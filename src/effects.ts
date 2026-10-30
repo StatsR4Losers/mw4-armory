@@ -4,7 +4,9 @@ import type { Mods } from './types';
 // A group marked "all" only shows when every stat in it moves by the same amount.
 const ORDER: { stats: string[]; label: string; lowerBetter: boolean; all?: boolean }[] = [
   { stats: ['range'], label: 'Damage range', lowerBetter: false },
+  { stats: ['rechamber'], label: 'Rechamber', lowerBetter: true },
   { stats: ['rpm'], label: 'Fire rate', lowerBetter: false },
+  { stats: ['pre_fire_delay'], label: 'Pre-fire delay', lowerBetter: true },
   { stats: ['ads'], label: 'ADS time', lowerBetter: true },
   { stats: ['stf'], label: 'Sprint to fire', lowerBetter: true },
   { stats: ['vert_recoil', 'horiz_recoil', 'vert_gun_kick', 'horiz_gun_kick'], label: 'Recoil', lowerBetter: true, all: true },
@@ -18,6 +20,7 @@ const ORDER: { stats: string[]; label: string; lowerBetter: boolean; all?: boole
   { stats: ['reload'], label: 'Reload time', lowerBetter: true },
   { stats: ['bv'], label: 'Bullet velocity', lowerBetter: false },
   { stats: ['ads_idle_sway', 'ads_gun_bob'], label: 'Aim sway', lowerBetter: true },
+  { stats: ['rechamber_aim'], label: 'Sway while rechambering', lowerBetter: true },
 ];
 
 export type Effect = { label: string; text: string; good: boolean };

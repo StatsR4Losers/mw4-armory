@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import raw from '../src/data/game.json' with { type: 'json' };
 import { GEAR_SLOTS, recommendGear, streakCost } from '../src/engine/gear.ts';
-import { evaluateBuild, optimize } from '../src/engine/index.ts';
+import { evaluateBuild, optimize, playstylesFor } from '../src/engine/index.ts';
 import { metricIds } from '../src/types.ts';
 import type { GameData, Settings, Weights } from '../src/types.ts';
 
@@ -10,7 +10,7 @@ const data = raw as unknown as GameData;
 const weapon = (id: string) => data.weapons.find(item => item.id === id)!;
 const gear = (id: string) => data.gear.find(item => item.id === id)!;
 const settings = (weaponId: string, patch: Partial<Settings> = {}): Settings => ({
-  weaponId, level: weapon(weaponId).maxLevel!, preset: 'allround', emphasis: Object.fromEntries(metricIds.map(id => [id, 1])) as Weights,
+  weaponId, level: weapon(weaponId).maxLevel!, preset: playstylesFor(weapon(weaponId))[0].id, emphasis: Object.fromEntries(metricIds.map(id => [id, 1])) as Weights,
   distanceM: 15, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [], ...patch,
 });
 
@@ -22,8 +22,8 @@ test('streak costs match the launch values and every streak has one', () => {
 });
 
 test('every gear slot gets a legal, unlocked pick and Overkill is never automatic', () => {
-  for (const item of data.weapons.filter(w => data.loadouts[w.id])) for (const preset of ['allround', 'close', 'long', 'control'] as const) {
-    const result = recommendGear(data, item, settings(item.id, { preset }));
+  for (const item of data.weapons.filter(w => data.loadouts[w.id])) for (const style of playstylesFor(item)) {
+    const result = recommendGear(data, item, settings(item.id, { preset: style.id }));
     for (const { slot } of GEAR_SLOTS) {
       const pick = gear(result.picks[slot]!.id);
       assert.ok(slot.startsWith('perk') ? pick.kind === 'perk' && pick.perkSlot === Number(slot.slice(-1)) : pick.kind === slot, `${item.id} ${slot}`);

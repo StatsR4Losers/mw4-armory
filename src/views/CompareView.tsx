@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { attachmentImage, data, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
-import { evaluateBuild } from '../engine';
+import { evaluateBuild, playstyleFor } from '../engine';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
 import type { Settings } from '../types';
@@ -11,11 +11,11 @@ const SLOT_ORDER = ['optic', 'muzzle', 'barrel', 'laser', 'underbarrel', 'guard'
 const window_ = (distance: number) => `${Math.round(distance * .5)}–${Math.round(distance * 1.5)} m`;
 
 export function CompareView({ items, setItems, settings, onCopy, onBuild }: { items: CompareItem[]; setItems: (update: (items: CompareItem[]) => CompareItem[]) => void; settings: Settings; onCopy: (text: string) => void; onBuild: () => void }) {
-  const rows = statRows(window_(settings.distanceM));
   const columns = useMemo(() => items.map(item => {
     const weapon = weaponById(item.weaponId)!;
-    return { item, weapon, ...evaluateBuild(data, weapon, { ...settings, weaponId: weapon.id }, item.attachments, item.apex) };
+    return { item, weapon, style: playstyleFor(weapon, settings.preset), ...evaluateBuild(data, weapon, { ...settings, weaponId: weapon.id }, item.attachments, item.apex) };
   }), [items, settings]);
+  const rows = statRows(window_(settings.distanceM), metric => columns.some(column => column.style.weights[metric] > 0));
   const update = (id: string, patch: Partial<CompareItem>) => setItems(list => list.map(item => item.id === id ? { ...item, ...patch } : item));
   const setSlot = (item: CompareItem, slot: string, attachmentId: string) => {
     const rest = item.attachments.filter(id => data.attachments[id]?.slot !== slot);
@@ -29,7 +29,7 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
       <div>
         <span className="eyebrow">Compare</span>
         <h1>Builds side by side</h1>
-        <p>Add builds from the Build tab, a guide site or your saved classes, or make your own here. Change any part and every number updates. Every column is measured against the baseline, scored at your current playstyle and {settings.distanceM} m fight distance. Use Make baseline to pick which one.</p>
+        <p>Add builds from the Build tab, a guide site or your saved classes, or make your own here. Change any part and every number updates. Every column is measured against the baseline at {settings.distanceM} m, scored with your current playstyle, or with its own class's default playstyle when the gun is from another class. Use Make baseline to pick which one.</p>
       </div>
       <div className="head-actions">
         <button className="button" onClick={addCustom}><Icon name="plus" size={15}/>Custom build</button>

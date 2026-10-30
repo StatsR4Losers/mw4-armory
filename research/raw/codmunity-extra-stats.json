@@ -1,0 +1,358 @@
+{
+ "source": "https://codmunity.gg/weapon/mw4/",
+ "retrieved": "2026-10-30",
+ "weapons": {
+  "han-86": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 30.75,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "m4": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 29.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "hyeon-burst": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 38.75,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "patriot-xmr": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 31,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "kastov-762": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 28,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "oden": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 34.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "axion": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 20,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "cronen-squall": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 33,
+    "pre_fire_delay": 45
+   },
+   "attachments": {}
+  },
+  "iso-nightshade": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 26.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "vel-46": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 28.25,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "wz-55-striga": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 19,
+    "pre_fire_delay": 64
+   },
+   "attachments": {}
+  },
+  "ppsh-41": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 27.5,
+    "pre_fire_delay": 37
+   },
+   "attachments": {}
+  },
+  "x-58-nyx": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 22.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "rezi-12": {
+   "base": {
+    "rechamber_speed": 733,
+    "hitscan_range": 17,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "warlord": {
+   "base": {
+    "rechamber_speed": 733,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 16.25,
+    "pre_fire_delay": 0
+   },
+   "attachments": {
+    "NK HEV-3 Bolt": {
+     "rechamber_speed": 1.27
+    },
+    "Warlord Lumen": {
+     "rechamber_speed": 1.05
+    }
+   }
+  },
+  "finn-lmg": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 35.5,
+    "pre_fire_delay": 50
+   },
+   "attachments": {}
+  },
+  "type-73": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 34.5,
+    "pre_fire_delay": 57
+   },
+   "attachments": {}
+  },
+  "apoc-338": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 36.5,
+    "pre_fire_delay": 75
+   },
+   "attachments": {}
+  },
+  "mar-9": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 33.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "oris-8-6": {
+   "base": {
+    "rechamber_speed": 1000,
+    "ads_rechamber_accuracy": 0.2,
+    "hip_rechamber_accuracy": 0.8,
+    "hitscan_range": 28.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {
+    "Schlager Visiv-5": {
+     "ads_rechamber_accuracy": 0.75
+    },
+    "Lightfire-5 Quick Bolt": {
+     "rechamber_speed": 0.93,
+     "ads_rechamber_accuracy": 1.19,
+     "hip_rechamber_accuracy": 0.81
+    },
+    "VX86 Heavy Bolt": {
+     "rechamber_speed": 1.07,
+     "ads_rechamber_accuracy": 0.5,
+     "hip_rechamber_accuracy": 0.5
+    }
+   }
+  },
+  "mosin-nagant": {
+   "base": {
+    "rechamber_speed": 1767,
+    "ads_rechamber_accuracy": 0.3,
+    "hip_rechamber_accuracy": 0.8,
+    "hitscan_range": 35,
+    "pre_fire_delay": 0
+   },
+   "attachments": {
+    "SA LYR-762 Barrel": {
+     "ads_rechamber_accuracy": 0.8,
+     "hip_rechamber_accuracy": 0.8
+    },
+    "Schlager Visiv-5": {
+     "ads_rechamber_accuracy": 0.75
+    },
+    "TV-Light 7-Bolt": {
+     "rechamber_speed": 0.89,
+     "ads_rechamber_accuracy": 1.19,
+     "hip_rechamber_accuracy": 1.19
+    },
+    "MN-BCH3 Heavy Bolt": {
+     "rechamber_speed": 1.11,
+     "ads_rechamber_accuracy": 0.5,
+     "hip_rechamber_accuracy": 0.5
+    }
+   }
+  },
+  "kg-7-vulcan": {
+   "base": {
+    "rechamber_speed": 1633,
+    "ads_rechamber_accuracy": 0.18,
+    "hip_rechamber_accuracy": 0.8,
+    "hitscan_range": 37,
+    "pre_fire_delay": 0
+   },
+   "attachments": {
+    "Schlager Visiv-5": {
+     "ads_rechamber_accuracy": 0.58
+    },
+    "Twist76 Heavy Bolt": {
+     "rechamber_speed": 1.12,
+     "ads_rechamber_accuracy": 0.17,
+     "hip_rechamber_accuracy": 0.5
+    },
+    "KT76 Light Bolt": {
+     "rechamber_speed": 0.84,
+     "ads_rechamber_accuracy": 1.32,
+     "hip_rechamber_accuracy": 1.19
+    }
+   }
+  },
+  "astaroth-57": {
+   "base": {
+    "rechamber_speed": 1600,
+    "ads_rechamber_accuracy": 0.18,
+    "hip_rechamber_accuracy": 0.8,
+    "hitscan_range": 31,
+    "pre_fire_delay": 0
+   },
+   "attachments": {
+    "Schlager Visiv-5": {
+     "ads_rechamber_accuracy": 0.58
+    },
+    "Astaroth .57 Infiltrator": {
+     "rechamber_speed": 1.02,
+     "ads_rechamber_accuracy": 1.28
+    }
+   }
+  },
+  "signal-50": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 30,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "sang-9mm": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 18.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "krait-p68": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 12.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "50-gs": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 23,
+    "pre_fire_delay": 0
+   },
+   "attachments": {}
+  },
+  "mojave-357": {
+   "base": {
+    "rechamber_speed": 0,
+    "ads_rechamber_accuracy": 0,
+    "hip_rechamber_accuracy": 0,
+    "hitscan_range": 20,
+    "pre_fire_delay": 64
+   },
+   "attachments": {
+    "M357 Heavy": {
+     "pre_fire_delay": 1.38
+    },
+    "M357 Shooter": {
+     "pre_fire_delay": 0.62
+    },
+    "M357 Light": {
+     "pre_fire_delay": 0.28
+    },
+    "Mojave .357 Lawless": {
+     "pre_fire_delay": 0
+    }
+   }
+  }
+ }
+}

@@ -3,6 +3,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { baseCatalog } from './source/base-catalog.ts';
 import { weaponStatOverrides } from './source/stat-overrides.ts';
+import { consensusFor } from '../src/engine/consensus.ts';
+import type { GameData } from '../src/types.ts';
 
 type Mods = Record<string, number>;
 type LevelRow = [name: string, slot: string, level: number, label: string];
@@ -12,6 +14,22 @@ const read = (path: string) => JSON.parse(readFileSync(new URL(path, root), 'utf
 const stats = read('research/raw/mw4-community-stats.json');
 const attachmentMeta = read('research/raw/mw4-community-attachments.json');
 const levels: Record<string, LevelRow[]> = read('research/raw/codmunity-unlock-levels.json').weapons;
+// Rechamber, rechamber steadiness, pre-fire delay and hitscan range, read from CODMunity's weapon pages by npm run fetch.
+const extras: Record<string, { base: Record<string, number>; attachments: Record<string, Mods> }> = read('research/raw/codmunity-extra-stats.json').weapons;
+// Only bolt-action rifles use the rechamber: both shotguns list the same 733 ms, the Rezi is semi-automatic, and no
+// source says what it does on a shotgun.
+const BOLT_ACTIONS = new Set(['mosin-nagant', 'oris-8-6', 'kg-7-vulcan', 'astaroth-57']);
+const EXTRA_KEYS: Record<string, string> = { rechamber_speed: 'rechamber', ads_rechamber_accuracy: 'rechamber_aim', hitscan_range: 'hitscan_range', pre_fire_delay: 'pre_fire_delay' };
+function extraFor(weaponId: string, values: Record<string, number>) {
+  const out: Mods = {};
+  for (const [key, value] of Object.entries(values)) {
+    const name = EXTRA_KEYS[key];
+    if (!name || !value) continue;
+    if ((name === 'rechamber' || name === 'rechamber_aim') && !BOLT_ACTIONS.has(weaponId)) continue;
+    out[name] = value;
+  }
+  return out;
+}
 
 const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const slotId = (slot: string) => slug(slot);
@@ -33,7 +51,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     const meta = metaById.get(id);
     if (!meta) problems.push(`${weapon.id}: no attachment record for "${name}" (${id})`);
     attachments[id] ??= { name, slot: slotId(slot), kind: label || meta?.about || '', image: !!meta?.picture };
-    list.push([id, level, statMods[id] ?? {}]);
+    list.push([id, level, { ...statMods[id] ?? {}, ...extraFor(weapon.id, extras[weapon.id]?.attachments[name] ?? {}) }]);
   }
   for (const id of Object.keys(statMods)) {
     if (list.some(entry => entry[0] === id)) continue;
@@ -53,7 +71,11 @@ const weapons = baseCatalog.weapons.map(weapon => {
     level: apexRow?.[2] ?? weapon.apex.unlockLevel ?? weapon.maxLevel,
     blocks: weapon.apex.blockedSlots.map(slotId),
     // A missing entry means the source lists no stat change, not a known zero effect.
-    mods: stats.apex[weapon.id] ?? null,
+    mods: (() => {
+      const extra = extraFor(weapon.id, extras[weapon.id]?.attachments[weapon.apex!.name] ?? extras[weapon.id]?.attachments[apexRow?.[0] ?? ''] ?? {});
+      const listed = stats.apex[weapon.id];
+      return listed || Object.keys(extra).length ? { ...listed ?? {}, ...extra } : null;
+    })(),
   };
   const profile = (overrides as any).damageProfile ?? weapon.damageProfile;
   return {
@@ -70,7 +92,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     rpm: (overrides as any).rpm ?? weapon.rpm,
     magazine: weapon.magazine,
     health: (overrides as any).stats?.health ?? 100,
-    base: stats.weapons[weapon.id] ?? null,
+    base: stats.weapons[weapon.id] ? { ...stats.weapons[weapon.id], ...extraFor(weapon.id, extras[weapon.id]?.base ?? {}) } : null,
     damage: profile ?? null,
     apex,
   };
@@ -173,7 +195,13 @@ const out = {
   version: `mw4-${retrieved}`,
   checkedAt: retrieved,
   statsUpdated: stats.meta.updated as string,
-  statNames: Object.fromEntries(stats.stats.map((stat: any) => [stat.id, { name: stat.name, unit: stat.unit, better: stat.better }])),
+  statNames: {
+    ...Object.fromEntries(stats.stats.map((stat: any) => [stat.id, { name: stat.name, unit: stat.unit, better: stat.better }])),
+    rechamber: { name: 'Rechamber time', unit: 'ms', better: 'lower' },
+    rechamber_aim: { name: 'Aim movement while rechambering', unit: '', better: 'lower' },
+    hitscan_range: { name: 'Hitscan range', unit: 'm', better: 'higher' },
+    pre_fire_delay: { name: 'Pre-fire delay', unit: 'ms', better: 'lower' },
+  },
   weapons,
   attachments,
   loadouts,
@@ -182,7 +210,14 @@ const out = {
   metaGear,
   metaSources: Object.fromEntries([codmunity, game8, wzstats].map(source => [source.source, { name: source.source, url: source.url, retrieved: source.retrieved }])),
 };
-writeFileSync(new URL('src/data/game.json', root), JSON.stringify(out));
+// What each gun's site builds are tuned for, scored with the same engine the site uses.
+const consensus: Record<string, unknown> = {};
+for (const weapon of weapons) {
+  if (!loadouts[weapon.id]) continue;
+  const found = consensusFor({ ...out, consensus: {} } as unknown as GameData, weapon);
+  if (found) consensus[weapon.id] = found;
+}
+writeFileSync(new URL('src/data/game.json', root), JSON.stringify({ ...out, consensus }));
 console.log(`weapons ${weapons.length}, with stats ${weapons.filter(w => loadouts[w.id]).length}, attachments ${Object.keys(attachments).length}, entries ${Object.values(loadouts).reduce((n, l) => n + l.length, 0)}`);
 console.log(`gear ${gear.length}, guide builds ${Object.values(meta).reduce((n, l) => n + l.length, 0)}, guide gear picks ${Object.values(metaGear).reduce((n, l) => n + l.length, 0)}, unmatched guide parts ${unmatchedNames.size}`);
 if (process.argv.includes('--verbose')) {

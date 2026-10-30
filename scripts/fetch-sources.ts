@@ -1,6 +1,7 @@
 // Downloads fresh source snapshots into research/raw, rebuilds src/data/game.json, prints what
 // changed and runs the tests. Run with: npm run fetch
-// Flags: --skip-levels keeps the current unlock table and only refreshes the stat files.
+// Flags: --skip-levels keeps the current unlock table. CODMunity's pages are still read for rechamber and hitscan stats.
+//        --skip-pages skips the CODMunity pages entirely and only refreshes the stat files.
 //        --no-test skips the test run at the end.
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -49,6 +50,47 @@ export function parseUnlockTable(html: string): LevelRow[] {
   return rows;
 }
 
+// Stats CODMunity's weapon pages carry that COD Loadout's files do not: bolt rechamber time and steadiness, and the
+// distance inside which bullets hit instantly.
+const EXTRA_BASE = ['rechamber_speed', 'ads_rechamber_accuracy', 'hip_rechamber_accuracy', 'hitscan_range', 'pre_fire_delay'];
+const EXTRA_MODS = ['rechamber_speed', 'ads_rechamber_accuracy', 'hip_rechamber_accuracy', 'pre_fire_delay'];
+export type PageExtras = { base: Record<string, number>; attachments: Record<string, Record<string, number>> };
+
+/** Top-level records in a CODMunity page's serialized data: each {__v:0,_id:"..."} object, with nested objects cut out. */
+function records(html: string) {
+  const out: string[] = [];
+  for (let start = html.indexOf('{__v:0,_id:'); start >= 0; start = html.indexOf('{__v:0,_id:', start + 1)) {
+    let depth = 0, end = start, flat = '';
+    for (; end < html.length; end++) {
+      const char = html[end];
+      if (char === '{' || char === '[') depth++;
+      else if (char === '}' || char === ']') { depth--; if (depth === 0) break; }
+      else if (depth === 1) flat += char;
+    }
+    out.push(flat);
+  }
+  return out;
+}
+const field = (record: string, key: string) => record.match(new RegExp(`(?:^|,)${key}:(-?[0-9.]+)(?=,|$)`))?.[1];
+const label = (record: string, key: string) => record.match(new RegExp(`(?:^|,)${key}:"([^"]*)"`))?.[1];
+
+/** The weapon's own stat record and each attachment's extra multipliers, from one CODMunity weapon page. */
+export function parsePageExtras(html: string): PageExtras | null {
+  const list = records(html);
+  // The weapon's own record has a fire rate and no loadout. Loadout records repeat it with attachments applied.
+  const own = list.find(record => label(record, 'game') === 'mw4' && field(record, 'rpm') && field(record, 'hitscan_range') && !record.includes('loadoutId:'));
+  if (!own) return null;
+  const base = Object.fromEntries(EXTRA_BASE.map(key => [key, field(own, key)]).filter(([, value]) => value != null).map(([key, value]) => [key, Number(value)]));
+  const attachments: PageExtras['attachments'] = {};
+  for (const record of list) {
+    const name = label(record, 'attachment');
+    if (!name || label(record, 'sourceGame') !== 'mw4') continue;
+    const mods = Object.fromEntries(EXTRA_MODS.map(key => [key, field(record, `${key}_mod`)]).filter(([, value]) => value != null).map(([key, value]) => [key, Number(value)]));
+    if (Object.keys(mods).length) attachments[name] = mods;
+  }
+  return { base, attachments };
+}
+
 async function refreshStats() {
   console.log('Stat files from COD Loadout');
   for (const [name, check] of [
@@ -64,25 +106,33 @@ async function refreshStats() {
   }
 }
 
-async function refreshLevels() {
-  const path = 'research/raw/codmunity-unlock-levels.json';
-  const previous = readJson(path);
+/** Reads each CODMunity weapon page once for its unlock table and its extra stats. levels false keeps the unlock table. */
+export async function refreshPages(levels: boolean) {
+  const levelPath = 'research/raw/codmunity-unlock-levels.json', extraPath = 'research/raw/codmunity-extra-stats.json';
+  const previous = readJson(levelPath);
+  let previousExtras: { weapons: Record<string, PageExtras> } = { weapons: {} };
+  try { previousExtras = readJson(extraPath); } catch { /* first run */ }
   const ids = Object.keys(readJson('research/raw/mw4-community-stats.json').attachments);
-  const weapons: Record<string, LevelRow[]> = {};
-  const kept: string[] = [];
-  console.log(`Unlock tables from CODMunity, ${ids.length} weapon pages, about ${Math.ceil(ids.length * 7 / 60)} minutes`);
+  const weapons: Record<string, LevelRow[]> = {}, extras: Record<string, PageExtras> = {};
+  const kept: string[] = [], keptExtras: string[] = [];
+  console.log(`CODMunity weapon pages, ${ids.length} of them, about ${Math.ceil(ids.length * 7 / 60)} minutes`);
   for (const [index, id] of ids.entries()) {
     const html = await get(`https://codmunity.gg/weapon/mw4/${id}`);
-    const rows = html ? parseUnlockTable(html) : [];
+    const rows = html && levels ? parseUnlockTable(html) : [];
     const old: LevelRow[] = previous.weapons[id] ?? [];
-    // A rate-limited or changed page must not wipe a weapon's known unlocks.
-    if (!rows.length && old.length) { weapons[id] = old; kept.push(id); }
+    // A rate-limited or changed page must not wipe a weapon's known unlocks or stats.
+    if (!rows.length && old.length) { weapons[id] = old; if (levels) kept.push(id); }
     else weapons[id] = rows;
-    console.log(`  ${String(index + 1).padStart(2)}/${ids.length} ${id}: ${rows.length ? `${rows.length} rows` : old.length ? 'failed, kept old rows' : 'no table'}`);
+    const found = html ? parsePageExtras(html) : null;
+    if (found) extras[id] = found;
+    else if (previousExtras.weapons[id]) { extras[id] = previousExtras.weapons[id]; keptExtras.push(id); }
+    console.log(`  ${String(index + 1).padStart(2)}/${ids.length} ${id}: ${levels ? (rows.length ? `${rows.length} unlock rows` : old.length ? 'unlocks failed, kept old rows' : 'no unlock table') + ', ' : ''}${found ? `${Object.keys(found.attachments).length} parts with extra stats` : 'extra stats failed'}`);
     await sleep(5_000);
   }
-  writeJson(path, { ...previous, retrieved: today, weapons, stale: kept.length ? kept : undefined });
-  if (kept.length) console.log(`  Kept older rows for ${kept.join(', ')}. Run again later to refresh them.`);
+  if (levels) writeJson(levelPath, { ...previous, retrieved: today, weapons, stale: kept.length ? kept : undefined });
+  writeJson(extraPath, { source: 'https://codmunity.gg/weapon/mw4/', retrieved: today, weapons: extras, stale: keptExtras.length ? keptExtras : undefined });
+  if (kept.length) console.log(`  Kept older unlock rows for ${kept.join(', ')}. Run again later to refresh them.`);
+  if (keptExtras.length) console.log(`  Kept older extra stats for ${keptExtras.join(', ')}.`);
 }
 
 function same(a: Mods | null | undefined, b: Mods | null | undefined) {
@@ -116,7 +166,7 @@ export function diffGames(before: Game, after: Game): string[] {
 async function main() {
   const before: Game = readJson('src/data/game.json');
   await refreshStats();
-  if (!args.has('--skip-levels')) await refreshLevels();
+  if (!args.has('--skip-pages')) await refreshPages(!args.has('--skip-levels'));
   console.log('Rebuilding src/data/game.json');
   execFileSync(process.execPath, ['--experimental-strip-types', 'scripts/build-data.ts'], { cwd: file('.'), stdio: 'inherit' });
   const changes = diffGames(before, readJson('src/data/game.json'));

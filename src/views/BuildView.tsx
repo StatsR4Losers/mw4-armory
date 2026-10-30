@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { attachmentEntry, attachmentImage, categories, data, shortCategory, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
-import { ATTACHMENT_LIMIT, METRICS, PRESETS, STABILITY, TIE_MS, apexState, evaluateBuild, fullModel } from '../engine';
+import { ATTACHMENT_LIMIT, METRICS, ROLES, STABILITY, TIE_MS, apexState, evaluateBuild, fullModel, playstyleById, shotInterval, playstyleFor, playstylesFor, roleOf, slugAmmo, weightsFor } from '../engine';
+import type { Playstyle } from '../engine';
 import { effects } from '../effects';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
-import type { BuildResult, ClassResult, MetricId, OptimizeResult, PresetId, Settings, Stability, StreakStyle, WeaponData } from '../types';
+import type { BuildResult, ClassResult, MetricId, OptimizeResult, Settings, Stability, StreakStyle, WeaponData } from '../types';
 import type { CompareItem } from './CompareView';
 import type { SavedClass } from './SavedView';
 import { ClassSetup, SitePicks } from './BuildExtras';
@@ -18,7 +19,7 @@ type Props = {
 type Baseline = { label: string; attachments: string[]; apex: boolean; stock?: boolean };
 
 const SLOT_ORDER = ['optic', 'muzzle', 'barrel', 'laser', 'underbarrel', 'guard', 'magazine', 'ammunition', 'rear-grip', 'stock', 'comb', 'bolt', 'trigger-action', 'cylinder'];
-const TUNABLE: MetricId[] = ['ads', 'stf', 'ttk', 'recoil', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway'];
+const TUNABLE: MetricId[] = ['ads', 'stf', 'ttk', 'fireRate', 'recoil', 'mobility', 'adsMove', 'flinch', 'hipfire', 'sway', 'steady', 'velocity', 'magazine', 'reload', 'swap'];
 const emphasisLabel = (value: number) => value === 0 ? 'Off' : value < .75 ? 'Low' : value <= 1.25 ? 'Normal' : value <= 2 ? 'High' : 'Max';
 const ms = (value: number | null | undefined) => value == null ? 'n/a' : `${Math.round(value)}`;
 const window_ = (distance: number) => `${Math.round(distance * .5)}–${Math.round(distance * 1.5)} m`;
@@ -27,10 +28,10 @@ const signedMs = (value: number) => { const rounded = Math.round(value); return 
 /** Names the settings that produced an earlier build, relative to the current ones. */
 function describe(before: Settings, now: Settings) {
   const parts: string[] = [];
-  if (before.preset !== now.preset) parts.push(PRESETS[before.preset].name);
+  if (before.preset !== now.preset) parts.push(playstyleById(before.preset)?.name ?? 'another playstyle');
   if (before.distanceM !== now.distanceM) parts.push(`${before.distanceM} m`);
   if (before.apex !== now.apex) parts.push(before.apex ? 'Apex on' : 'Apex off');
-  if (before.optic !== now.optic) parts.push(before.optic ? 'optic on' : 'optic off');
+  if (before.optic !== now.optic && before.preset === now.preset) parts.push(before.optic ? 'optic on' : 'optic off');
   if (before.level !== now.level) parts.push(`level ${before.level}`);
   if (JSON.stringify(before.emphasis) !== JSON.stringify(now.emphasis)) parts.push('earlier fine-tune');
   if (before.locked.join() !== now.locked.join() || before.excluded.join() !== now.excluded.join()) parts.push('earlier locks');
@@ -55,6 +56,8 @@ function usePreviousBuild(weapon: WeaponData, settings: Settings, best: BuildRes
 
 export function BuildView({ settings, change, selectWeapon, result, busy, error, saved, onSave, onShare, onCopy, onReset, onCompare }: Props) {
   const weapon = weaponById(settings.weaponId)!;
+  const style = playstyleFor(weapon, settings.preset);
+  const [minDistance, maxDistance] = ROLES[roleOf(weapon)].distance;
   const [pickerOpen, setPickerOpen] = useState(false);
   const [compareKey, setCompareKey] = useState('previous');
   const panel = useRef<HTMLElement>(null);
@@ -99,15 +102,15 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         <p className="hint">Only attachments unlocked by this level are used.</p>
       </section>
       <section className="control">
-        <div className="control-head"><span>Playstyle</span></div>
-        <div className="presets">{(Object.keys(PRESETS) as PresetId[]).map(id => <button key={id} className={settings.preset === id ? 'active' : ''} aria-pressed={settings.preset === id} onClick={() => change({ preset: id, distanceM: PRESETS[id].distanceM })}>
-          <strong>{PRESETS[id].name}</strong><span>{PRESETS[id].blurb}</span>
+        <div className="control-head"><span>{ROLES[style.role].name} playstyle</span></div>
+        <div className="presets">{playstylesFor(weapon).map(item => <button key={item.id} className={style.id === item.id ? 'active' : ''} aria-pressed={style.id === item.id} onClick={() => change({ preset: item.id, distanceM: item.distanceM })}>
+          <strong>{item.name}{data.consensus?.[weapon.id]?.clear && data.consensus[weapon.id].style === item.id && <i className="sites-tag" title="The playstyle the guide sites' builds for this gun fit best">Sites' pick</i>}</strong><span>{item.blurb}</span>
         </button>)}</div>
       </section>
       <section className="control">
         <div className="control-head"><label htmlFor="distance">Typical fight distance</label><output>{settings.distanceM}<small> m</small></output></div>
-        <input id="distance" type="range" min={4} max={50} value={settings.distanceM} onChange={event => change({ distanceM: Number(event.target.value) })}/>
-        <p className="hint">Range is scored by time to kill across fights from {window_(settings.distanceM)}.</p>
+        <input id="distance" type="range" min={minDistance} max={maxDistance} value={Math.max(minDistance, Math.min(maxDistance, settings.distanceM))} onChange={event => change({ distanceM: Number(event.target.value) })}/>
+        <p className="hint">{distanceHint(weapon, style, settings.distanceM)}</p>
       </section>
       <section className="control">
         <div className="control-head"><span>Perks and streaks</span></div>
@@ -118,7 +121,8 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
       </section>
       <details className="control tune">
         <summary><Icon name="sliders" size={15}/>Fine-tune what matters<Icon name="chevron" size={14}/></summary>
-        <div className="tune-list">{TUNABLE.map(id => <div key={id} className="tune-row">
+        {/* Sliders scale the playstyle's own weights, so a stat the playstyle ignores has no slider. */}
+        <div className="tune-list">{TUNABLE.filter(id => style.weights[id] > 0).map(id => <div key={id} className="tune-row">
           <label htmlFor={`e-${id}`} title={METRICS[id].help}>{METRICS[id].name}</label>
           <output>{emphasisLabel(settings.emphasis[id])}</output>
           <input id={`e-${id}`} type="range" min={0} max={3} step={.25} value={settings.emphasis[id]} onChange={event => change({ emphasis: { ...settings.emphasis, [id]: Number(event.target.value) } })}/>
@@ -129,13 +133,15 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
 
     <section className="workspace" aria-busy={busy}>
       <Hero weapon={weapon} result={result} settings={settings} busy={busy}/>
-      {!fullModel(weapon) && <div className="callout"><Icon name="info" size={16}/><p><b>Handling-only scoring.</b> The data covers aim speed, recoil and movement for this gun, but not pellet spread, one-shot range or slug behavior. Treat the pick as a starting point.</p></div>}
+      {!fullModel(weapon) && <div className="callout"><Icon name="info" size={16}/><p>{weapon.fireMode === 'burst'
+        ? <><b>No burst time-to-kill model.</b> The data has no burst delay, so damage range counts one millisecond per percent and the rest is handling and recoil.</>
+        : <><b>Handling-only scoring.</b> The data has no pellet damage, spread or one-shot range for shotguns, and no slug damage. The pick covers aim speed, recoil, movement and pump speed. Treat it as a starting point.</>}</p></div>}
       {error && <div className="callout bad"><Icon name="info" size={16}/><p>{error}</p></div>}
 
       <section className={`build-panel ${busy ? 'is-busy' : ''}`} ref={panel}>
         <header className="build-head">
           <div className="build-title">
-            <span className="eyebrow">Best build · {PRESETS[settings.preset].name} · {settings.distanceM} m</span>
+            <span className="eyebrow">Best build · {style.name} · {settings.distanceM} m</span>
             <h2>{settings.apex && weapon.apex ? <><Icon name="bolt" size={18}/>{weapon.apex.name}</> : 'No Apex'}</h2>
           </div>
           {best && <div className="build-score" title="Estimated milliseconds of fight time saved against the stock gun"><strong>{signedMs(best.score)}</strong><span>vs stock</span></div>}
@@ -146,10 +152,10 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
             <input type="checkbox" checked={settings.apex} disabled={!weapon.apex} onChange={event => change({ apex: event.target.checked })}/><span/>
             <b>Apex</b>{weapon.apex ? <em>{weapon.apex.name}{weapon.apex.blocks.length ? `, blocks ${weapon.apex.blocks.map(slotName).map(name => name.toLowerCase()).join(', ')}` : ''}</em> : <em>none for this gun</em>}
           </label>
-          <label className="switch">
+          {style.optic === 'choice' ? <label className="switch">
             <input type="checkbox" checked={settings.optic} onChange={event => change({ optic: event.target.checked })}/><span/>
-            <b>Optic</b><em>{settings.optic ? 'uses the optic that costs least' : 'iron sights'}</em>
-          </label>
+            <b>Optic</b><em>{settings.optic ? 'takes a slot, no stat change' : 'iron sights'}</em>
+          </label> : <span className="switch-note"><b>{style.optic === 'scope' ? 'Stock scope' : 'No optic'}</b><em>{style.optic === 'scope' ? 'optics list no stat changes, so none takes a slot' : 'hip fire, so no slot goes to an optic'}</em></span>}
           <label className="compare-pick">
             <span>Compared with</span>
             <select value={chosen.key} onChange={event => setCompareKey(event.target.value)}>
@@ -192,7 +198,7 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         </>}
       </section>
 
-      {result && <SitePicks weapon={weapon} result={result} activeKey={chosen.key} onCompare={compareWith} onCopy={onCopy}/>}
+      {result && <SitePicks weapon={weapon} result={result} activeKey={chosen.key} style={style} onStyle={id => change({ preset: id, distanceM: playstyleById(id)!.distanceM })} onCompare={compareWith} onCopy={onCopy}/>}
       {result?.gear && <ClassSetup gear={result.gear} settings={settings} change={change} weapon={weapon}/>}
 
       <details className="method">
@@ -200,14 +206,33 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         <ul>
           <li>Every legal combination of up to {ATTACHMENT_LIMIT} attachments is checked. Attachments that are worse in every scored stat than another in the same slot are skipped first, which cannot change the winner.</li>
           <li>Attachment changes multiply, the way CODMunity combines them: a +18% range muzzle and a +28% range barrel give 1.18 × 1.28 = +51%.</li>
-          <li>The score is milliseconds of fight time saved against the stock gun. ADS, sprint-to-fire and time to kill count in real milliseconds. One percent of recoil counts as {Math.round(PRESETS[settings.preset].weights.recoil)}% of the time a missed shot costs.</li>
-          <li>Time to kill assumes chest hits with every bullet. Range attachments stretch every damage band by their multiplier.</li>
+          <li>The score is milliseconds of fight time saved against the stock gun. ADS, sprint-to-fire, weapon swap, bullet travel time and time to kill count in real milliseconds. {style.weights.recoil > 0 ? <>One percent of recoil counts as {+(style.weights.recoil).toFixed(1)}% of the time a missed shot costs.</> : <>Recoil is not scored in this playstyle.</>}</li>
+          {weapon.fireMode === 'auto' && <li>Time to kill assumes chest hits with every bullet. Range attachments stretch every damage band by their multiplier.</li>}
+          {style.aim && fullModel(weapon) && weapon.fireMode !== 'auto' && <li>{aimText(style)} A missed shot or a hit that does not kill costs one more shot interval, so rechamber speed and one-shot range both count in milliseconds. These hit rates are this site's assumptions, not measurements.</li>}
+          {style.ammo === 'slug' && <li>Slug builds always run {slugAmmo(data, weapon) ? data.attachments[slugAmmo(data, weapon)![0]].name : 'slugs'}. The data does not list what slugs do to damage or range, so builds are compared on aim speed, recoil and handling around it.</li>}
+          {style.ammo === 'pellets' && slugAmmo(data, weapon) && <li>Slugs are left out of this playstyle. The data shows only their recoil and velocity changes, not that they turn hip fire into a single projectile.</li>}
+          {style.followUps != null && <li>A faster pump or fire rate counts on {Math.round(style.followUps * 100)}% of fights, the share assumed to need a second shot.</li>}
           <li>The stability line rescores the top {STABILITY.pool.toLocaleString()} builds {STABILITY.samples} times with every priority scaled by up to {STABILITY.weightSpread}x and the fight distance moved by up to {STABILITY.distanceSpread * 100}%. Builds within {TIE_MS} ms count as a tie.</li>
           <li>Import codes come from the game. Site builds show the site's code where it published one. For the optimizer's pick, build it once in Gunsmith and the game gives you a code.</li>
         </ul>
       </details>
     </section>
   </div>;
+}
+
+const REGION_NAMES: Record<string, string> = { head: 'head', neck: 'neck', chest: 'chest', stomach: 'stomach', upperarm: 'upper arms', lowerarm: 'lower arms', upperleg: 'upper legs', lowerleg: 'lower legs' };
+
+/** Plain description of a playstyle's assumed hit spread. */
+function aimText(style: Playstyle) {
+  const aim = style.aim!;
+  const top = Object.entries(aim.regions).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([region, share]) => `${Math.round(share * 100)}% ${REGION_NAMES[region]}`);
+  return `${style.name} assumes ${Math.round(aim.miss * 100)}% of shots miss, and hits land ${top.join(', ')} and the rest lower.`;
+}
+
+function distanceHint(weapon: WeaponData, style: Playstyle, distance: number) {
+  if (!fullModel(weapon)) return weapon.fireMode === 'burst' ? 'Used for bullet travel time.' : 'Shotgun damage is not in the data, so distance only changes bullet travel time.';
+  if (weapon.fireMode === 'auto') return `Range is scored by time to kill across fights from ${window_(distance)}.`;
+  return `One-shot range is scored across fights from ${window_(distance)}${style.aim ? ` with ${style.aim.name} aim` : ''}.`;
 }
 
 function WeaponPicker({ weapon, open, setOpen, onSelect }: { weapon: WeaponData; open: boolean; setOpen: (open: boolean) => void; onSelect: (id: string) => void }) {
@@ -239,7 +264,10 @@ function Hero({ weapon, result, settings, busy }: { weapon: WeaponData; result: 
     { label: 'Magazine', value: `${weapon.magazine ?? Math.round(base.mag_size)}`, unit: 'rds' },
     { label: 'ADS', value: ms(base.ads), unit: 'ms' },
     { label: 'Sprint to fire', value: ms(base.stf), unit: 'ms' },
-    { label: `TTK ${window_(settings.distanceM)}`, value: ms(result?.baseTtkMs), unit: result?.baseTtkMs ? 'ms' : '' },
+    ...(weapon.fireMode === 'auto' && fullModel(weapon)
+      ? [{ label: `TTK ${window_(settings.distanceM)}`, value: ms(result?.baseTtkMs), unit: result?.baseTtkMs ? 'ms' : '' }]
+      : [{ label: 'Between shots', value: ms(shotInterval(weapon, base)), unit: 'ms' },
+        ...(fullModel(weapon) ? [{ label: `One-shot hits ${window_(settings.distanceM)}`, value: result?.stock?.oneShot == null ? 'n/a' : `${Math.round(result.stock.oneShot * 100)}`, unit: result?.stock?.oneShot == null ? '' : '%' }] : [])]),
   ];
   return <section className="hero">
     <div className="hero-copy">
@@ -309,7 +337,8 @@ function PartsDiff({ weapon, after, before, beforeLabel, result, settings, toggl
 }
 
 function StatsDiff({ weapon, after, before, settings }: { weapon: WeaponData; after: BuildResult; before: BuildResult; settings: Settings }) {
-  const rows = statRows(window_(settings.distanceM)).filter(row => !row.optional || row.get(after, weapon) != null);
+  const weights = weightsFor(settings, playstyleFor(weapon, settings.preset));
+  const rows = statRows(window_(settings.distanceM), metric => weights[metric] > 0).filter(row => !row.optional || row.get(after, weapon) != null);
   const scoreDiff = after.score - before.score;
   return <div className="stats-diff">
     <div className="stats-row total"><span>Fight-time edge vs stock</span><span className="stat-before">{signedMs(before.score)}</span><span className="diff-arrow">{Math.abs(scoreDiff) >= .5 && <Icon name="arrow" size={13}/>}</span><span className={`stat-after ${scoreDiff >= .5 ? 'good' : scoreDiff <= -.5 ? 'bad' : ''}`}>{signedMs(after.score)}</span></div>

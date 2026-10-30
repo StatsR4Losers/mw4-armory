@@ -1,4 +1,5 @@
-import type { GameData, GearItem, GearPick, GearResult, GearSlot, PresetId, Settings, StreakStyle, WeaponData } from '../types.ts';
+import type { GameData, GearItem, GearPick, GearResult, GearSlot, GearStyle, Settings, StreakStyle, WeaponData } from '../types.ts';
+import { playstyleFor } from './playstyles.ts';
 
 export const GEAR_SLOTS: { slot: GearSlot; label: string }[] = [
   { slot: 'tactical', label: 'Tactical' }, { slot: 'lethal', label: 'Lethal' }, { slot: 'field', label: 'Field upgrade' },
@@ -6,7 +7,7 @@ export const GEAR_SLOTS: { slot: GearSlot; label: string }[] = [
 ];
 
 // Small, stated playstyle rules on top of what the guides pick. 1 means the playstyle wants it.
-const FIT: Record<PresetId, Record<string, { value: number; why: string }>> = {
+const FIT: Record<GearStyle, Record<string, { value: number; why: string }>> = {
   allround: {
     'Quick Fix': { value: 1, why: 'heals right after each kill' }, Ninja: { value: .8, why: 'quiet footsteps' }, Ghost: { value: .8, why: 'hides you from UAVs' },
     'Battle Hardened': { value: .6, why: 'shrugs off flashes and stuns' }, Stim: { value: .8, why: 'instant heal and sprint reset' }, 'Sticky Grenade': { value: .6, why: 'reliable lethal' },
@@ -61,8 +62,8 @@ function shares(data: GameData, weapon: WeaponData) {
   };
 }
 
-function scoreItem(data: GameData, weapon: WeaponData, item: GearItem, preset: PresetId, share: ReturnType<typeof shares>): GearPick {
-  const own = share.own(item.id), cls = share.cls(item.id), fit = FIT[preset][item.name];
+function scoreItem(data: GameData, weapon: WeaponData, item: GearItem, style: GearStyle, share: ReturnType<typeof shares>): GearPick {
+  const own = share.own(item.id), cls = share.cls(item.id), fit = FIT[style][item.name];
   const parts: [number, number][] = [[.45, own], [.25, cls], [.15, fit?.value ?? 0]];
   if (item.tier != null) parts.push([.15, item.tier]);
   const total = parts.reduce((sum, [w]) => sum + w, 0);
@@ -79,6 +80,7 @@ function scoreItem(data: GameData, weapon: WeaponData, item: GearItem, preset: P
 
 export function recommendGear(data: GameData, weapon: WeaponData, settings: Settings): GearResult {
   const share = shares(data, weapon);
+  const style = playstyleFor(weapon, settings.preset).gear;
   const unlocked = (item: GearItem) => item.unlock == null || item.unlock <= settings.playerLevel;
   const picks: Partial<Record<GearSlot, GearPick>> = {};
   const alternatives: Partial<Record<GearSlot, GearPick[]>> = {};
@@ -86,9 +88,9 @@ export function recommendGear(data: GameData, weapon: WeaponData, settings: Sett
     const options = data.gear.filter(item => item.kind === slotKind(slot) && (perkSlot(slot) === null || item.perkSlot === perkSlot(slot)));
     const lockedId = settings.gearLocks[slot];
     const ranked = options.filter(item => unlocked(item) && item.name !== 'Overkill')
-      .map(item => scoreItem(data, weapon, item, settings.preset, share)).sort((a, b) => b.value - a.value || a.id.localeCompare(b.id));
+      .map(item => scoreItem(data, weapon, item, style, share)).sort((a, b) => b.value - a.value || a.id.localeCompare(b.id));
     const locked = lockedId ? options.find(item => item.id === lockedId) : undefined;
-    picks[slot] = locked ? { ...scoreItem(data, weapon, locked, settings.preset, share), locked: true } : ranked[0];
+    picks[slot] = locked ? { ...scoreItem(data, weapon, locked, style, share), locked: true } : ranked[0];
     alternatives[slot] = ranked.filter(pick => pick.id !== picks[slot]?.id).slice(0, 3);
   }
   const hardline = data.gear.find(item => item.id === picks.perk2?.id)?.name === 'Hardline';

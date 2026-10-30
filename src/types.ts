@@ -30,12 +30,30 @@ export interface GameData {
   meta: Record<string, MetaBuild[]>;
   metaGear: Record<string, MetaGear[]>;
   metaSources: Record<string, { name: string; url: string; retrieved: string }>;
+  // What the guide sites' builds are tuned for, per gun. Computed by scripts/build-data.ts with engine/consensus.ts.
+  consensus: Record<string, Consensus>;
+}
+export interface Consensus {
+  // The playstyle whose best build the site builds come closest to.
+  style: string;
+  // False when another playstyle fits within CLEAR_MARGIN, so the lean is too small to call.
+  clear: boolean;
+  // For each playstyle, the mean share of that playstyle's best gain the site builds reach, and how many builds counted.
+  fit: Record<string, { capture: number; builds: number }>;
+  builds: number;
+  // Average stat changes across the site builds, largest first. good is true when the change helps.
+  profile: { label: string; change: number; good: boolean }[];
+  // Parts at least half the site builds run.
+  shared: { id: string; count: number }[];
 }
 
-export const metricIds = ['ads', 'stf', 'recoil', 'ttk', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway'] as const;
+export const metricIds = ['ads', 'stf', 'recoil', 'ttk', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway', 'fireRate', 'swap', 'steady'] as const;
 export type MetricId = typeof metricIds[number];
 export type Weights = Record<MetricId, number>;
-export type PresetId = 'allround' | 'close' | 'long' | 'control';
+// Playstyle ids are per weapon class, such as smg-rush or sniper-quickscope. See engine/playstyles.ts.
+export type PresetId = string;
+// The perk and equipment rules a playstyle uses.
+export type GearStyle = 'allround' | 'close' | 'long' | 'control';
 
 export interface Settings {
   weaponId: string;
@@ -68,6 +86,8 @@ export interface BuildResult {
   metrics: Record<MetricId, number>;
   score: number;
   ttkMs: number | null;
+  // Share of hits that kill in one shot, for guns scored by shots to kill.
+  oneShot: number | null;
   contributions: { id: string; score: number }[];
 }
 /** How the best build holds up when priorities and fight distance move a little. Shares are 0 to 1. */

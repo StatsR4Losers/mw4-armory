@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { attachmentImage, data, slotName, sortSlots } from '../data/game';
 import { GEAR_SLOTS, streakCost } from '../engine/gear';
+import { playstyleById } from '../engine';
+import type { Playstyle } from '../engine';
 import { Icon } from '../components/Icon';
 import type { GearItem, GearResult, GearSlot, OptimizeResult, ScoredMeta, Settings, WeaponData } from '../types';
 
@@ -65,7 +67,30 @@ export function ClassSetup({ gear, settings, change, weapon }: { gear: GearResul
   </section>;
 }
 
-export function SitePicks({ weapon, result, activeKey, onCompare, onCopy }: { weapon: WeaponData; result: OptimizeResult; activeKey: string; onCompare: (key: string) => void; onCopy: (text: string, message?: string) => void }) {
+/** What the site builds for this gun are tuned for, read from how they score under each playstyle. */
+function SiteRead({ weapon, result, style, onStyle }: { weapon: WeaponData; result: OptimizeResult; style: Playstyle; onStyle: (id: string) => void }) {
+  const consensus = data.consensus?.[weapon.id];
+  if (!consensus) return null;
+  const pick = playstyleById(consensus.style);
+  const fits = Object.entries(consensus.fit).sort((a, b) => b[1].capture - a[1].capture);
+  const pct = (value: number) => `${Math.round(Math.max(0, value) * 100)}%`;
+  const ours = new Set([...(result.standard.best?.attachments ?? []), ...(result.apex.best?.attachments ?? [])]);
+  return <div className="site-read">
+    <p>
+      <b>{consensus.clear ? `The sites build it for ${pick?.name ?? consensus.style}.` : `No clear lean. The sites' builds fit ${fits.filter(([, fit]) => fits[0][1].capture - fit.capture < .05).map(([id]) => playstyleById(id)?.name ?? id).join(' and ')} about equally.`}</b>{' '}
+      {fits[0][1].builds === consensus.builds ? `Their ${consensus.builds} matched builds reach` : `${fits[0][1].builds} of their ${consensus.builds} matched builds match its ammo, and they reach`} {pct(fits[0][1].capture)} of the best {pick?.name} build's gain
+      {fits.length > 1 ? <>, against {fits.slice(1).map(([id, fit]) => `${pct(fit.capture)} for ${playstyleById(id)?.name ?? id}`).join(' and ')}.</> : '.'}
+      {consensus.clear && style.id !== consensus.style && pick && <> <button className="link" onClick={() => onStyle(pick.id)}>Use {pick.name}</button></>}
+    </p>
+    {consensus.profile.length > 0 && <div className="read-chips" aria-label="Average change across site builds">{consensus.profile.map(item => <span key={item.label} className={item.good ? 'good' : 'bad'}>{item.label} {item.change > 0 ? '+' : '−'}{Math.abs(item.change)}%</span>)}</div>}
+    {consensus.shared.length > 0 && <ul className="read-shared">{consensus.shared.slice(0, 4).map(item => <li key={item.id}>
+      <span>{data.attachments[item.id]?.name}</span><small>{item.count} of {consensus.builds} builds</small>
+      <em className={ours.has(item.id) ? 'good' : ''}>{ours.has(item.id) ? 'optimizer runs it too' : 'optimizer leaves it out'}</em>
+    </li>)}</ul>}
+  </div>;
+}
+
+export function SitePicks({ weapon, result, activeKey, style, onStyle, onCompare, onCopy }: { weapon: WeaponData; result: OptimizeResult; activeKey: string; style: Playstyle; onStyle: (id: string) => void; onCompare: (key: string) => void; onCopy: (text: string, message?: string) => void }) {
   const [source, setSource] = useState('all');
   const [showAll, setShowAll] = useState(false);
   const metas = result.meta.map((meta, index) => ({ meta, key: `meta:${index}` }));
@@ -104,6 +129,7 @@ export function SitePicks({ weapon, result, activeKey, onCompare, onCopy }: { we
       <h3>What the sites say</h3>
       <p>Each site's top build for the {weapon.name}, scored with the same math as the optimizer at your settings. Press Compare to put one next to the optimizer's build above.</p>
     </div>
+    <SiteRead weapon={weapon} result={result} style={style} onStyle={onStyle}/>
     <div className="site-tops">{tops.map(item => card(item, true))}</div>
     <button className="link show-all" onClick={() => setShowAll(!showAll)} aria-expanded={showAll}>{showAll ? 'Hide' : 'Show'} all {metas.length} site builds<Icon name="chevron" size={13}/></button>
     {showAll && <>

@@ -7,6 +7,24 @@ const sources = [
   { title: 'TimeSaver: Shipment 24/7 XP farm', url: 'https://timesaver.gg/blog/mw4-shipment-xp-farm-decoy-grenades-fastest-weapon-leveling' },
   { title: 'esports.gg: Leveling weapons in MW4', url: 'https://esports.gg/guides/call-of-duty/how-to-level-up-weapons-faster-in-modern-warfare-4/' },
   { title: 'Boosting Factory: Best XP modes', url: 'https://www.boostingfactory.com/modern-warfare-4/blog/how-level-fast-mw4' },
+  { title: 'CODMunity: weapon pages with rechamber and hitscan stats', url: 'https://codmunity.gg/weapon/mw4/mosin-nagant' },
+  { title: 'CODMunity: time to kill by class', url: 'https://codmunity.gg/ttk/mw4?cat=SMG' },
+  { title: 'Insider Gaming: no hip-fire bloom in MW4', url: 'https://insider-gaming.com/infinity-ward-promises-no-bloom-in-mw4-and-most-authentic-gunplay-yet/' },
+  { title: 'Gfinity: launch patch notes, flinch on one-shot weapons', url: 'https://www.gfinityesports.com/article/call-of-duty-mw4-launch-patch-notes' },
+  { title: 'Dexerto: the Oris 8.6 and quickscoping', url: 'https://www.dexerto.com/call-of-duty/one-shot-modern-warfare-4-rifle-is-a-throwback-to-one-of-cods-most-op-weapons-3422193/' },
+  { title: 'Game8: Mosin-Nagant optics and ADS', url: 'https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/634319' },
+  { title: 'Game8: Warlord slug builds', url: 'https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/634417' },
+  { title: 'Dexerto: MWIII idle sway delay (earlier game)', url: 'https://www.dexerto.com/call-of-duty/mw3-season-2-patch-note-2520071/' },
+];
+
+// What each class's playstyles weigh most, from the Oct 30 research pass. The optimizer's weights follow these lists.
+const classes = [
+  { name: 'SMGs', styles: 'Rush, Mid-range', body: 'Sprint-to-fire and hip fire lead for Rush: most SMG fights start off a sprint, and MW4 removed hip-fire bloom, so hip sway, gun bob and turn sway decide where hip shots land. Mid-range puts damage range first, because SMG kill times jump 115 to 140 ms past the first damage drop at 11 to 15 m. Idle aim sway does nothing for either.' },
+  { name: 'Assault rifles', styles: 'All-around, Aggressive, Anchor, Low recoil', body: 'Recoil, ADS and damage range lead. Anchor adds flinch and sway for long sightlines. Aggressive moves sprint-to-fire up. The sites take bigger magazines than creators say they need, so magazine size counts more than it used to.' },
+  { name: 'LMGs', styles: 'Anchor, Mobile', body: 'ADS time is the LMG problem at 360 to 510 ms, so it leads both. Anchor adds recoil, range and a reload you can live with, since reloads run 6 to 7 seconds on the FiNN and APOC.' },
+  { name: 'Bolt-action rifles and snipers', styles: 'Quickscope, Hardscope', body: 'Quickscoping is ADS, sprint-to-fire and rechamber. Sway never ramps in before you shoot. Hardscoping is flinch, aim sway, one-shot range and a steady scope while the bolt cycles. The rechamber is its own stat on CODMunity: 1767 ms on the Mosin, 1633 ms on the KG-7, 1000 ms on the Oris. A missed shot or a limb hit costs one full cycle, which is why light bolts score high. Snipers keep their own scope, because no optic lists a stat change.' },
+  { name: 'Shotguns', styles: 'Hip fire, Close ADS, Slugs', body: 'Hip fire wants sprint-to-fire, movement and hip sway. Slugs want ADS, recoil and range, and slug playstyles always run the slug. The data has no pellet spread, one-shot range or slug damage, so shotgun picks are handling only.' },
+  { name: 'Pistols', styles: 'Sidearm, Run and gun, Precision', body: 'As a sidearm, swap speed and sprint-to-fire lead. Run and gun is where the Mojave Lawless and GS Magna Apex conversions live. Precision is for the .50 GS and Mojave aimed in. The Krait P68\'s Tapper 9 trigger, +39% fire rate, is the meta pick.' },
 ];
 
 const modes = [
@@ -27,16 +45,15 @@ export function GuideView() {
     </header>
 
     <section className="guide-section">
-      <h2>What matters in a gunfight</h2>
-      <p className="lede">The optimizer is weighted by this ranking. Change it under Fine-tune if you play differently.</p>
-      <ol className="rank">
-        <li><b>Sprint-to-fire and ADS speed.</b> Most SMG fights start off a sprint around a corner. Whoever shoots first usually wins, so these decide the opening.</li>
-        <li><b>Recoil.</b> Every missed bullet adds one shot interval to your kill time: 63 ms on the VEL 46 at 952 rpm, 100 ms on the Kastov 762 at 600 rpm. Slow guns lose more per miss.</li>
-        <li><b>Damage range, if you fight past the first drop.</b> The VEL 46 kills in 252 ms inside 10 m, 315 ms to 17 m, and 378 ms to 25 m on chest hits. Range attachments move those lines out. On small maps they rarely pay for their ADS cost.</li>
-        <li><b>Movement and strafe speed.</b> Faster rotations and harder targets mid-fight.</li>
-        <li><b>Flinch.</b> Matters in the fights where the other player shoots first.</li>
-        <li><b>Barely matters.</b> Idle aim sway, gun bob, bullet velocity on SMGs, and reload speed with a 40-round magazine.</li>
-      </ol>
+      <h2>What matters, by weapon class</h2>
+      <p className="lede">Each class has its own playstyles on the Build tab, weighted by these rankings. Each gun opens on the playstyle its site builds fit best. Change any weight under Fine-tune if you play differently.</p>
+      <div className="class-list">{classes.map(item => <div key={item.name} className="card-plain"><h3>{item.name}</h3><p className="class-styles">{item.styles}</p><p>{item.body}</p></div>)}</div>
+      <ul className="facts-list">
+        <li>Bullets hit instantly inside each gun's hitscan range, 19 to 28 m on SMGs and 30 to 37 m on snipers, per CODMunity. Bullet velocity only counts past that, and velocity attachments stretch the hitscan range by the same amount.</li>
+        <li>Every missed bullet on an automatic adds one shot interval to your kill time: 63 ms on the VEL 46, 100 ms on the Kastov 762. That is how recoil is priced.</li>
+        <li>Nobody has measured when idle sway starts after you aim in MW4. In MWIII it ramped in over about 3 seconds, which is why it only counts for playstyles that hold an angle.</li>
+        <li>Game8 measured up to 70 ms of ADS difference between optics on the Mosin and the Oris. CODMunity has no per-optic numbers yet, so the optimizer cannot rank optics. For quickscoping, pick a low-zoom optic.</li>
+      </ul>
     </section>
 
     <section className="guide-section">

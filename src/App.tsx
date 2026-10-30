@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { data, supported, weaponById } from './data/game';
-import { PRESETS } from './engine';
+import { ROLES, playstyleById, playstyleFor, playstylesFor, roleOf } from './engine';
 import { metricIds } from './types';
-import type { BuildResult, GearSlot, OptimizeResult, PresetId, Settings, StreakStyle, Weights } from './types';
+import type { BuildResult, GearSlot, OptimizeResult, Settings, StreakStyle, Weights } from './types';
 import { BuildView } from './views/BuildView';
 import { GuideView } from './views/GuideView';
 import { SavedView } from './views/SavedView';
@@ -25,9 +25,17 @@ const views: { id: View; label: string; icon: string }[] = [
 
 export const neutralEmphasis = () => Object.fromEntries(metricIds.map(id => [id, 1])) as Weights;
 
+/** Each gun opens on the playstyle its site builds clearly fit best, or its class's first playstyle. */
+function openingStyle(weaponId: string) {
+  const weapon = weaponById(weaponId)!;
+  const consensus = data.consensus?.[weaponId];
+  return playstyleFor(weapon, consensus?.clear ? consensus.style : playstylesFor(weapon)[0].id);
+}
+
 export function defaultSettings(weaponId = 'vel-46'): Settings {
   const weapon = weaponById(weaponId)!;
-  return { weaponId, level: weapon.maxLevel ?? 1, preset: 'allround', emphasis: neutralEmphasis(), distanceM: PRESETS.allround.distanceM, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
+  const style = openingStyle(weaponId);
+  return { weaponId, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutralEmphasis(), distanceM: style.distanceM, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
 }
 
 // Stored and shared settings are untrusted. Read known fields only and fall back to defaults.
@@ -35,10 +43,15 @@ function normalize(input: unknown): Settings {
   const raw = (input && typeof input === 'object' ? input : {}) as Partial<Settings>;
   const weapon = typeof raw.weaponId === 'string' ? weaponById(raw.weaponId) : undefined;
   const next = defaultSettings(weapon && supported(weapon) ? weapon.id : undefined);
-  const max = weaponById(next.weaponId)!.maxLevel ?? 1;
+  const chosen = weaponById(next.weaponId)!, max = chosen.maxLevel ?? 1;
   if (typeof raw.level === 'number' && Number.isFinite(raw.level)) next.level = Math.max(1, Math.min(max, Math.round(raw.level)));
-  if (typeof raw.preset === 'string' && raw.preset in PRESETS) next.preset = raw.preset as PresetId;
-  if (typeof raw.distanceM === 'number' && Number.isFinite(raw.distanceM)) next.distanceM = Math.max(2, Math.min(60, Math.round(raw.distanceM)));
+  // Playstyles belong to a weapon class. One saved for another class, or from before classes had their own, falls back to the default.
+  const style = typeof raw.preset === 'string' ? playstyleById(raw.preset) : undefined;
+  if (style && style.role === roleOf(chosen)) {
+    next.preset = style.id;
+    const [min, top] = ROLES[style.role].distance;
+    if (typeof raw.distanceM === 'number' && Number.isFinite(raw.distanceM)) next.distanceM = Math.max(min, Math.min(top, Math.round(raw.distanceM)));
+  }
   if (typeof raw.optic === 'boolean') next.optic = raw.optic;
   if (typeof raw.apex === 'boolean') next.apex = raw.apex;
   if (raw.emphasis && typeof raw.emphasis === 'object') for (const id of metricIds) {
@@ -130,7 +143,11 @@ export default function App() {
   const selectWeapon = (weaponId: string) => {
     const weapon = weaponById(weaponId);
     if (!weapon || !supported(weapon)) return;
-    setSettings(current => ({ ...current, weaponId, level: weapon.maxLevel ?? 1, locked: [], excluded: [] }));
+    setSettings(current => {
+      // A new gun opens on the playstyle its site builds fit best. The distance resets only when the playstyle changes.
+      const style = openingStyle(weaponId);
+      return { ...current, weaponId, level: weapon.maxLevel ?? 1, locked: [], excluded: [], preset: style.id, ...(style.id === current.preset ? {} : { distanceM: style.distanceM }) };
+    });
     setResult(null);
   };
   const share = async () => {
@@ -147,7 +164,7 @@ export default function App() {
     const weapon = weaponById(settings.weaponId)!;
     const label = variant === 'apex' ? weapon.apex?.name ?? 'Apex' : 'No Apex';
     const gear = result?.gear ? [...GEAR_SLOT_IDS.map(slot => result.gear!.picks[slot]?.id), ...result.gear.streaks.map(pick => pick.id)].filter((id): id is string => !!id) : [];
-    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${label} · ${PRESETS[settings.preset].name}`, weaponId: weapon.id, variant, attachments: build.attachments, gear, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
+    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${label} · ${playstyleFor(weapon, settings.preset).name}`, weaponId: weapon.id, variant, attachments: build.attachments, gear, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
     setToast('Class saved on this device.');
   };
   const addCompare = (item: Omit<CompareItem, 'id'>) => {

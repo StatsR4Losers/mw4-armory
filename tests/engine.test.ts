@@ -9,7 +9,7 @@ const data = raw as unknown as GameData;
 const weapon = (id: string) => data.weapons.find(item => item.id === id)!;
 const neutral = () => Object.fromEntries(metricIds.map(id => [id, 1])) as Weights;
 const settings = (weaponId: string, patch: Partial<Settings> = {}): Settings => ({
-  weaponId, level: weapon(weaponId).maxLevel!, preset: 'allround', emphasis: neutral(), distanceM: 15, optic: false, locked: [], excluded: [],
+  weaponId, level: weapon(weaponId).maxLevel!, preset: 'allround', emphasis: neutral(), distanceM: 15, apex: false, optic: false, locked: [], excluded: [],
   playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [], ...patch,
 });
 const mods = (weaponId: string, id: string) => data.loadouts[weaponId].find(entry => entry[0] === id)![2];

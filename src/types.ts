@@ -44,6 +44,8 @@ export interface Settings {
   // Multiplies the preset weight for each metric. 1 keeps the preset, 0 ignores the metric.
   emphasis: Weights;
   distanceM: number;
+  // Show the build with the gun's Apex attachment. Both are always computed.
+  apex: boolean;
   optic: boolean;
   locked: string[];
   excluded: string[];

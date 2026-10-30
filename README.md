@@ -2,7 +2,9 @@
 
 A class optimizer for Modern Warfare 4 (2026) multiplayer. Pick a gun, a playstyle and your weapon level. It finds the best build without the Apex attachment and the best build with it, from community-measured attachment stats, then fills in perks, equipment and killstreaks.
 
-It also lists what CODMunity, Game8 and WZStats run on each gun, with their import codes, scored with the same math. Each class card notes what changed after a settings change, and the Compare tab puts up to three builds side by side with every part editable.
+The Build screen shows one build at a time, with switches for the Apex attachment and an optic. Every build is shown against a baseline you pick: by default the build you had before your last change, or the stock gun, the other Apex choice, any site's build, or a saved class. Changed parts and stats get an arrow; unchanged ones do not.
+
+"What the sites say" shows each of CODMunity's, Game8's and WZStats' top build for the gun, with import codes, scored with the same math, and every other site build on request. The Compare tab puts up to three builds side by side with every part editable and a baseline you choose.
 
 ## Run locally
 

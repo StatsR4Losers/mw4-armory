@@ -29,7 +29,7 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
       <div>
         <span className="eyebrow">Compare</span>
         <h1>Builds side by side</h1>
-        <p>Add builds from the Build tab, a guide site or your saved classes, or make your own here. Change any part and every number updates. Differences are measured against the first column, scored at your current playstyle and {settings.distanceM} m fight distance.</p>
+        <p>Add builds from the Build tab, a guide site or your saved classes, or make your own here. Change any part and every number updates. Every column is measured against the baseline, scored at your current playstyle and {settings.distanceM} m fight distance. Use Make baseline to pick which one.</p>
       </div>
       <div className="head-actions">
         <button className="button" onClick={addCustom}><Icon name="plus" size={15}/>Custom build</button>
@@ -59,7 +59,7 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
             </div>
             <button className="icon-btn" aria-label={`Remove ${item.label}`} onClick={() => setItems(list => list.filter(other => other.id !== item.id))}><Icon name="close" size={14}/></button>
           </header>
-          {index === 0 ? <span className="baseline-tag">Baseline</span> : <span className="baseline-tag muted">vs {baseline.item.label}</span>}
+          <div className="baseline-row">{index === 0 ? <span className="baseline-tag">Baseline</span> : <><span className="baseline-tag muted">vs {baseline.item.label}</span><button className="link" onClick={() => setItems(list => [item, ...list.filter(other => other.id !== item.id)])}>Make baseline</button></>}</div>
           {weapon.apex && <label className="switch small"><input type="checkbox" checked={item.apex} onChange={event => update(item.id, { apex: event.target.checked, attachments: event.target.checked ? item.attachments.filter(id => !weapon.apex!.blocks.includes(data.attachments[id]?.slot)) : item.attachments })}/><span/>{weapon.apex.name}</label>}
           {build && <div className="compare-edge"><strong>{build.score >= 0 ? '+' : '−'}{Math.abs(Math.round(build.score))}</strong><span>ms edge vs its stock</span>{index > 0 && baseline.build && baseline.weapon.id === weapon.id && <em className={build.score >= baseline.build.score ? 'good' : 'bad'}>{build.score >= baseline.build.score ? '+' : '−'}{Math.abs(Math.round(build.score - baseline.build.score))} ms vs baseline</em>}</div>}
           <div className="compare-parts">{slots.map(slot => {

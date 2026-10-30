@@ -11,7 +11,7 @@ const weapon = (id: string) => data.weapons.find(item => item.id === id)!;
 const gear = (id: string) => data.gear.find(item => item.id === id)!;
 const settings = (weaponId: string, patch: Partial<Settings> = {}): Settings => ({
   weaponId, level: weapon(weaponId).maxLevel!, preset: 'allround', emphasis: Object.fromEntries(metricIds.map(id => [id, 1])) as Weights,
-  distanceM: 15, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [], ...patch,
+  distanceM: 15, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [], ...patch,
 });
 
 test('streak costs match the launch values and every streak has one', () => {

@@ -27,7 +27,7 @@ export const neutralEmphasis = () => Object.fromEntries(metricIds.map(id => [id,
 
 export function defaultSettings(weaponId = 'vel-46'): Settings {
   const weapon = weaponById(weaponId)!;
-  return { weaponId, level: weapon.maxLevel ?? 1, preset: 'allround', emphasis: neutralEmphasis(), distanceM: PRESETS.allround.distanceM, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
+  return { weaponId, level: weapon.maxLevel ?? 1, preset: 'allround', emphasis: neutralEmphasis(), distanceM: PRESETS.allround.distanceM, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
 }
 
 // Stored and shared settings are untrusted. Read known fields only and fall back to defaults.
@@ -40,6 +40,7 @@ function normalize(input: unknown): Settings {
   if (typeof raw.preset === 'string' && raw.preset in PRESETS) next.preset = raw.preset as PresetId;
   if (typeof raw.distanceM === 'number' && Number.isFinite(raw.distanceM)) next.distanceM = Math.max(2, Math.min(60, Math.round(raw.distanceM)));
   if (typeof raw.optic === 'boolean') next.optic = raw.optic;
+  if (typeof raw.apex === 'boolean') next.apex = raw.apex;
   if (raw.emphasis && typeof raw.emphasis === 'object') for (const id of metricIds) {
     const value = (raw.emphasis as Partial<Weights>)[id];
     if (typeof value === 'number' && Number.isFinite(value)) next.emphasis[id] = Math.max(0, Math.min(3, value));
@@ -168,7 +169,7 @@ export default function App() {
       <span className="data-stamp">Stats {data.statsUpdated.slice(5).replace('-', '/')} · unlocks {data.checkedAt.slice(5).replace('-', '/')}</span>
     </header>
     <main className="main">
-      {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/>}
+      {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/>}
       {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
       {view === 'guide' && <GuideView/>}
       {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(normalize(item.settings)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}

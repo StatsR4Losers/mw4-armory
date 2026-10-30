@@ -1,15 +1,54 @@
-// Shared data contract. Observed game facts and editorial role weights stay separate.
-export const dimensions = ['combat', 'handling', 'mobility', 'sustain', 'survival', 'intel', 'objective', 'streaks'] as const;
-export type Dimension = typeof dimensions[number];
-export type Roles = Record<Dimension, number>;
-export type ProfileId = 'balanced' | 'close' | 'long' | 'speed' | 'control' | 'stealth' | 'objective' | 'streaks';
-export interface Source { id: string; title: string; url: string; checkedAt: string; note?: string }
-export interface Apex { id: string; name: string; description: string; unlockLevel: number | null; blockedSlots: string[]; imageUrl: string | null; roles: Partial<Roles>; sourceIds: string[] }
-export interface Weapon { id: string; name: string; category: string; slot: 'primary' | 'secondary' | 'melee'; reportedUnlockLevels?: number[]; unlockLevel: number | null; maxLevel: number | null; fireMode?: 'auto' | 'semi' | 'burst' | 'single'; rpm: number | null; magazine: number | null; description: string; imageUrl: string | null; sourceIds: string[]; apex: Apex | null; roles: Roles; stats?: Partial<WeaponStats>; damageProfile?: { minM: number; maxM: number | null; regions: Record<string, number> }[] }
-export interface WeaponStats { damage: number; health: number; adsMs: number; sprintToFireMs: number; velocityMps: number; reloadMs: number; movementMps: number; adsMovementMps: number; sprintMps: number; tacticalSprintMps: number }
-export interface Attachment { id: string; name: string; slot: string; weaponIds: string[]; unlock: { weaponId: string | null; level: number | null }; description: string; pros: string[]; cons: string[]; imageUrl: string | null; sourceIds: string[]; roles: Partial<Roles>; effects?: Partial<WeaponStats>; conflicts?: string[]; blockedSlots?: string[]; prerequisites?: string[] }
-export interface Gear { id: string; name: string; kind: 'tactical' | 'lethal' | 'field' | 'perk' | 'streak'; perkSlot?: number; unlockLevel: number | null; description: string; threshold?: number | null; thresholdWithHardline?: number | null; imageUrl: string | null; sourceIds: string[]; roles: Roles }
-export interface Catalog { attachmentLimit?: number; version: string; checkedAt: string; sources: Source[]; weapons: Weapon[]; attachments: Attachment[]; gear: Gear[]; notes: string[] }
-export interface OptimizeSettings { profile: ProfileId; distanceM?: number; hitRegion?: string; primaryId: string; secondaryId: string; weaponLevels: Record<string, number>; playerLevel: number; apexMode: 'compare' | 'off' | 'on'; ownedAttachmentIds: string[]; lockedGear: Partial<Record<'tactical' | 'lethal' | 'field' | 'perk1' | 'perk2' | 'perk3', string>>; priorities: Partial<Roles>; streakBand: number; excludedIds?: string[]; lockedStreakIds?: string[]; lockedAttachmentIds?: Record<string, string[]> }
-export interface Build { id: string; primary: Weapon; melee?: Weapon | null; secondary: Weapon | null; attachments: Attachment[]; secondaryAttachments: Attachment[]; apex: Apex | null; secondaryApex: Apex | null; gear: Gear[]; score: number; dimensions: Roles; reasons: string[]; limitations: string[]; idealTtkMs: number | null; idealTtkBasis?: string; variant: 'standard' | 'apex' }
-export interface OptimizeResult { builds: Build[]; warnings: string[]; evaluated: number; method: string }
+// Shared data contract. Game data comes from research/raw through scripts/build-data.ts.
+export type Mods = Record<string, number>;
+export interface DamageBand { minM: number; maxM: number | null; regions: Record<string, number> }
+export interface ApexData { id: string; name: string; description: string; level: number | null; blocks: string[]; mods: Mods | null }
+export interface WeaponData {
+  id: string; name: string; category: string; slot: 'primary' | 'secondary' | 'melee'; description: string;
+  unlockLevel: number; maxLevel: number | null; fireMode: 'auto' | 'semi' | 'burst' | 'single' | null;
+  rpm: number | null; magazine: number | null; health: number;
+  base: Record<string, number> | null; damage: DamageBand[] | null; apex: ApexData | null;
+}
+export interface AttachmentInfo { name: string; slot: string; kind: string; image: boolean }
+export interface GameData {
+  version: string; checkedAt: string;
+  statNames: Record<string, { name: string; unit: string; better: 'higher' | 'lower' }>;
+  weapons: WeaponData[];
+  attachments: Record<string, AttachmentInfo>;
+  loadouts: Record<string, [id: string, level: number, mods: Mods][]>;
+}
+
+export const metricIds = ['ads', 'stf', 'recoil', 'ttk', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway'] as const;
+export type MetricId = typeof metricIds[number];
+export type Weights = Record<MetricId, number>;
+export type PresetId = 'allround' | 'close' | 'long' | 'control';
+
+export interface Settings {
+  weaponId: string;
+  level: number;
+  preset: PresetId;
+  // Multiplies the preset weight for each metric. 1 keeps the preset, 0 ignores the metric.
+  emphasis: Weights;
+  distanceM: number;
+  optic: boolean;
+  locked: string[];
+  excluded: string[];
+}
+
+export interface BuildResult {
+  apex: boolean;
+  attachments: string[];
+  stats: Record<string, number>;
+  metrics: Record<MetricId, number>;
+  score: number;
+  ttkMs: number | null;
+  contributions: { id: string; score: number }[];
+}
+export interface ClassResult {
+  variant: 'standard' | 'apex';
+  available: boolean;
+  reason: string | null;
+  best: BuildResult | null;
+  alternatives: BuildResult[];
+  evaluated: number;
+}
+export interface OptimizeResult { stock: BuildResult | null; standard: ClassResult; apex: ClassResult; baseTtkMs: number | null; warnings: string[] }

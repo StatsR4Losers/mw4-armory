@@ -1,35 +1,33 @@
-# Release verification
+# Verification
 
-Checked October 30, 2026. This records local acceptance before publication. The deployment receipt is saved separately in the parent workspace after Sites confirms publication.
+Checked October 30, 2026, after the rebuild from the ChatGPT version.
 
-## Completed checks
+## Automated
 
-- Production TypeScript check and Vite build pass.
-- All 26 automated engine and catalog checks pass. They cover complete class categories, source references, level boundaries, unknown unlocks, shared unlock paths, Apex gating and slot blockers, perk locks, Overkill, deterministic results, damage breakpoints, and comparison with an exhaustive small case.
-- The browser displayed a complete M4 class. Setting its weapon level to 14 removed Apex and restricted the primary attachment choices. Restoring level 72 enabled the same-weapon standard versus Apex comparison.
-- Locking Ninja kept it in perk slot 2 after recalculation.
-- A saved M4 build remained in browser storage after a page reload and after the desktop app restarted.
-- A share link survived reload with the selected standard build and Ninja lock intact.
-- The ownership manager accepted an explicit confirmation for an attachment with no published unlock level.
-- The browser loaded actual weapon and attachment images. The tested class included ammunition, optic, laser, magazine, barrel, and stock renders. Image fallback components handle unavailable hosts.
-- The base TTK step plot rendered sourced distance breakpoints and an accessible values table. It excludes attachment and Apex effects.
-- A 390 px mobile viewport showed the single-column layout and loaded attachment images without horizontal document overflow. The viewport override was reset afterward.
-- The optimizer runs in a Web Worker. Changing settings cancels an obsolete worker and prevents its result from replacing a newer search. Saving and sharing remain disabled during calculation.
+`npm test` runs 9 checks, all passing:
 
-## Data coverage
+- Attachment values in the bundled data match what CODMunity shows on the VEL 46 and Kastov 762 pages, read by hand.
+- Every loadout entry points at a known attachment, no unlock sits above the gun's max level, and every Apex can unlock.
+- Stacked changes multiply. VEL 46 time to kill follows its damage bands (252, 315, 378 ms) and a ×1.28 range multiplier moves the 10 m line to 12.8 m.
+- The pruned search finds the same best score as a full brute-force search for six gun, preset and Apex cases.
+- Every best build for all 28 guns has at most five attachments, one per slot, no optic with optics off, and nothing in an Apex-blocked slot.
+- Weapon level gates attachments and the Apex. Locks, exclusions and the optic switch hold. Results are deterministic.
 
-- 33 launch weapons and all 67 gear entries across the requested categories.
-- 28 supported Apex options with reported unlock and blocked-slot information.
-- 615 distinct standard attachment names represented by 1,589 weapon-specific entries.
-- 175 provisional weapon-level unlock observations. The other 1,414 entries require manual ownership confirmation before use.
-- 611 distinct attachment image addresses, covering 1,585 entries. These are remote source assets, not locally recreated artwork.
-- 32 weapons have reported handling, movement, reload, and projectile observations. Knife measurements remain unknown.
-- 26 weapons have sourced damage profiles. The baseline TTK calculator supports 15 documented automatic weapons and withholds unsupported firing mechanics.
+`npm run build` passes the TypeScript check and builds `dist/`.
 
-## Remaining limits
+## In the browser
 
-No live-game private-match measurements were collected. Community values and compatibility remain source reports. Conflicting official player unlock levels use a conservative maximum and remain disclosed. Current costs for 16 streaks remain unresolved; suggestions involving them cannot establish an attainable streak band.
+Checked in the dev server at 1440 px and 390 px wide:
 
-Full-class ranking uses explicit editorial role weights. It does not model exact attachment stacking, recoil-to-hit probability, Apex damage behavior, burst timing, pellets, or a measured player win rate. Base TTK is a separate comparison under perfect chest-hit assumptions. Unknown inputs are not filled with fabricated values.
+- Switching guns with the picker, playstyle presets, the distance slider, fine-tune sliders and the optic switch all recompute both classes.
+- Excluding the XRK Tango 380 Barrel on the VEL 46 swapped in the VB-46 Series 11. Locking an attachment highlights it and keeps it in later builds. Clear all removes every pin.
+- At weapon level 59 the VEL 46 Snap card shows it unlocks at 60, and its button sets the level back to 60.
+- Saving both classes puts them on the Saved tab and in browser storage.
+- A share link for the Kastov 762 restored the gun, level, preset, distance, optic setting, emphasis and exclusion, and dropped an invalid attachment ID.
+- At 390 px there is no horizontal page scroll.
 
-Browser checks exercised the primary requested flows. They did not exhaustively test every imported attachment, every image address, all device sizes, JSON import/export round trips, or all keyboard interactions.
+## Not checked
+
+- No build was tested in the game, and no stat was measured in a private match.
+- Copy to clipboard was not confirmed, because the test browser blocks clipboard writes. The app shows a message when that happens.
+- The slowest search, the Rezi 12 with optics on and every stat weighted, takes about 1.8 s. It runs off the main thread.

@@ -2,18 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import { data, supported, weaponById } from './data/game';
 import { PRESETS } from './engine';
 import { metricIds } from './types';
-import type { BuildResult, OptimizeResult, PresetId, Settings, Weights } from './types';
+import type { BuildResult, GearSlot, OptimizeResult, PresetId, Settings, StreakStyle, Weights } from './types';
 import { BuildView } from './views/BuildView';
 import { GuideView } from './views/GuideView';
 import { SavedView } from './views/SavedView';
 import type { SavedClass } from './views/SavedView';
 import { DataView } from './views/DataView';
+import { CompareView } from './views/CompareView';
+import type { CompareItem } from './views/CompareView';
 import { Icon } from './components/Icon';
 
 const STORAGE_KEY = 'mw4-armory-v2';
-type View = 'build' | 'guide' | 'saved' | 'data';
+const GEAR_SLOT_IDS: GearSlot[] = ['tactical', 'lethal', 'field', 'perk1', 'perk2', 'perk3'];
+type View = 'build' | 'compare' | 'guide' | 'saved' | 'data';
 const views: { id: View; label: string; icon: string }[] = [
   { id: 'build', label: 'Build', icon: 'target' },
+  { id: 'compare', label: 'Compare', icon: 'grid' },
   { id: 'guide', label: 'Guide', icon: 'book' },
   { id: 'saved', label: 'Saved', icon: 'save' },
   { id: 'data', label: 'Data', icon: 'data' },
@@ -23,7 +27,7 @@ export const neutralEmphasis = () => Object.fromEntries(metricIds.map(id => [id,
 
 export function defaultSettings(weaponId = 'vel-46'): Settings {
   const weapon = weaponById(weaponId)!;
-  return { weaponId, level: weapon.maxLevel ?? 1, preset: 'allround', emphasis: neutralEmphasis(), distanceM: PRESETS.allround.distanceM, optic: false, locked: [], excluded: [] };
+  return { weaponId, level: weapon.maxLevel ?? 1, preset: 'allround', emphasis: neutralEmphasis(), distanceM: PRESETS.allround.distanceM, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
 }
 
 // Stored and shared settings are untrusted. Read known fields only and fall back to defaults.
@@ -45,26 +49,37 @@ function normalize(input: unknown): Settings {
     const list = raw[key];
     if (Array.isArray(list)) next[key] = [...new Set(list.filter((id): id is string => typeof id === 'string' && known.has(id)))].slice(0, 20);
   }
+  if (typeof raw.playerLevel === 'number' && Number.isFinite(raw.playerLevel)) next.playerLevel = Math.max(1, Math.min(55, Math.round(raw.playerLevel)));
+  if (typeof raw.killBand === 'number' && Number.isFinite(raw.killBand)) next.killBand = Math.max(3, Math.min(13, Math.round(raw.killBand)));
+  if (raw.streakStyle === 'support' || raw.streakStyle === 'lethal' || raw.streakStyle === 'mixed') next.streakStyle = raw.streakStyle as StreakStyle;
+  const gear = new Map(data.gear.map(item => [item.id, item]));
+  if (raw.gearLocks && typeof raw.gearLocks === 'object') for (const slot of GEAR_SLOT_IDS) {
+    const id = (raw.gearLocks as Record<string, unknown>)[slot];
+    const item = typeof id === 'string' ? gear.get(id) : undefined;
+    if (item && (slot.startsWith('perk') ? item.kind === 'perk' && item.perkSlot === Number(slot.slice(-1)) : item.kind === slot)) next.gearLocks[slot] = item.id;
+  }
+  if (Array.isArray(raw.streakLocks)) next.streakLocks = [...new Set(raw.streakLocks.filter((id): id is string => typeof id === 'string' && gear.get(id)?.kind === 'streak'))].slice(0, 3);
   return next;
 }
 
 function encode(value: unknown) { return btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(value)))).replace(/=+$/, ''); }
 function decode(value: string) { return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(value), c => c.charCodeAt(0)))); }
 
-function readInitial(): { settings: Settings; saved: SavedClass[]; toast: string | null } {
-  let settings = defaultSettings(), saved: SavedClass[] = [], toast: string | null = null;
+function readInitial(): { settings: Settings; saved: SavedClass[]; compare: CompareItem[]; toast: string | null } {
+  let settings = defaultSettings(), saved: SavedClass[] = [], compare: CompareItem[] = [], toast: string | null = null;
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
     if (stored) {
       settings = normalize(stored.settings);
       if (Array.isArray(stored.saved)) saved = stored.saved.filter((item: SavedClass) => item && typeof item.id === 'string' && weaponById(item.weaponId) && Array.isArray(item.attachments)).slice(0, 200);
+      if (Array.isArray(stored.compare)) compare = stored.compare.filter((item: CompareItem) => item && typeof item.id === 'string' && supported(weaponById(item.weaponId) ?? data.weapons[0]) && Array.isArray(item.attachments)).slice(0, 3);
     }
   } catch { /* Private windows and cleared storage start from defaults. */ }
   if (location.hash.startsWith('#b=')) {
     try { settings = normalize(decode(decodeURIComponent(location.hash.slice(3)))); toast = 'Loaded the shared build settings.'; }
     catch { toast = 'That share link could not be read. Your own settings are loaded.'; }
   }
-  return { settings, saved, toast };
+  return { settings, saved, compare, toast };
 }
 
 export default function App() {
@@ -73,6 +88,7 @@ export default function App() {
   const [settings, setSettings] = useState(initial.current.settings);
   const [saved, setSaved] = useState<SavedClass[]>(initial.current.saved);
   const [toast, setToast] = useState<string | null>(initial.current.toast);
+  const [compare, setCompare] = useState<CompareItem[]>(initial.current.compare);
   const [view, setView] = useState<View>('build');
   const [result, setResult] = useState<OptimizeResult | null>(null);
   const [busy, setBusy] = useState(true);
@@ -100,8 +116,8 @@ export default function App() {
   }, [settings]);
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, saved })); } catch { /* Storage can be full or blocked. */ }
-  }, [settings, saved]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, saved, compare })); } catch { /* Storage can be full or blocked. */ }
+  }, [settings, saved, compare]);
 
   useEffect(() => {
     if (!toast) return;
@@ -122,15 +138,20 @@ export default function App() {
     try { await navigator.clipboard.writeText(url); setToast('Share link copied.'); }
     catch { setToast('Share link is in the address bar.'); }
   };
-  const copyText = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); setToast('Class copied. Paste it anywhere.'); }
+  const copyText = async (text: string, message = 'Class copied. Paste it anywhere.') => {
+    try { await navigator.clipboard.writeText(text); setToast(message); }
     catch { setToast('Copy failed. Your browser blocked clipboard access.'); }
   };
   const saveClass = (variant: 'standard' | 'apex', build: BuildResult) => {
     const weapon = weaponById(settings.weaponId)!;
     const label = variant === 'apex' ? weapon.apex?.name ?? 'Apex' : 'No Apex';
-    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${label} · ${PRESETS[settings.preset].name}`, weaponId: weapon.id, variant, attachments: build.attachments, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
+    const gear = result?.gear ? [...GEAR_SLOT_IDS.map(slot => result.gear!.picks[slot]?.id), ...result.gear.streaks.map(pick => pick.id)].filter((id): id is string => !!id) : [];
+    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${label} · ${PRESETS[settings.preset].name}`, weaponId: weapon.id, variant, attachments: build.attachments, gear, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
     setToast('Class saved on this device.');
+  };
+  const addCompare = (item: Omit<CompareItem, 'id'>) => {
+    setCompare(current => [...current.slice(current.length >= 3 ? 1 : 0), { ...item, id: crypto.randomUUID() }]);
+    setToast(compare.length >= 3 ? 'Added to Compare. The oldest build was dropped.' : 'Added to Compare.');
   };
 
   return <div className="app">
@@ -141,18 +162,19 @@ export default function App() {
       </button>
       <nav className="nav" aria-label="Sections">
         {views.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} aria-current={view === item.id ? 'page' : undefined} onClick={() => setView(item.id)}>
-          <Icon name={item.icon} size={16}/><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}
+          <Icon name={item.icon} size={16}/><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}{item.id === 'compare' && compare.length > 0 && <i>{compare.length}</i>}
         </button>)}
       </nav>
       <span className="data-stamp">Stats {data.statsUpdated.slice(5).replace('-', '/')} · unlocks {data.checkedAt.slice(5).replace('-', '/')}</span>
     </header>
     <main className="main">
-      {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} onSave={saveClass} onShare={share} onCopy={copyText} onReset={() => setSettings(defaultSettings(settings.weaponId))}/>}
+      {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/>}
+      {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
       {view === 'guide' && <GuideView/>}
-      {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(normalize(item.settings)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')}/>}
+      {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(normalize(item.settings)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}
       {view === 'data' && <DataView/>}
     </main>
-    <footer className="footer"><span>MW4 Armory is a fan-made tool. Not affiliated with Activision or Infinity Ward.</span><span>Stats: CODMunity via COD Loadout. Renders: COD Loadout.</span></footer>
+    <footer className="footer"><span>MW4 Armory is a fan-made tool. Not affiliated with Activision or Infinity Ward.</span><span>Stats: CODMunity via COD Loadout. Guide builds: CODMunity, Game8, WZStats. Renders: COD Loadout.</span></footer>
     {toast && <div className="toast" role="status"><Icon name="check" size={15}/>{toast}</div>}
   </div>;
 }

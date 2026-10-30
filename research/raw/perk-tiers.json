@@ -1,0 +1,28 @@
+{
+ "retrieved": "2026-10-30",
+ "note": "Perk tier lists as published. Scores used by the optimizer: top tier 1, second 0.67, third 0.33, fourth and below 0.",
+ "lists": [
+  {
+   "source": "GameRant",
+   "url": "https://gamerant.com/call-of-duty-modern-warfare-4-cod-mw4-best-perks-tier-list/",
+   "published": "2026-10-26",
+   "tiers": [
+    ["Ghost", "Ninja", "Cold-Blooded"],
+    ["Fast Hands", "Quick Fix", "Blood Rush", "Battle Hardened"],
+    ["Overkill", "Kill Chain", "Birdseye", "Combat Grid", "Hardline"],
+    ["Tracker", "Scavenger", "Resupply", "Bomb Squad"],
+    ["Lethal Reach", "High Alert"]
+   ]
+  },
+  {
+   "source": "games.gg",
+   "url": "https://games.gg/call-of-duty-modern-warfare-4/guides/best-mw4-perks-tier-list/",
+   "published": "2026-10-29",
+   "tiers": [
+    ["Ghost", "Quick Fix", "Ninja", "Blood Rush"],
+    ["Resupply", "High Alert", "Birdseye", "Bomb Squad", "Scavenger", "Cold-Blooded", "Combat Grid", "Tracker"],
+    ["Overkill", "Kill Chain", "Hardline", "Fast Hands", "Battle Hardened", "Lethal Reach"]
+   ]
+  }
+ ]
+}

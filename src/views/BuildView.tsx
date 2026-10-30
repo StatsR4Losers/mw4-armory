@@ -3,12 +3,15 @@ import { attachmentEntry, attachmentImage, categories, data, shortCategory, slot
 import { ATTACHMENT_LIMIT, METRICS, PRESETS, STABILITY, TIE_MS, apexState, fullModel, recoilRatio } from '../engine';
 import { effects } from '../effects';
 import { Icon } from '../components/Icon';
-import type { BuildResult, ClassResult, MetricId, OptimizeResult, PresetId, Settings, Stability, WeaponData } from '../types';
+import type { BuildResult, ClassResult, MetricId, OptimizeResult, PresetId, Settings, Stability, StreakStyle, WeaponData } from '../types';
+import type { CompareItem } from './CompareView';
+import { ChangeNote, ClassSetup, GuideBuilds, useBuildChanges } from './BuildExtras';
 
 type Props = {
   settings: Settings; change: (patch: Partial<Settings>) => void; selectWeapon: (id: string) => void;
   result: OptimizeResult | null; busy: boolean; error: string;
-  onSave: (variant: 'standard' | 'apex', build: BuildResult) => void; onShare: () => void; onCopy: (text: string) => void; onReset: () => void;
+  onSave: (variant: 'standard' | 'apex', build: BuildResult) => void; onShare: () => void; onCopy: (text: string, message?: string) => void; onReset: () => void;
+  onCompare: (item: Omit<CompareItem, 'id'>) => void;
 };
 
 const TUNABLE: MetricId[] = ['ads', 'stf', 'ttk', 'recoil', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway'];
@@ -16,7 +19,7 @@ const emphasisLabel = (value: number) => value === 0 ? 'Off' : value < .75 ? 'Lo
 const ms = (value: number | null | undefined) => value == null ? 'n/a' : `${Math.round(value)}`;
 const window_ = (distance: number) => `${Math.round(distance * .5)}–${Math.round(distance * 1.5)} m`;
 
-export function BuildView({ settings, change, selectWeapon, result, busy, error, onSave, onShare, onCopy, onReset }: Props) {
+export function BuildView({ settings, change, selectWeapon, result, busy, error, onSave, onShare, onCopy, onReset, onCompare }: Props) {
   const weapon = weaponById(settings.weaponId)!;
   const [pickerOpen, setPickerOpen] = useState(false);
   const toggle = (key: 'locked' | 'excluded', id: string) => {
@@ -48,6 +51,14 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         <label className="switch"><input type="checkbox" checked={settings.optic} onChange={event => change({ optic: event.target.checked })}/><span/>Use an optic</label>
         <p className="hint">Off keeps iron sights and frees the slot. On reserves one slot for the optic that costs the least.</p>
       </section>
+      <section className="control">
+        <div className="control-head"><span>Class setup</span></div>
+        <div className="setup-row"><label htmlFor="player-level">Player level</label><input id="player-level" type="number" min={1} max={55} value={settings.playerLevel} onChange={event => change({ playerLevel: Math.max(1, Math.min(55, Number(event.target.value) || 1)) })}/></div>
+        <div className="control-head small"><label htmlFor="kill-band">Kills per life</label><output>{settings.killBand}</output></div>
+        <input id="kill-band" type="range" min={3} max={13} value={settings.killBand} onChange={event => change({ killBand: Number(event.target.value) })}/>
+        <div className="seg full" role="group" aria-label="Streak style">{(['mixed', 'support', 'lethal'] as StreakStyle[]).map(style => <button key={style} aria-pressed={settings.streakStyle === style} className={settings.streakStyle === style ? 'active' : ''} onClick={() => change({ streakStyle: style })}>{style[0].toUpperCase() + style.slice(1)}</button>)}</div>
+        <p className="hint">Perks and equipment above your level are skipped. Streaks that cost more kills than you usually get are left out.</p>
+      </section>
       <details className="control tune">
         <summary><Icon name="sliders" size={15}/>Fine-tune what matters<Icon name="chevron" size={14}/></summary>
         <div className="tune-list">{TUNABLE.map(id => <div key={id} className="tune-row">
@@ -70,12 +81,14 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         <button className="link" onClick={() => change({ locked: [], excluded: [] })}>Clear all</button>
       </div>}
       <div className={`classes ${busy ? 'is-busy' : ''}`}>
-        <ClassCard index={1} title="No Apex" weapon={weapon} result={result?.standard} settings={settings} change={change} toggle={toggle} onSave={build => onSave('standard', build)} onCopy={build => copyClass('No Apex', build)}/>
-        <ClassCard index={2} title={weapon.apex?.name ?? 'Apex'} weapon={weapon} result={result?.apex} settings={settings} change={change} toggle={toggle} onSave={build => onSave('apex', build)} onCopy={build => copyClass(weapon.apex?.name ?? 'Apex', build)} apex/>
+        <ClassCard index={1} title="No Apex" weapon={weapon} result={result?.standard} settings={settings} change={change} toggle={toggle} onSave={build => onSave('standard', build)} onCopy={build => copyClass('No Apex', build)} onCompare={build => onCompare({ label: 'Class 1, no Apex', weaponId: weapon.id, attachments: build.attachments, apex: false })}/>
+        <ClassCard index={2} title={weapon.apex?.name ?? 'Apex'} weapon={weapon} result={result?.apex} settings={settings} change={change} toggle={toggle} onSave={build => onSave('apex', build)} onCopy={build => copyClass(weapon.apex?.name ?? 'Apex', build)} onCompare={build => onCompare({ label: `Class 2, ${weapon.apex?.name ?? 'Apex'}`, weaponId: weapon.id, attachments: build.attachments, apex: true })} apex/>
       </div>
+      {result?.gear && <ClassSetup gear={result.gear} settings={settings} change={change} weapon={weapon}/>}
       {result && <CompareTable weapon={weapon} result={result} settings={settings}/>}
+      {result && <GuideBuilds weapon={weapon} result={result} onCopy={onCopy} onCompare={meta => onCompare({ label: `${meta.source} ${meta.label}`, weaponId: weapon.id, attachments: meta.attachments, apex: meta.apex })}/>}
       <div className="share-row">
-        <p>Build codes come from the game, so make the class in Gunsmith and it will give you a code to share.</p>
+        <p>Import codes come from the game. Guide builds above show each site's code where it published one. For your own classes, build them once in Gunsmith and the game gives you a code.</p>
         <button className="button ghost" onClick={onShare}><Icon name="share" size={15}/>Share these settings</button>
       </div>
       <details className="method">
@@ -135,11 +148,12 @@ function Hero({ weapon, result, settings, busy }: { weapon: WeaponData; result: 
   </section>;
 }
 
-function ClassCard({ index, title, weapon, result, settings, change, toggle, onSave, onCopy, apex = false }: {
+function ClassCard({ index, title, weapon, result, settings, change, toggle, onSave, onCopy, onCompare, apex = false }: {
   index: number; title: string; weapon: WeaponData; result: ClassResult | undefined; settings: Settings; change: (patch: Partial<Settings>) => void;
-  toggle: (key: 'locked' | 'excluded', id: string) => void; onSave: (build: BuildResult) => void; onCopy: (build: BuildResult) => void; apex?: boolean;
+  toggle: (key: 'locked' | 'excluded', id: string) => void; onSave: (build: BuildResult) => void; onCopy: (build: BuildResult) => void; onCompare: (build: BuildResult) => void; apex?: boolean;
 }) {
   const best = result?.best ?? null;
+  const [changes, dismiss] = useBuildChanges(weapon, settings, best, apex);
   const contributions = useMemo(() => new Map(best?.contributions.map(item => [item.id, item.score]) ?? []), [best]);
   const holds = useMemo(() => new Map(result?.stability?.parts.map(item => [item.id, item.share]) ?? []), [result]);
   const needed = weapon.apex?.level ?? weapon.maxLevel ?? 0;
@@ -150,6 +164,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
       {best && <div className="edge" title="Estimated milliseconds of fight time saved against the stock gun"><strong>{best.score >= 0 ? '+' : '−'}{Math.abs(Math.round(best.score))}</strong><span>ms edge</span></div>}
     </header>
     {apex && weapon.apex && <p className="apex-note">{weapon.apex.description}{weapon.apex.blocks.length ? <> Blocks the <b>{weapon.apex.blocks.map(slotName).map(name => name.toLowerCase()).join(', ')}</b> slot{weapon.apex.blocks.length > 1 ? 's' : ''}.</> : ' Blocks no slots.'}</p>}
+    {best && changes && <ChangeNote changes={changes} onDismiss={dismiss}/>}
     {best && result?.stability && <StabilityNote stability={result.stability}/>}
     {!result && <div className="class-empty"><i className="spinner"/>Finding the best build</div>}
     {result && !result.available && <div className="class-empty locked">
@@ -188,6 +203,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
       <footer>
         <button className="button" onClick={() => onSave(best)}><Icon name="save" size={15}/>Save class</button>
         <button className="button ghost" onClick={() => onCopy(best)}><Icon name="copy" size={15}/>Copy list</button>
+        <button className="button ghost" onClick={() => onCompare(best)}><Icon name="grid" size={15}/>Compare</button>
       </footer>
       {result!.alternatives.length > 0 && <details className="alternatives">
         <summary>Close runners-up<Icon name="chevron" size={14}/></summary>

@@ -1,6 +1,8 @@
 # MW4 Armory
 
-A Gunsmith optimizer for Modern Warfare 4 (2026) multiplayer. Pick a gun, a playstyle and your weapon level. It finds the best build without the Apex attachment and the best build with it, from community-measured attachment stats.
+A class optimizer for Modern Warfare 4 (2026) multiplayer. Pick a gun, a playstyle and your weapon level. It finds the best build without the Apex attachment and the best build with it, from community-measured attachment stats, then fills in perks, equipment and killstreaks.
+
+It also lists what CODMunity, Game8 and WZStats run on each gun, with their import codes, scored with the same math. Each class card notes what changed after a settings change, and the Compare tab puts up to three builds side by side with every part editable.
 
 ## Run locally
 
@@ -25,6 +27,8 @@ Attachment changes multiply, the way CODMunity combines them. A build is scored 
 
 The four presets in `PRESETS` set those weights.
 
+Perks, equipment and killstreaks come from `src/engine/gear.ts`. Each item scores on how often Game8 and WZStats pick it for this gun (45%), for its weapon class (25%), the two perk tier lists (15%, perks only) and a short playstyle rule with a stated reason (15%). Overkill is never picked automatically, since the site does not choose a second primary. Killstreaks are three picks at or under the kills-per-life band, valued by streak style, because no site ranks them yet. Hardline lowers each cost by one. Any slot can be locked.
+
 Each class also gets a stability check. The engine keeps the top 1,000 builds and rescores them 200 times, each time scaling every weight by up to 1.6x either way and moving the fight distance by up to 30%. It reports how often the best build stays within 5 ms of that setting's winner, how often each of its parts appears in the winners, and which other parts win often. A test checks that rescoring the pool finds the same winner as a full search under nudged settings. Shotguns, marksman rifles, snipers and pistols only get handling and recoil scoring, because the data has no pellet spread or one-shot range.
 
 ## Data
@@ -35,6 +39,8 @@ Each class also gets a stability check. The engine keeps the top 1,000 builds an
 - `research/raw/codmunity-unlock-levels.json`: which attachments fit each gun and their unlock levels, read from each CODMunity weapon page on Oct 30. The MAR-9 page has no table.
 - `scripts/source/base-catalog.ts`: names, categories, Apex attachments and blocked slots from Activision's launch guide.
 - `scripts/source/stat-overrides.ts`: damage profiles and fire rates from CODMunity's MW4 records.
+
+Guide builds come from `research/raw/meta-codmunity.json`, `meta-game8.json` and `meta-wzstats.json`, read in a browser on Oct 30 because CODMunity and WZStats render their builds in the page. Part names are matched to this site's attachment IDs. A name within two edits of exactly one part of that gun, with the same numbers in it, counts as a typo and matches. Anything else stays visible as unmatched and is left out of the score. `npm run data -- --verbose` lists every near match and unmatched name. `npm run fetch` does not refresh guide builds.
 
 ## Refreshing after a patch
 

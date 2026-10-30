@@ -4,7 +4,7 @@ Checked October 30, 2026, after the rebuild from the ChatGPT version.
 
 ## Automated
 
-`npm test` runs 13 checks, all passing:
+`npm test` runs 18 checks, all passing:
 
 - Attachment values in the bundled data match what CODMunity shows on the VEL 46 and Kastov 762 pages, read by hand.
 - Every loadout entry points at a known attachment, no unlock sits above the gun's max level, and every Apex can unlock.
@@ -15,6 +15,11 @@ Checked October 30, 2026, after the rebuild from the ChatGPT version.
 - Stability results are deterministic, stay between 0 and 1, and describe the best build's own parts.
 - Under 24 nudged settings across three guns, rescoring the top 1,000 builds finds a winner within 5 ms of a full search every time, and the exact winner at least 90% of the time. A wider run before the test, 160 nudged settings over eight guns, matched exactly in 159 and missed by 0.7 ms in the other.
 - The fetch script's table parser reads names, slots, levels and labels and ignores other tables. Its change report names added, removed, moved and retuned parts.
+- All 17 streaks have a cost, and the UAV, Counter UAV, Advanced UAV, Gunship and Bomb Glider match the published values.
+- For all 28 guns and four playstyles, every perk and equipment slot gets an item of the right kind, Overkill is never automatic, and three distinct streaks are picked.
+- Player level, kills per life, Hardline and locks hold. A locked streak stays even above the band.
+- The CODMunity VEL 46 Versatile Apex build keeps its code and its five parts. Across five guns, no fully matched, legal guide build without an optic outscores the optimizer's class at the same settings.
+- Scoring a hand-made build reports Apex-blocked slots, two parts in one slot, and parts that do not fit the gun.
 
 `npm run build` passes the TypeScript check and builds `dist/`.
 

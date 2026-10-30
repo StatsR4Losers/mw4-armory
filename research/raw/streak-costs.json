@@ -1,0 +1,16 @@
+{
+ "retrieved": "2026-10-30",
+ "note": "Kill costs from Activision's Oct 19 launch multiplayer post, as listed by COD Loadout and LFCarry. Both agree on all 16 streaks other than the UAV. The UAV is 5 per the Oct 21 launch patch notes (4 with Hardline). Hardline lowers every cost by one.",
+ "sources": [
+  "https://codloadout.gitlab.io/mw4/perks-and-equipment/",
+  "https://lfcarry.com/guides/mw4-nuke-guide",
+  "https://www.callofduty.com/patchnotes/2026/10/call-of-duty-modern-warfare-4-launch-patch-notes"
+ ],
+ "costs": {
+  "UAV": 5, "Bomb Glider": 4, "Care Package": 4, "Impact Warhead": 4,
+  "Artillery Beacon": 6, "Crossfire": 6, "Combat Drone": 6, "Counter UAV": 6,
+  "Wheelson": 8, "Missile Salvo": 8, "Railgun Sentry": 8,
+  "Attack Helicopter": 10, "Deathstalker": 10, "Advanced UAV": 10, "Argonaut": 10,
+  "Gunship": 12, "Air Lockdown": 12
+ }
+}

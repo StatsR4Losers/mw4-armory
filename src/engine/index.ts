@@ -1,5 +1,6 @@
 import { metricIds } from '../types.ts';
-import type { BuildResult, ClassResult, GameData, MetricId, Mods, OptimizeResult, PresetId, Settings, Stability, WeaponData, Weights } from '../types.ts';
+import type { BuildResult, ClassResult, GameData, MetaBuild, MetricId, Mods, OptimizeResult, PresetId, ScoredMeta, Settings, Stability, WeaponData, Weights } from '../types.ts';
+import { recommendGear } from './gear.ts';
 
 // Scores are in milliseconds of fight time, or a millisecond equivalent for stats without a time unit.
 // ADS, sprint-to-fire and time to kill count in real milliseconds saved. Recoil counts as the share of a
@@ -319,6 +320,41 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
   return { variant, available: true, reason: null, best, alternatives, evaluated, stability: best ? stability(weapon, top, settings) : null };
 }
 
+/** Scores a given set of attachments, for guide builds and the compare view. Problems are listed, not fixed. */
+export function evaluateBuild(data: GameData, weapon: WeaponData, settings: Settings, attachmentIds: string[], useApex: boolean): { build: BuildResult | null; issues: string[] } {
+  if (!weapon.base) return { build: null, issues: [`No attachment stat data is published for ${weapon.name}.`] };
+  const issues: string[] = [];
+  const known = new Map((data.loadouts[weapon.id] ?? []).map(([id, level, mods]) => [id, { id, slot: data.attachments[id].slot, level, mods }]));
+  const chosen: Option[] = [];
+  for (const id of attachmentIds) {
+    const option = known.get(id);
+    if (!option) { issues.push(`${data.attachments[id]?.name ?? id} is not listed for the ${weapon.name}.`); continue; }
+    if (chosen.some(item => item.slot === option.slot)) issues.push(`Two parts use the ${option.slot.replace('-', ' ')} slot.`);
+    if (useApex && weapon.apex?.blocks.includes(option.slot)) issues.push(`${weapon.apex.name} blocks the ${option.slot.replace('-', ' ')} slot.`);
+    chosen.push(option);
+  }
+  if (chosen.length > ATTACHMENT_LIMIT) issues.push(`${chosen.length} attachments, one more than the game allows.`);
+  if (useApex && !weapon.apex) issues.push(`${weapon.name} has no Apex attachment.`);
+  const apex = useApex && weapon.apex;
+  const weights = weightsFor(settings), shot = missedShotMs(weapon);
+  const evaluate = (list: Option[]): BuildResult => {
+    const stats = applyMods(weapon.base!, [...(apex ? [weapon.apex!.mods ?? {}] : []), ...list.map(item => item.mods)]);
+    const { values, ttkMs } = metrics(weapon, stats, settings.distanceM);
+    return { apex: !!apex, attachments: list.map(item => item.id), stats, metrics: values, score: score(values, weights, shot), ttkMs, contributions: [] };
+  };
+  const build = evaluate(chosen);
+  build.contributions = chosen.map(item => ({ id: item.id, score: build.score - evaluate(chosen.filter(other => other !== item)).score }));
+  return { build, issues };
+}
+
+export function scoreMeta(data: GameData, weapon: WeaponData, settings: Settings, builds: MetaBuild[]): ScoredMeta[] {
+  return builds.map(meta => {
+    const { build, issues } = evaluateBuild(data, weapon, settings, meta.attachments, meta.apex);
+    if (meta.unmatched.length) issues.unshift(`Not scored: ${meta.unmatched.join(', ')}.`);
+    return { ...meta, build, issues };
+  });
+}
+
 export function stockBuild(weapon: WeaponData, settings: Settings): BuildResult | null {
   if (!weapon.base) return null;
   const { values, ttkMs } = metrics(weapon, weapon.base, settings.distanceM);
@@ -330,7 +366,7 @@ export function optimize(data: GameData, settings: Settings): OptimizeResult {
   const warnings: string[] = [];
   if (!weapon) {
     const missing: ClassResult = { variant: 'standard', available: false, reason: 'Choose a weapon.', best: null, alternatives: [], evaluated: 0, stability: null };
-    return { stock: null, standard: missing, apex: { ...missing, variant: 'apex' }, baseTtkMs: null, warnings: ['Choose a weapon.'] };
+    return { stock: null, standard: missing, apex: { ...missing, variant: 'apex' }, baseTtkMs: null, warnings: ['Choose a weapon.'], gear: null, meta: [] };
   }
   if (weapon.apex && !weapon.apex.mods) warnings.push(`CODMunity lists no stat changes for ${weapon.apex.name}. Its build only accounts for the slots it blocks.`);
   return {
@@ -339,5 +375,7 @@ export function optimize(data: GameData, settings: Settings): OptimizeResult {
     apex: optimizeClass(data, weapon, settings, true),
     baseTtkMs: averageTtk(weapon, settings.distanceM),
     warnings,
+    gear: data.gear.length ? recommendGear(data, weapon, settings) : null,
+    meta: scoreMeta(data, weapon, settings, data.meta[weapon.id] ?? []),
   };
 }

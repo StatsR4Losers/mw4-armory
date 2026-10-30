@@ -9,12 +9,27 @@ export interface WeaponData {
   base: Record<string, number> | null; damage: DamageBand[] | null; apex: ApexData | null;
 }
 export interface AttachmentInfo { name: string; slot: string; kind: string; image: boolean }
+export type GearSlot = 'tactical' | 'lethal' | 'field' | 'perk1' | 'perk2' | 'perk3';
+export type StreakStyle = 'mixed' | 'support' | 'lethal';
+export interface GearItem {
+  id: string; name: string; kind: 'tactical' | 'lethal' | 'field' | 'perk' | 'streak'; perkSlot: number | null;
+  unlock: number | null; description: string;
+  // Kill cost for streaks. Tier is the mean perk tier-list score, 0 to 1.
+  cost: number | null; tier: number | null;
+}
+/** A build a guide site publishes. Parts that do not match this gun's data are kept in unmatched. */
+export interface MetaBuild { source: string; label: string; apex: boolean; code: string | null; attachments: string[]; unmatched: string[]; url: string; updated: string | null; note: string | null }
+export interface MetaGear { source: string; url: string; items: string[]; unmatched: string[]; generic: boolean }
 export interface GameData {
   version: string; checkedAt: string; statsUpdated: string;
   statNames: Record<string, { name: string; unit: string; better: 'higher' | 'lower' }>;
   weapons: WeaponData[];
   attachments: Record<string, AttachmentInfo>;
   loadouts: Record<string, [id: string, level: number, mods: Mods][]>;
+  gear: GearItem[];
+  meta: Record<string, MetaBuild[]>;
+  metaGear: Record<string, MetaGear[]>;
+  metaSources: Record<string, { name: string; url: string; retrieved: string }>;
 }
 
 export const metricIds = ['ads', 'stf', 'recoil', 'ttk', 'mobility', 'adsMove', 'flinch', 'hipfire', 'magazine', 'reload', 'velocity', 'sway'] as const;
@@ -32,7 +47,17 @@ export interface Settings {
   optic: boolean;
   locked: string[];
   excluded: string[];
+  playerLevel: number;
+  // Kills you usually get in one life. Streaks above it are left out.
+  killBand: number;
+  streakStyle: StreakStyle;
+  gearLocks: Partial<Record<GearSlot, string>>;
+  streakLocks: string[];
 }
+
+export interface GearPick { id: string; value: number; reasons: string[]; locked: boolean }
+export interface GearResult { picks: Partial<Record<GearSlot, GearPick>>; alternatives: Partial<Record<GearSlot, GearPick[]>>; streaks: GearPick[]; hardline: boolean }
+export interface ScoredMeta extends MetaBuild { build: BuildResult | null; issues: string[] }
 
 export interface BuildResult {
   apex: boolean;
@@ -66,4 +91,4 @@ export interface ClassResult {
   evaluated: number;
   stability: Stability | null;
 }
-export interface OptimizeResult { stock: BuildResult | null; standard: ClassResult; apex: ClassResult; baseTtkMs: number | null; warnings: string[] }
+export interface OptimizeResult { stock: BuildResult | null; standard: ClassResult; apex: ClassResult; baseTtkMs: number | null; warnings: string[]; gear: GearResult | null; meta: ScoredMeta[] }

@@ -10,7 +10,7 @@ export interface WeaponData {
 }
 export interface AttachmentInfo { name: string; slot: string; kind: string; image: boolean }
 export interface GameData {
-  version: string; checkedAt: string;
+  version: string; checkedAt: string; statsUpdated: string;
   statNames: Record<string, { name: string; unit: string; better: 'higher' | 'lower' }>;
   weapons: WeaponData[];
   attachments: Record<string, AttachmentInfo>;
@@ -43,6 +43,20 @@ export interface BuildResult {
   ttkMs: number | null;
   contributions: { id: string; score: number }[];
 }
+/** How the best build holds up when priorities and fight distance move a little. Shares are 0 to 1. */
+export interface Stability {
+  samples: number;
+  // Share of nudged settings where this build scores within TIE_MS of that setting's winner.
+  nearBest: number;
+  // Share where it is the exact winner. Low when several builds tie.
+  wins: number;
+  // Score lead over the runner-up at your exact settings.
+  gapMs: number;
+  // For each part of this build, the share of winners that use it.
+  parts: { id: string; share: number }[];
+  // Parts not in this build that appear in at least a quarter of winners.
+  contenders: { id: string; share: number }[];
+}
 export interface ClassResult {
   variant: 'standard' | 'apex';
   available: boolean;
@@ -50,5 +64,6 @@ export interface ClassResult {
   best: BuildResult | null;
   alternatives: BuildResult[];
   evaluated: number;
+  stability: Stability | null;
 }
 export interface OptimizeResult { stock: BuildResult | null; standard: ClassResult; apex: ClassResult; baseTtkMs: number | null; warnings: string[] }

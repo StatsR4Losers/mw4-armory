@@ -1,5 +1,5 @@
 import { metricIds } from '../types.ts';
-import type { BuildResult, ClassResult, GameData, MetricId, Mods, OptimizeResult, PresetId, Settings, WeaponData, Weights } from '../types.ts';
+import type { BuildResult, ClassResult, GameData, MetricId, Mods, OptimizeResult, PresetId, Settings, Stability, WeaponData, Weights } from '../types.ts';
 
 // Scores are in milliseconds of fight time, or a millisecond equivalent for stats without a time unit.
 // ADS, sprint-to-fire and time to kill count in real milliseconds saved. Recoil counts as the share of a
@@ -183,11 +183,63 @@ export function apexState(weapon: WeaponData, level: number): { available: boole
   return { available: true, reason: null };
 }
 
-type SearchOptions = { prune?: boolean; keep?: number };
+// collect receives the ranked pool the stability check rescores, so tests can compare it to a full search.
+type SearchOptions = { prune?: boolean; keep?: number; collect?: BuildResult[] };
+
+// Each stability sample scales every weight by up to 1.6x either way and moves the fight distance by up to 30%.
+// Builds within TIE_MS of each other count as a tie: smaller differences are below what the data can resolve.
+export const STABILITY = { samples: 200, weightSpread: 1.6, distanceSpread: .3, pool: 1000 };
+export const TIE_MS = 5;
+
+/** Seeded generator, so the same settings always report the same stability. */
+function seeded(seed: string) {
+  let h = 2166136261;
+  for (const char of seed) h = Math.imul(h ^ char.charCodeAt(0), 16777619);
+  return () => {
+    h += 0x6d2b79f5;
+    let t = h;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/** Rescores the best builds under nearby priorities and distances and reports how well the winner holds. */
+export function stability(weapon: WeaponData, pool: BuildResult[], settings: Settings, samples = STABILITY.samples): Stability | null {
+  if (pool.length < 2) return null;
+  const random = seeded(`${weapon.id}|${pool[0].apex}|${pool[0].attachments.join()}|${settings.distanceM}`);
+  const base = weightsFor(settings), shot = missedShotMs(weapon);
+  const cache = new Map<string, Record<MetricId, number>>();
+  const used = new Map<string, number>();
+  let wins = 0, near = 0;
+  for (let sample = 0; sample < samples; sample++) {
+    const weights = Object.fromEntries(metricIds.map(id => [id, base[id] * Math.exp((random() * 2 - 1) * Math.log(STABILITY.weightSpread))])) as Weights;
+    const distance = Math.max(2, Math.round(settings.distanceM * (1 + (random() * 2 - 1) * STABILITY.distanceSpread)));
+    let bestScore = -Infinity, winner = 0, ours = 0;
+    pool.forEach((build, index) => {
+      const key = `${distance}|${index}`;
+      let values = cache.get(key);
+      if (!values) { values = metrics(weapon, build.stats, distance).values; cache.set(key, values); }
+      const value = score(values, weights, shot);
+      if (index === 0) ours = value;
+      if (value > bestScore) { bestScore = value; winner = index; }
+    });
+    if (winner === 0) wins++;
+    if (ours >= bestScore - TIE_MS) near++;
+    for (const id of pool[winner].attachments) used.set(id, (used.get(id) ?? 0) + 1);
+  }
+  const share = (id: string) => (used.get(id) ?? 0) / samples;
+  return {
+    samples, nearBest: near / samples, wins: wins / samples, gapMs: pool[0].score - pool[1].score,
+    parts: pool[0].attachments.map(id => ({ id, share: share(id) })),
+    contenders: [...used.keys()].filter(id => !pool[0].attachments.includes(id) && share(id) >= .25)
+      .map(id => ({ id, share: share(id) })).sort((a, b) => b.share - a.share),
+  };
+}
 
 export function optimizeClass(data: GameData, weapon: WeaponData, settings: Settings, useApex: boolean, options: SearchOptions = {}): ClassResult {
   const variant = useApex ? 'apex' : 'standard';
-  const empty = (reason: string): ClassResult => ({ variant, available: false, reason, best: null, alternatives: [], evaluated: 0 });
+  const empty = (reason: string): ClassResult => ({ variant, available: false, reason, best: null, alternatives: [], evaluated: 0, stability: null });
   if (!weapon.base) return empty(`No attachment stat data is published for ${weapon.name}.`);
   if (useApex) {
     const state = apexState(weapon, settings.level);
@@ -229,7 +281,7 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
   const required = new Set([...lockedSlots.keys(), ...(requireOptic ? ['optic'] : [])]);
   const order = [...slots.keys()].sort((a, b) => Number(required.has(b)) - Number(required.has(a)) || a.localeCompare(b));
   const apexMods = useApex ? [weapon.apex!.mods ?? {}] : [];
-  const keep = options.keep ?? 40;
+  const keep = options.keep ?? STABILITY.pool;
   const top: BuildResult[] = [];
   let evaluated = 0;
 
@@ -242,11 +294,12 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
     if (index === order.length) {
       evaluated++;
       const result = evaluate(chosen);
-      if (top.length < keep || result.score > top[top.length - 1].score) {
-        top.push(result);
-        top.sort((a, b) => b.score - a.score || a.attachments.join().localeCompare(b.attachments.join()));
-        if (top.length > keep) top.pop();
-      }
+      if (top.length >= keep && result.score <= top[top.length - 1].score) return;
+      // Binary insertion keeps the list sorted, with earlier builds first on ties.
+      let low = 0, high = top.length;
+      while (low < high) { const mid = (low + high) >> 1; if (top[mid].score >= result.score) low = mid + 1; else high = mid; }
+      top.splice(low, 0, result);
+      if (top.length > keep) top.pop();
       return;
     }
     const slot = order[index];
@@ -255,6 +308,7 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
     for (const option of slots.get(slot)!) visit(index + 1, [...chosen, option]);
   };
   visit(0, []);
+  options.collect?.push(...top);
   const best = top[0] ?? null;
   if (best) {
     const chosen = best.attachments.map(id => pool.find(item => item.id === id)!);
@@ -262,7 +316,7 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
       .sort((a, b) => b.score - a.score);
   }
   const alternatives = top.slice(1).filter((build, index, list) => list.findIndex(other => other.attachments.join() === build.attachments.join()) === index).slice(0, 3);
-  return { variant, available: true, reason: null, best, alternatives, evaluated };
+  return { variant, available: true, reason: null, best, alternatives, evaluated, stability: best ? stability(weapon, top, settings) : null };
 }
 
 export function stockBuild(weapon: WeaponData, settings: Settings): BuildResult | null {
@@ -275,7 +329,7 @@ export function optimize(data: GameData, settings: Settings): OptimizeResult {
   const weapon = data.weapons.find(item => item.id === settings.weaponId);
   const warnings: string[] = [];
   if (!weapon) {
-    const missing: ClassResult = { variant: 'standard', available: false, reason: 'Choose a weapon.', best: null, alternatives: [], evaluated: 0 };
+    const missing: ClassResult = { variant: 'standard', available: false, reason: 'Choose a weapon.', best: null, alternatives: [], evaluated: 0, stability: null };
     return { stock: null, standard: missing, apex: { ...missing, variant: 'apex' }, baseTtkMs: null, warnings: ['Choose a weapon.'] };
   }
   if (weapon.apex && !weapon.apex.mods) warnings.push(`CODMunity lists no stat changes for ${weapon.apex.name}. Its build only accounts for the slots it blocks.`);

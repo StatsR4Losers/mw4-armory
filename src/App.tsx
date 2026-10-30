@@ -144,7 +144,7 @@ export default function App() {
           <Icon name={item.icon} size={16}/><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}
         </button>)}
       </nav>
-      <span className="data-stamp">Data {data.checkedAt.slice(5).replace('-', '/')} · patch 10/28</span>
+      <span className="data-stamp">Stats {data.statsUpdated.slice(5).replace('-', '/')} · unlocks {data.checkedAt.slice(5).replace('-', '/')}</span>
     </header>
     <main className="main">
       {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} onSave={saveClass} onShare={share} onCopy={copyText} onReset={() => setSettings(defaultSettings(settings.weaponId))}/>}

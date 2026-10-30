@@ -38,6 +38,7 @@ export function DataView() {
         <li>Time to kill assumes every bullet hits the chest of a 100-health target. Headshots, misses and armor are not modeled.</li>
         <li>Damage range attachments are applied by stretching each damage band by their multiplier. CODMunity lists range as a percent, not in meters.</li>
         <li>The MAR-9 page on CODMunity has no unlock table, so its attachments show "Lv ?" and are always available.</li>
+        <li>COD Loadout lists 20 more parts for the M4 than CODMunity's M4 page does, including Han 86 parts and the Schlager Visiv-5. The site follows each gun's own CODMunity page and leaves them out.</li>
         <li>Shotguns, marksman rifles, snipers and pistols are scored on handling and recoil only. Pellet spread and one-shot range are not in the data.</li>
         <li>The Oct 28 patch raised arm and hand damage on five SMGs from 0.95x to 1x. The damage profiles already reflect it. Chest-hit kill times did not change.</li>
         <li>Nobody here measured anything in a private match. Treat close scores, within about 5 ms, as a tie and pick the one that feels better.</li>

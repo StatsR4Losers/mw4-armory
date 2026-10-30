@@ -1,0 +1,130 @@
+// Downloads fresh source snapshots into research/raw, rebuilds src/data/game.json, prints what
+// changed and runs the tests. Run with: npm run fetch
+// Flags: --skip-levels keeps the current unlock table and only refreshes the stat files.
+//        --no-test skips the test run at the end.
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+
+type Mods = Record<string, number>;
+type Game = { weapons: { id: string; name: string; base: Record<string, number> | null; apex: { name: string; mods: Mods | null } | null }[]; attachments: Record<string, { name: string }>; loadouts: Record<string, [string, number, Mods][]> };
+type LevelRow = [name: string, slot: string, level: number, label: string];
+
+const root = new URL('..', import.meta.url);
+const file = (path: string) => new URL(path, root);
+const readJson = (path: string) => JSON.parse(readFileSync(file(path), 'utf8'));
+const writeJson = (path: string, value: unknown) => writeFileSync(file(path), JSON.stringify(value, null, 1) + '\n');
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const args = new Set(process.argv.slice(2));
+const today = new Date().toISOString().slice(0, 10);
+// Requests say what they are. If a site refuses them, the old snapshot stays in place.
+const UA = 'mw4-armory-data-refresh/1.0 (personal fan tool; about 30 requests a run, 5 s apart)';
+
+async function get(url: string, attempts = 6, backoffMs = 25_000): Promise<string | null> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      const response = await fetch(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(60_000) });
+      if (response.ok) return await response.text();
+      console.log(`  ${response.status} from ${url} (try ${attempt}/${attempts})`);
+    } catch (error) {
+      console.log(`  ${error instanceof Error ? error.message : error} from ${url} (try ${attempt}/${attempts})`);
+    }
+    if (attempt < attempts) await sleep(backoffMs);
+  }
+  return null;
+}
+
+const entities: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'", '#x27': "'", nbsp: ' ' };
+const text = (html: string) => html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ')
+  .replace(/&(#x27|#39|amp|lt|gt|quot|nbsp);/g, (_, name: string) => entities[name]).replace(/\s+/g, ' ').trim();
+
+/** Rows of the attachment table on a CODMunity weapon page: name, slot, "Level N", type label. */
+export function parseUnlockTable(html: string): LevelRow[] {
+  const rows: LevelRow[] = [];
+  for (const [, row] of html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)) {
+    const cells = [...row.matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g)].map(match => text(match[1]));
+    const level = cells[2]?.match(/^Level (\d+)$/);
+    if (level) rows.push([cells[0], cells[1], Number(level[1]), cells[3] ?? '']);
+  }
+  return rows;
+}
+
+async function refreshStats() {
+  console.log('Stat files from COD Loadout');
+  for (const [name, check] of [
+    ['mw4-community-stats.json', (value: any) => Object.keys(value.weapons ?? {}).length >= 28 && Object.keys(value.attachments ?? {}).length >= 20 && value.apex],
+    ['mw4-community-attachments.json', (value: any) => Array.isArray(value.attachments) && value.attachments.length >= 400],
+  ] as const) {
+    const body = await get(`https://codloadout.gitlab.io/data/${name}`, 3, 5_000);
+    let parsed: any = null;
+    try { parsed = body && JSON.parse(body); } catch { /* handled below */ }
+    if (!parsed || !check(parsed)) { console.log(`  ${name}: download failed or looks wrong, keeping the old copy`); continue; }
+    writeFileSync(file(`research/raw/${name}`), body!);
+    console.log(`  ${name}: updated ${parsed.meta?.updated ?? 'date unknown'}`);
+  }
+}
+
+async function refreshLevels() {
+  const path = 'research/raw/codmunity-unlock-levels.json';
+  const previous = readJson(path);
+  const ids = Object.keys(readJson('research/raw/mw4-community-stats.json').attachments);
+  const weapons: Record<string, LevelRow[]> = {};
+  const kept: string[] = [];
+  console.log(`Unlock tables from CODMunity, ${ids.length} weapon pages, about ${Math.ceil(ids.length * 7 / 60)} minutes`);
+  for (const [index, id] of ids.entries()) {
+    const html = await get(`https://codmunity.gg/weapon/mw4/${id}`);
+    const rows = html ? parseUnlockTable(html) : [];
+    const old: LevelRow[] = previous.weapons[id] ?? [];
+    // A rate-limited or changed page must not wipe a weapon's known unlocks.
+    if (!rows.length && old.length) { weapons[id] = old; kept.push(id); }
+    else weapons[id] = rows;
+    console.log(`  ${String(index + 1).padStart(2)}/${ids.length} ${id}: ${rows.length ? `${rows.length} rows` : old.length ? 'failed, kept old rows' : 'no table'}`);
+    await sleep(5_000);
+  }
+  writeJson(path, { ...previous, retrieved: today, weapons, stale: kept.length ? kept : undefined });
+  if (kept.length) console.log(`  Kept older rows for ${kept.join(', ')}. Run again later to refresh them.`);
+}
+
+function same(a: Mods | null | undefined, b: Mods | null | undefined) {
+  return JSON.stringify(Object.entries(a ?? {}).sort()) === JSON.stringify(Object.entries(b ?? {}).sort());
+}
+
+/** Human summary of what changed between two builds of game.json. */
+export function diffGames(before: Game, after: Game): string[] {
+  const lines: string[] = [];
+  const name = (game: Game, id: string) => game.attachments[id]?.name ?? id;
+  for (const weapon of after.weapons) {
+    const old = before.weapons.find(item => item.id === weapon.id);
+    const changes: string[] = [];
+    const a = new Map((before.loadouts[weapon.id] ?? []).map(entry => [entry[0], entry]));
+    const b = new Map((after.loadouts[weapon.id] ?? []).map(entry => [entry[0], entry]));
+    const added = [...b.keys()].filter(id => !a.has(id)), removed = [...a.keys()].filter(id => !b.has(id));
+    if (added.length) changes.push(`added ${added.map(id => name(after, id)).join(', ')}`);
+    if (removed.length) changes.push(`removed ${removed.map(id => name(before, id)).join(', ')}`);
+    const levels = [...b.keys()].filter(id => a.has(id) && a.get(id)![1] !== b.get(id)![1]);
+    if (levels.length) changes.push(`unlock levels moved for ${levels.map(id => `${name(after, id)} ${a.get(id)![1]}→${b.get(id)![1]}`).join(', ')}`);
+    const mods = [...b.keys()].filter(id => a.has(id) && !same(a.get(id)![2], b.get(id)![2]));
+    if (mods.length) changes.push(`new stat changes for ${mods.map(id => name(after, id)).join(', ')}`);
+    const baseStats = Object.keys(weapon.base ?? {}).filter(stat => old?.base?.[stat] !== weapon.base![stat]);
+    if (baseStats.length) changes.push(`base ${baseStats.map(stat => `${stat} ${old?.base?.[stat] ?? 'none'}→${weapon.base![stat]}`).join(', ')}`);
+    if (weapon.apex && !same(old?.apex?.mods, weapon.apex.mods)) changes.push(`${weapon.apex.name} ${weapon.apex.mods ? (old?.apex?.mods ? 'stats changed' : 'now has stats') : 'lost its stats'}`);
+    if (changes.length) lines.push(`${weapon.name}: ${changes.join('; ')}`);
+  }
+  return lines;
+}
+
+async function main() {
+  const before: Game = readJson('src/data/game.json');
+  await refreshStats();
+  if (!args.has('--skip-levels')) await refreshLevels();
+  console.log('Rebuilding src/data/game.json');
+  execFileSync(process.execPath, ['--experimental-strip-types', 'scripts/build-data.ts'], { cwd: file('.'), stdio: 'inherit' });
+  const changes = diffGames(before, readJson('src/data/game.json'));
+  console.log(changes.length ? `\n${changes.length} weapons changed:\n${changes.map(line => `  ${line}`).join('\n')}` : '\nNo data changed.');
+  if (!args.has('--no-test')) {
+    console.log('\nRunning tests');
+    execFileSync('npm', ['test', '--silent'], { cwd: file('.'), stdio: 'inherit' });
+  }
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) await main();

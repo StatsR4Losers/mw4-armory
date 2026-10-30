@@ -76,9 +76,11 @@ const weapons = baseCatalog.weapons.map(weapon => {
   };
 });
 
+const retrieved: string = read('research/raw/codmunity-unlock-levels.json').retrieved;
 const out = {
-  version: 'mw4-2026-10-30',
-  checkedAt: '2026-10-30',
+  version: `mw4-${retrieved}`,
+  checkedAt: retrieved,
+  statsUpdated: stats.meta.updated as string,
   statNames: Object.fromEntries(stats.stats.map((stat: any) => [stat.id, { name: stat.name, unit: stat.unit, better: stat.better }])),
   weapons,
   attachments,
@@ -86,4 +88,10 @@ const out = {
 };
 writeFileSync(new URL('src/data/game.json', root), JSON.stringify(out));
 console.log(`weapons ${weapons.length}, with stats ${weapons.filter(w => loadouts[w.id]).length}, attachments ${Object.keys(attachments).length}, entries ${Object.values(loadouts).reduce((n, l) => n + l.length, 0)}`);
-if (problems.length) { console.log(`${problems.length} problems:`); for (const problem of problems) console.log('  ' + problem); }
+// Known gaps: a few stat entries are not on the weapon's CODMunity page, and a few new parts lack icons.
+if (problems.length) {
+  const byWeapon = new Map<string, string[]>();
+  for (const problem of problems) { const [weapon, rest] = problem.split(': '); byWeapon.set(weapon, [...byWeapon.get(weapon) ?? [], rest]); }
+  console.log(`${problems.length} entries skipped or missing icons:`);
+  for (const [weapon, list] of byWeapon) console.log(`  ${weapon}: ${list.length} (${list.slice(0, 2).join('; ')}${list.length > 2 ? '; ...' : ''})`);
+}

@@ -199,6 +199,19 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 20px; marg
 .edge strong { display: block; font-family: var(--display); font-size: 30px; line-height: 1; color: var(--good); font-variant-numeric: tabular-nums; }
 .edge span { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
 .apex-note { margin: -4px 18px 12px; padding: 10px 12px; border-radius: 10px; background: var(--apex-soft); color: #d9d2ff; font-size: 13px; }
+.stability { margin: -4px 18px 10px; padding: 10px 12px; border-radius: 10px; font-size: 13px; border: 1px solid; display: grid; gap: 4px; }
+.stability p { color: var(--muted); }
+.stability strong { color: var(--text); }
+.stability.solid { background: var(--good-soft); border-color: rgba(79, 214, 156, .28); }
+.stability.solid strong { color: var(--good); }
+.stability.mixed { background: var(--accent-soft); border-color: rgba(244, 178, 62, .28); }
+.stability.mixed strong { color: var(--accent); }
+.stability.shaky { background: var(--bad-soft); border-color: rgba(255, 125, 110, .28); }
+.stability.shaky strong { color: var(--bad); }
+.stability .contenders { font-size: 12.5px; }
+.att-hold { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 5px; background: var(--panel-3); color: var(--muted); white-space: nowrap; cursor: help; }
+.att-hold.core { background: var(--good-soft); color: var(--good); }
+.att-hold.flex { background: var(--accent-soft); color: var(--accent); }
 .class-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 260px; padding: 24px; text-align: center; color: var(--muted); }
 .class-empty p { max-width: 36ch; }
 .class-empty.locked svg { color: var(--faint); }
@@ -332,7 +345,7 @@ td.bad { color: var(--bad); font-weight: 600; }
   .facts div:last-child { grid-column: 1 / -1; border-left: 0; }
   .attachments li { grid-template-columns: 44px minmax(0, 1fr); }
   .att-icon { width: 44px; height: 44px; }
-  .att-side { grid-column: 2; grid-template-columns: auto auto 1fr; align-items: center; justify-items: start; gap: 10px; }
+  .att-side { grid-column: 2; grid-template-columns: auto auto auto 1fr; align-items: center; justify-items: start; gap: 10px; }
   .att-actions { opacity: 1; justify-self: end; }
   .two-col, .coverage { grid-template-columns: minmax(0, 1fr); }
   .guide-section { padding: 18px 16px; }

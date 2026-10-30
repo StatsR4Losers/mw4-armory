@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "data": "node --experimental-strip-types scripts/build-data.ts"
+    "data": "node --experimental-strip-types scripts/build-data.ts",
+    "fetch": "node --experimental-strip-types scripts/fetch-sources.ts"
   },
   "dependencies": {
     "react": "^19.2.0",

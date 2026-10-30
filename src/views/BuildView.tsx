@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { attachmentEntry, attachmentImage, categories, data, shortCategory, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
-import { ATTACHMENT_LIMIT, METRICS, PRESETS, apexState, fullModel, recoilRatio } from '../engine';
+import { ATTACHMENT_LIMIT, METRICS, PRESETS, STABILITY, TIE_MS, apexState, fullModel, recoilRatio } from '../engine';
 import { effects } from '../effects';
 import { Icon } from '../components/Icon';
-import type { BuildResult, ClassResult, MetricId, OptimizeResult, PresetId, Settings, WeaponData } from '../types';
+import type { BuildResult, ClassResult, MetricId, OptimizeResult, PresetId, Settings, Stability, WeaponData } from '../types';
 
 type Props = {
   settings: Settings; change: (patch: Partial<Settings>) => void; selectWeapon: (id: string) => void;
@@ -86,6 +86,7 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
           <li>The score is milliseconds of fight time saved against the stock gun. ADS, sprint-to-fire and time to kill count in real milliseconds. One percent of recoil counts as {Math.round(PRESETS[settings.preset].weights.recoil)}% of the time a missed shot costs, so slow-firing guns value recoil more.</li>
           <li>Recoil above stock is penalized faster than it grows, because a gun gets much harder to hold past a point.</li>
           <li>Time to kill assumes chest hits with every bullet. Damage range attachments stretch every damage band by their multiplier.</li>
+          <li>The stability check rescores the top {STABILITY.pool.toLocaleString()} builds {STABILITY.samples} times, each with every priority scaled by up to {STABILITY.weightSpread}x either way and the fight distance moved by up to {STABILITY.distanceSpread * 100}%. Core parts are in at least 75% of those winners, flex parts in under 40%. A test checks that this matches a full search almost every time.</li>
         </ul>
       </details>
     </section>
@@ -140,6 +141,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
 }) {
   const best = result?.best ?? null;
   const contributions = useMemo(() => new Map(best?.contributions.map(item => [item.id, item.score]) ?? []), [best]);
+  const holds = useMemo(() => new Map(result?.stability?.parts.map(item => [item.id, item.share]) ?? []), [result]);
   const needed = weapon.apex?.level ?? weapon.maxLevel ?? 0;
   return <article className={`class-card ${apex ? 'apex' : ''}`}>
     <header>
@@ -148,6 +150,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
       {best && <div className="edge" title="Estimated milliseconds of fight time saved against the stock gun"><strong>{best.score >= 0 ? '+' : '−'}{Math.abs(Math.round(best.score))}</strong><span>ms edge</span></div>}
     </header>
     {apex && weapon.apex && <p className="apex-note">{weapon.apex.description}{weapon.apex.blocks.length ? <> Blocks the <b>{weapon.apex.blocks.map(slotName).map(name => name.toLowerCase()).join(', ')}</b> slot{weapon.apex.blocks.length > 1 ? 's' : ''}.</> : ' Blocks no slots.'}</p>}
+    {best && result?.stability && <StabilityNote stability={result.stability}/>}
     {!result && <div className="class-empty"><i className="spinner"/>Finding the best build</div>}
     {result && !result.available && <div className="class-empty locked">
       <Icon name="lock" size={22}/><p>{result.reason}</p>
@@ -161,6 +164,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
           const image = attachmentImage(id);
           const locked = settings.locked.includes(id);
           const value = contributions.get(id) ?? 0;
+          const hold = holds.get(id);
           return <li key={id} className={locked ? 'is-locked' : ''}>
             <span className="att-icon">{image ? <img src={image} alt="" loading="lazy"/> : <Icon name="grid" size={18}/>}</span>
             <div className="att-main">
@@ -171,6 +175,7 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
             <div className="att-side">
               <span className="att-value" title="What removing this attachment would cost, in milliseconds of fight time">{value >= 0 ? '+' : '−'}{Math.abs(Math.round(value))} ms</span>
               <span className="att-level">{entry.level ? `Lv ${entry.level}` : 'Lv ?'}</span>
+              {hold !== undefined && <span className={`att-hold ${hold >= .75 ? 'core' : hold < .4 ? 'flex' : ''}`} title={`Used by ${Math.round(hold * 100)}% of the winning builds when your settings are nudged`}>{hold >= .75 ? 'Core' : hold < .4 ? 'Flex' : 'Likely'} {Math.round(hold * 100)}%</span>}
               <span className="att-actions">
                 <button className={`icon-btn ${locked ? 'on' : ''}`} onClick={() => toggle('locked', id)} aria-pressed={locked} aria-label={`${locked ? 'Unlock' : 'Lock'} ${info.name}`} title={locked ? 'Locked in every build' : 'Lock into every build'}><Icon name="lock" size={14}/></button>
                 <button className="icon-btn" onClick={() => toggle('excluded', id)} aria-label={`Exclude ${info.name}`} title="Never use this attachment"><Icon name="ban" size={14}/></button>
@@ -198,6 +203,16 @@ function ClassCard({ index, title, weapon, result, settings, change, toggle, onS
       <p className="evaluated">{result!.evaluated.toLocaleString()} legal builds checked</p>
     </>}
   </article>;
+}
+
+function StabilityNote({ stability }: { stability: Stability }) {
+  const near = stability.nearBest;
+  const tone = near >= .7 ? 'solid' : near >= .4 ? 'mixed' : 'shaky';
+  const label = tone === 'solid' ? 'Solid pick' : tone === 'mixed' ? 'Depends on the details' : 'Close call';
+  return <div className={`stability ${tone}`} title={`Your priorities were nudged up to ${STABILITY.weightSpread}x either way and your fight distance up to ${STABILITY.distanceSpread * 100}%, ${stability.samples} times.`}>
+    <p><strong>{label}.</strong> Within {TIE_MS} ms of the best build in {Math.round(near * 100)}% of nearby settings.</p>
+    {stability.contenders.length > 0 && <p className="contenders">Often wins instead: {stability.contenders.slice(0, 3).map(item => `${data.attachments[item.id].name} (${Math.round(item.share * 100)}%)`).join(', ')}.</p>}
+  </div>;
 }
 
 function CompareTable({ weapon, result, settings }: { weapon: WeaponData; result: OptimizeResult; settings: Settings }) {

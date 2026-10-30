@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import raw from '../src/data/game.json' with { type: 'json' };
-import { ATTACHMENT_LIMIT, PRESETS, applyMods, optimize, optimizeClass, ttkAt } from '../src/engine/index.ts';
+import { ATTACHMENT_LIMIT, PRESETS, STABILITY, TIE_MS, applyMods, metrics, missedShotMs, optimize, optimizeClass, score, ttkAt, weightsFor } from '../src/engine/index.ts';
 import { metricIds } from '../src/types.ts';
-import type { GameData, PresetId, Settings, Weights } from '../src/types.ts';
+import type { BuildResult, GameData, PresetId, Settings, Weights } from '../src/types.ts';
 
 const data = raw as unknown as GameData;
 const weapon = (id: string) => data.weapons.find(item => item.id === id)!;
@@ -106,4 +106,37 @@ test('the search is deterministic and does not change its inputs', () => {
   const a = optimize(data, s), b = optimize(data, s);
   assert.deepEqual(a.standard.best!.attachments, b.standard.best!.attachments);
   assert.equal(JSON.stringify(s), before);
+});
+
+test('stability is deterministic, bounded and describes the best build', () => {
+  const a = optimize(data, settings('vel-46')).standard, b = optimize(data, settings('vel-46')).standard;
+  assert.deepEqual(a.stability, b.stability);
+  const s = a.stability!;
+  assert.equal(s.samples, STABILITY.samples);
+  for (const value of [s.nearBest, s.wins, ...s.parts.map(p => p.share), ...s.contenders.map(p => p.share)]) assert.ok(value >= 0 && value <= 1);
+  assert.ok(s.nearBest >= s.wins, 'an exact win is always within the tie margin');
+  assert.deepEqual(s.parts.map(p => p.id), a.best!.attachments);
+  for (const item of s.contenders) assert.ok(!a.best!.attachments.includes(item.id) && item.share >= .25);
+});
+
+test('rescoring the top builds matches a full search under nudged settings', () => {
+  let seed = 11;
+  const random = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  let agree = 0, total = 0;
+  for (const [id, preset, apex] of [['vel-46', 'allround', false], ['kastov-762', 'long', false], ['iso-nightshade', 'close', true]] as const) {
+    const base = settings(id, { preset, distanceM: PRESETS[preset].distanceM });
+    const pool: BuildResult[] = [];
+    optimizeClass(data, weapon(id), base, apex, { collect: pool });
+    for (let i = 0; i < 8; i++) {
+      const emphasis = Object.fromEntries(metricIds.map(m => [m, Math.exp((random() * 2 - 1) * Math.log(STABILITY.weightSpread))])) as Weights;
+      const nudged = { ...base, emphasis, distanceM: Math.max(2, Math.round(base.distanceM * (1 + (random() * 2 - 1) * STABILITY.distanceSpread))) };
+      const truth = optimizeClass(data, weapon(id), nudged, apex, { keep: 1 }).best!;
+      const weights = weightsFor(nudged), shot = missedShotMs(weapon(id));
+      const fromPool = Math.max(...pool.map(build => score(metrics(weapon(id), build.stats, nudged.distanceM).values, weights, shot)));
+      assert.ok(truth.score - fromPool < TIE_MS, `${id}: pool missed the winner by ${truth.score - fromPool} ms`);
+      if (Math.abs(truth.score - fromPool) < 1e-9) agree++;
+      total++;
+    }
+  }
+  assert.ok(agree / total >= .9, `pool found the exact winner in ${agree}/${total}`);
 });

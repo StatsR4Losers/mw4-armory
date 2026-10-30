@@ -41,7 +41,7 @@ export function GuideView() {
 
     <section className="guide-section">
       <h2>Two classes per gun</h2>
-      <p>Every gun's Apex attachment unlocks at max weapon level and sits in a sixth slot. Many block a normal slot, so the best Apex build is often a different build, not the same one plus the Apex. The VEL 46 Snap blocks the stock, the Kastov ARC blocks the barrel, and the Han X20 Skybreaker blocks the optic, stock and barrel. That is why the Build tab shows both classes side by side.</p>
+      <p>Every gun's Apex attachment unlocks at max weapon level and sits in a sixth slot. Many block a normal slot, so the best Apex build is often a different build, not the same one plus the Apex. The VEL 46 Snap blocks the stock, the Kastov ARC blocks the barrel, and the Han X20 Skybreaker blocks the optic, stock and barrel. That is why the Build tab has an Apex switch, and why its compare picker can put the best build with and without the Apex next to each other.</p>
       <p>Game8 says the VEL 46 Snap's Quick Draw needs the Overkill perk. CODMunity's stat changes for it apply either way.</p>
     </section>
 

@@ -169,7 +169,8 @@ export default function App() {
       <span className="data-stamp">Stats {data.statsUpdated.slice(5).replace('-', '/')} · unlocks {data.checkedAt.slice(5).replace('-', '/')}</span>
     </header>
     <main className="main">
-      {view === 'build' && <BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/>}
+      {/* The Build screen stays mounted so its before/after history survives a trip to another tab. */}
+      <div hidden={view !== 'build'}><BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/></div>
       {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
       {view === 'guide' && <GuideView/>}
       {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(normalize(item.settings)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}

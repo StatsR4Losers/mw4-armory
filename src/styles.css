@@ -239,14 +239,16 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 20px; marg
 .site-list { display: grid; gap: 8px; margin-top: 12px; }
 .site-card { display: grid; gap: 10px; align-content: start; padding: 14px; border-radius: 12px; background: var(--panel-2); border: 1px solid var(--line); }
 .site-card.active { border-color: var(--accent); }
-.site-card header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.site-card header strong { font-size: 15px; }
+.site-card header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 8px; }
+.site-name { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.site-name strong { font-size: 15px; }
+.site-side { display: flex; align-items: center; gap: 4px; }
 .source-tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; background: var(--panel-3); }
 .source-tag.codmunity { background: rgba(97, 175, 255, .14); color: #92c7ff; }
 .source-tag.game8 { background: rgba(255, 140, 90, .14); color: #ffae8a; }
 .source-tag.wzstats { background: rgba(160, 120, 255, .14); color: #c5afff; }
 .apex-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 6px; background: var(--apex-soft); color: var(--apex); }
-.site-score { margin-left: auto; font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--good); font-variant-numeric: tabular-nums; }
+.site-score { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--good); font-variant-numeric: tabular-nums; }
 .site-score.bad { color: var(--bad); }
 .site-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .site-list .site-parts { display: flex; flex-wrap: wrap; gap: 6px; }

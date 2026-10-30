@@ -79,11 +79,15 @@ export function SitePicks({ weapon, result, activeKey, onCompare, onCopy }: { we
   const versusText = (meta: ScoredMeta) => { const value = versus(meta); if (value === null) return ''; return Math.abs(value) < .5 ? 'ties the optimizer' : value > 0 ? `${Math.round(value)} ms ahead of the optimizer` : `${Math.round(-value)} ms behind the optimizer`; };
   const card = ({ meta, key }: typeof metas[number], top: boolean) => <article key={key} className={`site-card ${top ? 'top' : ''} ${activeKey === key ? 'active' : ''}`}>
     <header>
-      <span className={`source-tag ${meta.source.toLowerCase()}`}>{meta.source}</span>
-      <strong>{meta.label}</strong>
-      {meta.apex && <span className="apex-tag"><Icon name="bolt" size={11}/>Apex</span>}
-      <span className={`site-score ${meta.build && Math.round(meta.build.score) < 0 ? 'bad' : ''}`}>{meta.build ? signedMs(meta.build.score) : 'n/a'}</span>
-      <a href={meta.url} target="_blank" rel="noreferrer" className="source-link" aria-label={`Open on ${meta.source}`}><Icon name="external" size={13}/></a>
+      <div className="site-name">
+        <span className={`source-tag ${meta.source.toLowerCase()}`}>{meta.source}</span>
+        <strong>{meta.label}</strong>
+        {meta.apex && <span className="apex-tag"><Icon name="bolt" size={11}/>Apex</span>}
+      </div>
+      <div className="site-side">
+        <span className={`site-score ${meta.build && Math.round(meta.build.score) < 0 ? 'bad' : ''}`}>{meta.build ? signedMs(meta.build.score) : 'n/a'}</span>
+        <a href={meta.url} target="_blank" rel="noreferrer" className="source-link" aria-label={`Open on ${meta.source}`}><Icon name="external" size={13}/></a>
+      </div>
     </header>
     <ul className="site-parts">
       {sortSlots(meta.attachments).map(id => { const image = attachmentImage(id); return <li key={id} title={slotName(data.attachments[id].slot)}>{image ? <img src={image} alt=""/> : <Icon name="grid" size={12}/>}{data.attachments[id].name}</li>; })}

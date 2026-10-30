@@ -1,57 +1,125 @@
 # MW4 Armory
 
-A class optimizer for Modern Warfare 4 (2026) multiplayer. Pick a gun, a playstyle and your weapon level. It finds the best build without the Apex attachment and the best build with it, from community-measured attachment stats, then fills in perks, equipment and killstreaks.
+A class optimizer for Call of Duty: Modern Warfare 4 (2026) multiplayer. Pick a gun, a playstyle and your weapon level, and it checks every legal attachment combination against community-measured stats to find the build that wins fights fastest. It also shows what CODMunity, Game8 and WZStats run on the same gun, with their import codes, scored with the same math.
 
-The Build screen shows one build at a time, with switches for the Apex attachment and an optic. Every build is shown against a baseline you pick: by default the build you had before your last change, or the stock gun, the other Apex choice, any site's build, or a saved class. Changed parts and stats get an arrow; unchanged ones do not.
+![The Build screen: the VEL 46 with its stats and the optimizer's pick for Long lanes](docs/screenshots/build.png)
 
-"What the sites say" shows each of CODMunity's, Game8's and WZStats' top build for the gun, with import codes, scored with the same math, and every other site build on request. The Compare tab puts up to three builds side by side with every part editable and a baseline you choose.
+It is a fan project. It is not affiliated with Activision or Infinity Ward, and none of the numbers come from them.
 
-## Run locally
+## What it does
 
-Use Node 26 or newer.
+### Finds the best build, and shows what changed
 
-- `npm install`
-- `npm run dev` starts the site at http://127.0.0.1:5173
-- `npm test` runs the engine and data checks
-- `npm run build` typechecks and writes the static site to `dist/`
-- `npm run data` rebuilds `src/data/game.json` from the snapshots in `research/raw/`
-- `npm run fetch` downloads fresh snapshots, rebuilds the data, prints what changed and runs the tests
+Every build is scored in milliseconds of fight time saved against the stock gun. Switch the Apex attachment or an optic on or off right on the build. A "Compared with" picker sets the baseline: by default the build you had before your last change, or the stock gun, the other Apex choice, any site's build, or one of your saved classes. Parts and stats that changed get an arrow. Parts that stayed get none.
 
-## How it works
+![Before and after: switching from Rush to Long lanes swaps five parts on the VEL 46](docs/screenshots/diff.png)
 
-The engine in `src/engine/index.ts` checks every legal combination of up to five attachments, one per slot, leaving out the slots an Apex blocks. Before searching, it drops any attachment that is worse in every scored stat than another one in the same slot. A test compares the result against a full brute-force search.
+Each part shows its main stat changes, its unlock level, how many milliseconds removing it would cost, and whether it is a core or flex pick. Lock a part to keep it in every build, or exclude it to never see it again.
 
-Attachment changes multiply, the way CODMunity combines them. A build is scored in milliseconds of fight time saved against the stock gun:
+### Shows what the sites say
 
-- ADS time, sprint-to-fire and average time to kill count in real milliseconds. Time to kill is averaged over fights from half to one and a half times the typical distance, with damage range attachments stretching every damage band.
-- Recoil counts as a share of one missed shot. On the All-around preset, 1% less recoil saves 3% of a shot interval, so 1.9 ms on the VEL 46 and 3 ms on the Kastov 762. Recoil above stock is penalized faster than it grows.
-- Movement, flinch, hip fire, magazine, reload and velocity count as percents with small weights. Idle aim sway counts for almost nothing.
+Each site's own top build for the gun sits right under the optimizer's pick, with its import code to copy into Gunsmith and how far it lands from the optimizer. Press Compare to load it as the baseline above. 228 site builds across 28 guns are included, 128 with a code.
 
-The four presets in `PRESETS` set those weights.
+![What the sites say: CODMunity, Game8 and WZStats top builds for the VEL 46](docs/screenshots/sites.png)
 
-Perks, equipment and killstreaks come from `src/engine/gear.ts`. Each item scores on how often Game8 and WZStats pick it for this gun (45%), for its weapon class (25%), the two perk tier lists (15%, perks only) and a short playstyle rule with a stated reason (15%). Overkill is never picked automatically, since the site does not choose a second primary. Killstreaks are three picks at or under the kills-per-life band, valued by streak style, because no site ranks them yet. Hardline lowers each cost by one. Any slot can be locked.
+### Fills in perks, equipment and killstreaks
 
-Each class also gets a stability check. The engine keeps the top 1,000 builds and rescores them 200 times, each time scaling every weight by up to 1.6x either way and moving the fight distance by up to 30%. It reports how often the best build stays within 5 ms of that setting's winner, how often each of its parts appears in the winners, and which other parts win often. A test checks that rescoring the pool finds the same winner as a full search under nudged settings. Shotguns, marksman rifles, snipers and pistols only get handling and recoil scoring, because the data has no pellet spread or one-shot range.
+Each slot is picked from what Game8 runs on that gun, what Game8 and WZStats run across its weapon class, two published perk tier lists, and a short playstyle rule. Every pick lists its reasons, and any slot can be swapped. Killstreaks use the launch kill costs and follow your kills per life and streak style.
+
+![Perks, equipment and killstreaks with the reasons for each pick](docs/screenshots/perks.png)
+
+### Compares builds side by side
+
+The Compare tab holds up to three builds from any gun. Change any part and every number updates. Pick which column is the baseline, and the others show their differences from it.
+
+![The Compare tab: Game8's VEL 46 build as the baseline against the optimizer's](docs/screenshots/compare.png)
+
+### Explains leveling, prestige and the camo grind
+
+A guide covers which stats decide fights, Classic against Regular prestige, when to prestige a gun relative to its camos, and which modes are best for XP. Anything not from Activision is marked.
+
+<p>
+  <img src="docs/screenshots/guide.png" alt="The leveling guide" width="64%"/>
+  <img src="docs/screenshots/phone.png" alt="The Build screen on a phone" width="30%"/>
+</p>
+
+It works on a phone, saves classes in the browser, and shares settings by link. There is no account and no server. Everything runs on your device.
+
+## How builds are scored
+
+The engine checks every combination of up to five attachments, one per slot, leaving out the slots an Apex blocks. Before searching, it drops any attachment that is worse in every scored stat than another one in the same slot, which cannot change the winner. A test checks the result against a full brute-force search.
+
+Attachment changes multiply, the way CODMunity combines them: a +18% range muzzle with a +28% range barrel gives 1.18 × 1.28 = +51%. The score is milliseconds of fight time saved against the stock gun:
+
+- **Time stats count in real milliseconds.** That covers ADS time, sprint-to-fire and average time to kill. Time to kill is averaged over fights from half to one and a half times your typical distance, with range attachments stretching every damage band.
+- **Recoil counts as a share of one missed shot.** On the All-around preset, 1% less recoil saves 3% of a shot interval: 1.9 ms on the VEL 46, 3 ms on the Kastov 762. Recoil above stock is penalized faster than it grows.
+- **The rest count as small percent weights.** That covers movement, flinch, hip fire, magazine, reload and velocity. Idle aim sway barely counts.
+
+Four playstyle presets set those weights, and twelve sliders adjust them. A stability line shows how often the pick stays within 5 ms of the best when your priorities and fight distance are nudged. It rescores the top 1,000 builds 200 times.
+
+Shotguns, marksman rifles, snipers and pistols are scored on handling and recoil only, because the data has no pellet spread or one-shot range.
 
 ## Data
 
-`scripts/build-data.ts` merges four inputs into `src/data/game.json`:
+| Data | Source | Read |
+| --- | --- | --- |
+| Base stats and each attachment's stat changes, 28 guns | [CODMunity](https://codmunity.gg/weapon-stats/mw4), via [COD Loadout](https://codloadout.gitlab.io/mw4/data-and-assumptions/) | Oct 28, 2026 |
+| Which attachments fit each gun, and their unlock levels | CODMunity weapon pages | Oct 30, 2026 |
+| Apex attachments and the slots they block | Activision's launch guide | Oct 19, 2026 |
+| Site builds, codes and gear picks | CODMunity, [Game8](https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/630961), [WZStats](https://wzstats.gg/) | Oct 30, 2026 |
+| Killstreak costs | Activision's launch post, via COD Loadout and LFCarry | Oct 19, 2026 |
+| Perk tier lists | [GameRant](https://gamerant.com/call-of-duty-modern-warfare-4-cod-mw4-best-perks-tier-list/), [games.gg](https://games.gg/call-of-duty-modern-warfare-4/guides/best-mw4-perks-tier-list/) | Oct 26 and 29, 2026 |
 
-- `research/raw/mw4-community-stats.json`: base stats and per-attachment multipliers for 28 guns, from CODMunity via COD Loadout, Oct 28.
-- `research/raw/codmunity-unlock-levels.json`: which attachments fit each gun and their unlock levels, read from each CODMunity weapon page on Oct 30. The MAR-9 page has no table.
-- `scripts/source/base-catalog.ts`: names, categories, Apex attachments and blocked slots from Activision's launch guide.
-- `scripts/source/stat-overrides.ts`: damage profiles and fire rates from CODMunity's MW4 records.
+The raw snapshots live in `research/raw/`, and `scripts/build-data.ts` merges them into `src/data/game.json`. Site part names are matched to this project's attachment IDs. Obvious typos match, and anything else is shown crossed out and left out of the score.
 
-Guide builds come from `research/raw/meta-codmunity.json`, `meta-game8.json` and `meta-wzstats.json`, read in a browser on Oct 30 because CODMunity and WZStats render their builds in the page. Part names are matched to this site's attachment IDs. A name within two edits of exactly one part of that gun, with the same numbers in it, counts as a typo and matches. Anything else stays visible as unmatched and is left out of the score. `npm run data -- --verbose` lists every near match and unmatched name. `npm run fetch` does not refresh guide builds.
+Known limits:
 
-## Refreshing after a patch
+- Nothing here was measured in a private match. Treat builds within about 5 ms of each other as a tie.
+- Time to kill assumes every bullet hits the chest of a 100-health target.
+- 9 of 28 Apex attachments have no published stat changes. Their builds only account for the slots they block.
+- No site ranks killstreaks yet, so streak picks follow values this project sets.
 
-`npm run fetch` pulls the two COD Loadout files, then reads the attachment table on each CODMunity weapon page, one page every 5 seconds, which takes about 3 minutes. Requests identify themselves as this tool. If a page fails after retries, that gun keeps its previous rows and the script lists it under `stale` in the snapshot. It then rebuilds the data, prints each gun whose parts, unlock levels, stat changes or Apex changed, and runs the tests. `npm run fetch -- --skip-levels` refreshes only the COD Loadout files.
+The in-app Data page lists every source and gap.
 
-New attachments need icons in `public/assets/attachments/`, named by attachment ID. Without one, the site shows a placeholder.
+## Run it locally
 
-Weapon renders and attachment icons in `public/assets/` come from COD Loadout. The artwork belongs to Activision. See `research/stats-sources.md` and `research/catalog-review.md` for the older source notes on the base catalog.
+Use Node 26 or newer.
 
-## Verification
+```bash
+npm install
+npm run dev
+```
 
-See `VERIFICATION.md`.
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Starts the site at http://127.0.0.1:5173 |
+| `npm test` | Runs 18 engine, data and gear checks |
+| `npm run build` | Typechecks and writes the static site to `dist/` |
+| `npm run data` | Rebuilds `src/data/game.json` from `research/raw/`. Add `-- --verbose` to list every near match and unmatched site part |
+| `npm run fetch` | Downloads fresh stat files and unlock tables, rebuilds the data, prints what changed per gun and runs the tests |
+
+`npm run fetch` reads one CODMunity page every 5 seconds, so it takes about 3 minutes. Its requests identify themselves as this tool. If a page fails, that gun keeps its previous data. `npm run fetch -- --skip-levels` refreshes only the stat files. Site builds were collected in a browser, so `fetch` does not refresh them.
+
+## Project layout
+
+```
+src/
+  engine/index.ts      build search, scoring, stability, scoring any given build
+  engine/gear.ts       perks, equipment and killstreak picks
+  views/               Build, Compare, Guide, Saved and Data screens
+  data/game.json       generated game data
+scripts/
+  build-data.ts        merges research/raw into src/data/game.json
+  fetch-sources.ts     refreshes the raw snapshots
+research/raw/          source snapshots, as read
+public/assets/         weapon renders and attachment icons
+tests/                 node:test checks
+```
+
+See `VERIFICATION.md` for what has and has not been checked.
+
+## Credits
+
+Stats come from [CODMunity](https://codmunity.gg/), through the data files [COD Loadout](https://codloadout.gitlab.io/) publishes. Site builds are from CODMunity, Game8 and WZStats. Weapon renders and attachment icons are from COD Loadout. The artwork belongs to Activision.
+
+Call of Duty and Modern Warfare are trademarks of Activision Publishing. This project is not endorsed by or affiliated with Activision, Infinity Ward or any of the sites above.

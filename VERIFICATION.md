@@ -25,14 +25,16 @@ Checked October 30, 2026, after the rebuild from the ChatGPT version.
 
 ## In the browser
 
-Checked in the dev server at 1440 px and 390 px wide:
+Checked in the dev server at 1440 px and 390 px wide after the Build screen redesign:
 
-- Switching guns with the picker, playstyle presets, the distance slider, fine-tune sliders and the optic switch all recompute both classes.
-- Excluding the XRK Tango 380 Barrel on the VEL 46 swapped in the VB-46 Series 11. Locking an attachment highlights it and keeps it in later builds. Clear all removes every pin.
-- At weapon level 59 the VEL 46 Snap card shows it unlocks at 60, and its button sets the level back to 60.
-- Saving both classes puts them on the Saved tab and in browser storage.
-- A share link for the Kastov 762 restored the gun, level, preset, distance, optic setting, emphasis and exclusion, and dropped an invalid attachment ID.
-- At 390 px there is no horizontal page scroll.
+- Switching from Rush to Long lanes on the VEL 46 set the baseline to "Previous build (Rush, 8 m)" and marked five changed slots with arrows. The unchanged Schlager Visiv-5 row had none. Stats that moved got arrows and the rest did not.
+- Turning the Apex switch on compared against the build with it off. Pressing Compare on Game8's top build loaded it as the baseline and marked the card as Comparing.
+- The baseline survives a trip to another tab and back.
+- Locking and excluding parts, the optic switch, weapon level gating and the Apex unlock button work as before.
+- Edit in Compare puts the baseline and the build in the Compare tab, and Make baseline swaps which column the others are measured against.
+- Saving a class puts it on the Saved tab with its perks and streaks. A share link restores the gun, level, preset, distance, switches, emphasis and exclusions.
+- At 390 px there is no horizontal page scroll, and changed parts stack as "Was X" above the new part.
+- The README screenshots were taken from this state with headless Chrome.
 
 ## Data refresh
 

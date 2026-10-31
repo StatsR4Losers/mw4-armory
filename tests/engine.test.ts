@@ -196,7 +196,7 @@ test('snipers keep their scope, hip-fire shotguns skip optics, and slug playstyl
     assert.ok(!optimize(data, settings(id, { preset: 'shotgun-hip' })).standard.best!.attachments.includes(slug));
     const early = optimize(data, settings(id, { preset: 'shotgun-slug', level: 5 })).standard;
     assert.equal(early.available, false);
-    assert.match(early.reason!, /unlocks at weapon level/);
+    assert.match(early.reason!, /is not unlocked yet. It unlocks at level 10 here/);
     assert.match(evaluateBuild(data, weapon(id), settings(id, { preset: 'shotgun-slug' }), [], false).issues.join(), /assumes slugs/);
   }
 });

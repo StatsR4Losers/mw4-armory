@@ -22,6 +22,12 @@ Snipers and bolt-action rifles get Quickscope and Hardscope. Shotguns get Hip fi
 
 Each part shows its main stat changes, its unlock level, how many milliseconds removing it would cost, and whether it is a core or flex pick. Lock a part to keep it in every build, or exclude it to never see it again.
 
+### Counts parts you unlocked on other guns
+
+MW4 unlocks each attachment once, for every gun that takes it, and the same part unlocks at a different level on each gun. The level slider remembers your level on each gun, and Your other guns takes the rest. A part counts if this gun or any other gun you entered has reached its level. Prestiged guns keep sharing what they unlocked before the reset.
+
+If the game disagrees, press Don't have it on a part and the build is redone without it. Under the build, a panel lists the parts the best build would add with everything unlocked, what each is worth, and the fewest levels to each one, on this gun or another.
+
 ### Shows what the sites say
 
 Each site's own top build for the gun sits right under the optimizer's pick, with its import code to copy into Gunsmith and how far it lands from the optimizer. Press Compare to load it as the baseline above. 228 site builds across 28 guns are included, 128 with a code.
@@ -77,6 +83,7 @@ Shotguns and the Hyeon Burst are scored on handling, recoil and fire rate only, 
 | --- | --- | --- |
 | Base stats and each attachment's stat changes, 28 guns | [CODMunity](https://codmunity.gg/weapon-stats/mw4), via [COD Loadout](https://codloadout.gitlab.io/mw4/data-and-assumptions/) | Oct 28, 2026 |
 | Which attachments fit each gun, and their unlock levels | CODMunity weapon pages | Oct 30, 2026 |
+| Shared attachment unlocks, Bonus Level Ups, what weapon prestige relocks | Activision's [create-a-class](https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class) and [progression](https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige) posts | Oct 30, 2026 |
 | Rechamber time, sway while rechambering, pre-fire delay, hitscan range | CODMunity weapon pages | Oct 30, 2026 |
 | Apex attachments and the slots they block | Activision's launch guide | Oct 19, 2026 |
 | Site builds, codes and gear picks | CODMunity, [Game8](https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/630961), [WZStats](https://wzstats.gg/) | Oct 30, 2026 |
@@ -90,6 +97,7 @@ Known limits:
 - Nothing here was measured in a private match. Treat builds within about 5 ms of each other as a tie.
 - Automatic time to kill assumes every bullet hits the chest of a 100-health target. The hit spreads and miss rates for one-shot guns are this project's assumptions.
 - 9 of 28 Apex attachments have no published stat changes. Their builds only account for the slots they block.
+- No source marks which parts are shared. A part counts as shared when two or more guns list it by the same name, except magazines and No Stock, whose generic names cover different calibers.
 - No site ranks killstreaks yet, so streak picks follow values this project sets.
 
 The in-app Data page lists every source and gap.
@@ -106,7 +114,7 @@ npm run dev
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Starts the site at http://127.0.0.1:5173 |
-| `npm test` | Runs 23 engine, data and gear checks |
+| `npm test` | Runs 31 engine, data, unlock and gear checks |
 | `npm run build` | Typechecks and writes the static site to `dist/` |
 | `npm run data` | Rebuilds `src/data/game.json` from `research/raw/` and rereads the site builds for intent, in about 45 seconds. Add `-- --verbose` to list every near match and unmatched site part |
 | `npm run fetch` | Downloads fresh stat files, unlock tables and rechamber and hitscan stats, rebuilds the data, prints what changed per gun and runs the tests |
@@ -120,6 +128,7 @@ src/
   engine/index.ts      build search, scoring, kill model, stability, scoring any given build
   engine/playstyles.ts playstyles and weights for each weapon class
   engine/consensus.ts  reads which playstyle the site builds fit
+  engine/unlocks.ts    shared attachment unlocks across guns, prestige and hand marks
   engine/gear.ts       perks, equipment and killstreak picks
   views/               Build, Compare, Guide, Saved and Data screens
   data/game.json       generated game data

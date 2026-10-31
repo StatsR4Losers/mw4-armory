@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { attachmentEntry, attachmentImage, categories, data, shortCategory, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
-import { ATTACHMENT_LIMIT, METRICS, ROLES, STABILITY, TIE_MS, apexState, evaluateBuild, fullModel, playstyleById, shotInterval, playstyleFor, playstylesFor, roleOf, slugAmmo, weightsFor } from '../engine';
+import { ATTACHMENT_LIMIT, METRICS, ROLES, STABILITY, TIE_MS, apexState, evaluateBuild, fullModel, markKey, playstyleById, shotInterval, playstyleFor, playstylesFor, roleOf, slugAmmo, weightsFor } from '../engine';
 import type { Playstyle } from '../engine';
 import { effects } from '../effects';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
-import type { BuildResult, ClassResult, MetricId, OptimizeResult, Settings, Stability, StreakStyle, WeaponData } from '../types';
+import type { Armory, BuildResult, ClassResult, MetricId, OptimizeResult, Settings, Stability, StreakStyle, WeaponData } from '../types';
 import type { CompareItem } from './CompareView';
 import type { SavedClass } from './SavedView';
 import { ClassSetup, SitePicks } from './BuildExtras';
+import { OtherGuns, UnlockGap, unlockTag } from './Unlocks';
 
 type Props = {
   settings: Settings; change: (patch: Partial<Settings>) => void; selectWeapon: (id: string) => void;
+  armory: Armory; setArmory: (update: (current: Armory) => Armory) => void;
   result: OptimizeResult | null; busy: boolean; error: string; saved: SavedClass[];
   onSave: (variant: 'standard' | 'apex', build: BuildResult) => void; onShare: () => void; onCopy: (text: string, message?: string) => void; onReset: () => void;
   onCompare: (item: Omit<CompareItem, 'id'>) => void;
@@ -35,6 +37,7 @@ function describe(before: Settings, now: Settings) {
   if (before.level !== now.level) parts.push(`level ${before.level}`);
   if (JSON.stringify(before.emphasis) !== JSON.stringify(now.emphasis)) parts.push('earlier fine-tune');
   if (before.locked.join() !== now.locked.join() || before.excluded.join() !== now.excluded.join()) parts.push('earlier locks');
+  if (JSON.stringify(before.armory) !== JSON.stringify(now.armory) && before.level === now.level) parts.push('earlier unlocks');
   return parts.length ? parts.join(', ') : 'earlier settings';
 }
 
@@ -54,7 +57,7 @@ function usePreviousBuild(weapon: WeaponData, settings: Settings, best: BuildRes
   return previous;
 }
 
-export function BuildView({ settings, change, selectWeapon, result, busy, error, saved, onSave, onShare, onCopy, onReset, onCompare }: Props) {
+export function BuildView({ settings, change, armory, setArmory, selectWeapon, result, busy, error, saved, onSave, onShare, onCopy, onReset, onCompare }: Props) {
   const weapon = weaponById(settings.weaponId)!;
   const style = playstyleFor(weapon, settings.preset);
   const [minDistance, maxDistance] = ROLES[roleOf(weapon)].distance;
@@ -91,7 +94,16 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
   const copyBuild = (build: BuildResult) => onCopy([`${weapon.name} · ${variantName}`, ...sortSlots(build.attachments).map(id => `${slotName(data.attachments[id].slot)}: ${data.attachments[id].name}`)].join('\n'));
   const compareWith = (key: string) => { setCompareKey(key); panel.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   const apexNeeded = weapon.apex?.level ?? weapon.maxLevel ?? 0;
-  const apexLocked = !!weapon.apex && settings.level < apexNeeded;
+  const apexLocked = !!weapon.apex && !apexState(weapon, settings).available;
+  const prestiged = armory.prestiged.includes(weapon.id);
+  // A mark on a shared part applies to every gun that takes it. A part marked missing also drops out of the locks.
+  const mark = (id: string, state: 'have' | 'missing' | null) => {
+    const key = markKey(data, weapon.id, id);
+    setArmory(current => ({ ...current, have: [...current.have.filter(item => item !== key), ...(state === 'have' ? [key] : [])], missing: [...current.missing.filter(item => item !== key), ...(state === 'missing' ? [key] : [])] }));
+    if (state === 'missing' && settings.locked.includes(id)) change({ locked: settings.locked.filter(item => item !== id) });
+  };
+  const marked = (list: string[]) => (data.loadouts[weapon.id] ?? []).map(entry => entry[0]).filter(id => list.includes(markKey(data, weapon.id, id)));
+  const markedMissing = marked(armory.missing), markedHave = marked(armory.have);
 
   return <div className="build-layout">
     <aside className="controls" aria-label="Build settings">
@@ -99,7 +111,11 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
       <section className="control">
         <div className="control-head"><label htmlFor="level">Weapon level</label><output>{settings.level}<small> / {weapon.maxLevel}</small></output></div>
         <input id="level" type="range" min={1} max={weapon.maxLevel ?? 1} value={settings.level} onChange={event => change({ level: Number(event.target.value) })}/>
-        <p className="hint">Only attachments unlocked by this level are used.</p>
+        <label className="check-row"><input type="checkbox" checked={prestiged} onChange={() => setArmory(current => ({ ...current, prestiged: prestiged ? current.prestiged.filter(id => id !== weapon.id) : [...current.prestiged, weapon.id] }))}/>In Weapon Prestige</label>
+        <p className="hint">{prestiged
+          ? `Prestige relocked this gun's parts, so only its own unlocks up to level ${settings.level} count. Its Apex stays.`
+          : 'Parts unlocked by this level count, plus shared parts you unlocked on your other guns.'}</p>
+        <OtherGuns weapon={weapon} armory={armory} setArmory={setArmory}/>
       </section>
       <section className="control">
         <div className="control-head"><span>{ROLES[style.role].name} playstyle</span></div>
@@ -167,18 +183,21 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         </div>
 
         {result?.warnings.map(text => <p className="note" key={text}><Icon name="info" size={14}/>{text}</p>)}
-        {settings.apex && apexLocked && <div className="locked-note"><Icon name="lock" size={16}/><p>{apexState(weapon, settings.level).reason}</p><button className="button ghost small" onClick={() => change({ level: apexNeeded })}>Set level to {apexNeeded}</button></div>}
+        {settings.apex && apexLocked && <div className="locked-note"><Icon name="lock" size={16}/><p>{apexState(weapon, settings).reason}</p><button className="button ghost small" onClick={() => change({ level: apexNeeded })}>Set level to {apexNeeded}</button></div>}
         {shown && !shown.available && !(settings.apex && apexLocked) && <div className="locked-note"><Icon name="lock" size={16}/><p>{shown.reason}</p></div>}
         {!result && <div className="loading"><i className="spinner"/>Finding the best build</div>}
 
         {best && shown && <>
           {shown.stability && <StabilityLine stability={shown.stability}/>}
-          <PartsDiff weapon={weapon} after={best} before={chosen.baseline} beforeLabel={chosen.baseline.label} result={shown} settings={settings} toggle={toggle}/>
+          <PartsDiff weapon={weapon} after={best} before={chosen.baseline} beforeLabel={chosen.baseline.label} result={shown} settings={settings} toggle={toggle} onMissing={id => mark(id, 'missing')}/>
           {baselineBuild && <StatsDiff weapon={weapon} after={best} before={baselineBuild} settings={settings}/>}
-          {(settings.locked.length > 0 || settings.excluded.length > 0) && <div className="pins">
+          <UnlockGap weapon={weapon} best={best} ceiling={shown.ceiling} settings={settings} onMark={mark}/>
+          {(settings.locked.length > 0 || settings.excluded.length > 0 || markedMissing.length > 0 || markedHave.length > 0) && <div className="pins">
             {settings.locked.map(id => <button key={id} className="pin locked" onClick={() => toggle('locked', id)}><Icon name="lock" size={12}/>{data.attachments[id]?.name}<Icon name="close" size={12}/></button>)}
             {settings.excluded.map(id => <button key={id} className="pin excluded" onClick={() => toggle('excluded', id)}><Icon name="ban" size={12}/>{data.attachments[id]?.name}<Icon name="close" size={12}/></button>)}
-            <button className="link" onClick={() => change({ locked: [], excluded: [] })}>Clear</button>
+            {markedMissing.map(id => <button key={id} className="pin missing" onClick={() => mark(id, null)} title="Marked as not unlocked. Press to undo."><Icon name="lock" size={12}/>{data.attachments[id]?.name}: not unlocked<Icon name="close" size={12}/></button>)}
+            {markedHave.map(id => <button key={id} className="pin have" onClick={() => mark(id, null)} title="Marked as unlocked. Press to undo."><Icon name="unlock" size={12}/>{data.attachments[id]?.name}: unlocked<Icon name="close" size={12}/></button>)}
+            {(settings.locked.length > 0 || settings.excluded.length > 0) && <button className="link" onClick={() => change({ locked: [], excluded: [] })}>Clear locks</button>}
           </div>}
           <footer className="build-actions">
             <button className="button" onClick={() => onSave(settings.apex ? 'apex' : 'standard', best)}><Icon name="save" size={15}/>Save class</button>
@@ -198,7 +217,7 @@ export function BuildView({ settings, change, selectWeapon, result, busy, error,
         </>}
       </section>
 
-      {result && <SitePicks weapon={weapon} result={result} activeKey={chosen.key} style={style} onStyle={id => change({ preset: id, distanceM: playstyleById(id)!.distanceM })} onCompare={compareWith} onCopy={onCopy}/>}
+      {result && <SitePicks weapon={weapon} result={result} settings={settings} activeKey={chosen.key} style={style} onStyle={id => change({ preset: id, distanceM: playstyleById(id)!.distanceM })} onCompare={compareWith} onCopy={onCopy}/>}
       {result?.gear && <ClassSetup gear={result.gear} settings={settings} change={change} weapon={weapon}/>}
 
       <details className="method">
@@ -289,8 +308,8 @@ function StabilityLine({ stability }: { stability: Stability }) {
   </p>;
 }
 
-function PartsDiff({ weapon, after, before, beforeLabel, result, settings, toggle }: {
-  weapon: WeaponData; after: BuildResult; before: Baseline; beforeLabel: string; result: ClassResult; settings: Settings; toggle: (key: 'locked' | 'excluded', id: string) => void;
+function PartsDiff({ weapon, after, before, beforeLabel, result, settings, toggle, onMissing }: {
+  weapon: WeaponData; after: BuildResult; before: Baseline; beforeLabel: string; result: ClassResult; settings: Settings; toggle: (key: 'locked' | 'excluded', id: string) => void; onMissing: (id: string) => void;
 }) {
   const contributions = new Map(after.contributions.map(item => [item.id, item.score]));
   const holds = new Map(result.stability?.parts.map(item => [item.id, item.share]) ?? []);
@@ -311,6 +330,7 @@ function PartsDiff({ weapon, after, before, beforeLabel, result, settings, toggl
       const now = inSlot(after.attachments, slot), was = inSlot(before.attachments, slot);
       const same = now === was;
       const entry = now ? attachmentEntry(weapon.id, now) : null;
+      const tag = now ? unlockTag(weapon, now, settings) : null;
       const image = now ? attachmentImage(now) : null;
       const locked = !!now && settings.locked.includes(now);
       const hold = now ? holds.get(now) : undefined;
@@ -320,13 +340,14 @@ function PartsDiff({ weapon, after, before, beforeLabel, result, settings, toggl
         <span className="diff-arrow">{!same && <Icon name="arrow" size={14}/>}</span>
         <span className="diff-after">
           {now ? <>
-            <span className="part-name">{image ? <img src={image} alt=""/> : <Icon name="grid" size={14}/>}<b>{name(now)}</b>{entry?.level ? <small>Lv {entry.level}</small> : null}</span>
+            <span className="part-name">{image ? <img src={image} alt=""/> : <Icon name="grid" size={14}/>}<b>{name(now)}</b>{tag && <small className={tag.shared ? 'shared' : ''} title={tag.title}>{tag.text}</small>}</span>
             <span className="part-meta">
               {effects(entry?.mods ?? {}, 2).map(effect => <em key={effect.label} className={effect.good ? 'good' : 'bad'}>{effect.label} {effect.text}</em>)}
               {hold !== undefined && <em className={`hold ${hold >= .75 ? 'core' : hold < .4 ? 'flex' : ''}`} title={`In ${Math.round(hold * 100)}% of the winning builds when settings are nudged`}>{hold >= .75 ? 'Core' : hold < .4 ? 'Flex' : 'Likely'}</em>}
               <span className="part-value" title="What removing this part would cost">{signedMs(contributions.get(now) ?? 0)}</span>
               <button className={`icon-btn ${locked ? 'on' : ''}`} onClick={() => toggle('locked', now)} aria-pressed={locked} aria-label={`${locked ? 'Unlock' : 'Lock'} ${name(now)}`} title={locked ? 'Locked' : 'Lock into every build'}><Icon name="lock" size={12}/></button>
-              <button className="icon-btn" onClick={() => toggle('excluded', now)} aria-label={`Exclude ${name(now)}`} title="Never use this part"><Icon name="ban" size={12}/></button>
+              <button className="icon-btn" onClick={() => toggle('excluded', now)} aria-label={`Exclude ${name(now)}`} title="Never use this part on this gun"><Icon name="ban" size={12}/></button>
+              <button className="own-btn" onClick={() => onMissing(now)} title="Mark as not unlocked. The build is redone without it, on every gun that takes it.">Don't have it</button>
             </span>
           </> : <i>None</i>}
         </span>

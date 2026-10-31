@@ -3,9 +3,12 @@ import type { BuildResult, ClassResult, GameData, MetaBuild, MetricId, Mods, Opt
 import { recommendGear } from './gear.ts';
 import { playstyleFor } from './playstyles.ts';
 import type { Aim, Playstyle } from './playstyles.ts';
+import { unlockHint, unlockState } from './unlocks.ts';
 
 export { AIMS, PLAYSTYLES, ROLES, playstyleById, playstyleFor, playstylesFor, roleOf } from './playstyles.ts';
 export type { Aim, Playstyle, Role } from './playstyles.ts';
+export { markKey, reachedLevel, sharedPart, unlockHint, unlockRoutes, unlockSites, unlockState } from './unlocks.ts';
+export type { Route, Unlock } from './unlocks.ts';
 
 // Scores are in milliseconds of fight time, or a millisecond equivalent for stats without a time unit.
 // ADS, sprint-to-fire, weapon swap, bullet travel and time to kill count in real milliseconds saved. Recoil counts
@@ -272,14 +275,15 @@ export function opticOn(settings: Pick<Settings, 'optic'>, style: Playstyle) { r
 
 export function availableOptions(data: GameData, weapon: WeaponData, settings: Settings): Option[] {
   return (data.loadouts[weapon.id] ?? [])
-    .filter(([id, level]) => level <= settings.level && !settings.excluded.includes(id))
+    .filter(([id]) => !settings.excluded.includes(id) && unlockState(data, weapon.id, id, settings).unlocked)
     .map(([id, level, mods]) => ({ id, slot: data.attachments[id].slot, level, mods }));
 }
 
-export function apexState(weapon: WeaponData, level: number): { available: boolean; reason: string | null } {
+export function apexState(weapon: WeaponData, settings: Pick<Settings, 'level' | 'armory'>): { available: boolean; reason: string | null } {
   if (!weapon.apex) return { available: false, reason: `${weapon.name} has no Apex attachment.` };
   const needed = weapon.apex.level ?? weapon.maxLevel;
-  if (needed && level < needed) return { available: false, reason: `${weapon.apex.name} unlocks at weapon level ${needed}.` };
+  // Apex attachments are not shared, and Weapon Prestige keeps them.
+  if (needed && settings.level < needed && !settings.armory?.prestiged.includes(weapon.id)) return { available: false, reason: `${weapon.apex.name} unlocks at weapon level ${needed}.` };
   return { available: true, reason: null };
 }
 
@@ -341,25 +345,26 @@ export function stability(weapon: WeaponData, pool: BuildResult[], settings: Set
 
 export function optimizeClass(data: GameData, weapon: WeaponData, settings: Settings, useApex: boolean, options: SearchOptions = {}): ClassResult {
   const variant = useApex ? 'apex' : 'standard';
-  const empty = (reason: string): ClassResult => ({ variant, available: false, reason, best: null, alternatives: [], evaluated: 0, stability: null });
+  const empty = (reason: string): ClassResult => ({ variant, available: false, reason, best: null, alternatives: [], evaluated: 0, stability: null, ceiling: null });
   if (!weapon.base) return empty(`No attachment stat data is published for ${weapon.name}.`);
   if (useApex) {
-    const state = apexState(weapon, settings.level);
+    const state = apexState(weapon, settings);
     if (!state.available) return empty(state.reason!);
   }
   const blocked = new Set(useApex ? weapon.apex!.blocks : []);
   const style = playstyleFor(weapon, settings.preset);
   const slug = slugAmmo(data, weapon);
-  const pool = availableOptions(data, weapon, settings).filter(option => style.ammo !== 'pellets' || option.id !== slug?.[0]);
+  const open = availableOptions(data, weapon, settings);
+  const pool = open.filter(option => style.ammo !== 'pellets' || option.id !== slug?.[0]);
   const locked = settings.locked.filter(id => (data.loadouts[weapon.id] ?? []).some(entry => entry[0] === id));
   if (style.ammo === 'slug') {
     if (!slug) return empty(`${weapon.name} has no slug ammunition.`);
-    if (slug[1] > settings.level) return empty(`${data.attachments[slug[0]].name} unlocks at weapon level ${slug[1]}.`);
+    if (!open.some(option => option.id === slug[0])) return empty(`${data.attachments[slug[0]].name} is not unlocked yet. It unlocks at ${unlockHint(data, weapon.id, slug[0], settings) || `weapon level ${slug[1]}`}.`);
     if (!locked.includes(slug[0])) locked.push(slug[0]);
   }
   for (const id of locked) {
     const option = pool.find(item => item.id === id);
-    if (!option) return empty(`${data.attachments[id]?.name ?? id} is locked but not unlocked at weapon level ${settings.level}.`);
+    if (!option) return empty(`${data.attachments[id]?.name ?? id} is locked in, but you have not unlocked it yet.`);
     if (blocked.has(option.slot)) return empty(`${data.attachments[id].name} is locked, but ${weapon.apex!.name} blocks the ${option.slot.replace('-', ' ')} slot.`);
   }
   const lockedSlots = new Map<string, Option>();
@@ -450,7 +455,12 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
       .sort((a, b) => b.score - a.score);
   }
   const alternatives = top.slice(1).filter((build, index, list) => list.findIndex(other => other.attachments.join() === build.attachments.join()) === index).slice(0, 3);
-  return { variant, available: true, reason: null, best, alternatives, evaluated, stability: best && outer ? stability(weapon, ranked, settings) : null };
+  // When your unlocks leave parts out, the same search with everything unlocked shows what they would add.
+  const everything = (data.loadouts[weapon.id] ?? []).filter(([id]) => !settings.excluded.includes(id)).length;
+  const ceiling = outer && open.length < everything
+    ? optimizeClass(data, weapon, { ...settings, level: weapon.maxLevel ?? settings.level, armory: undefined }, useApex, { keep: 1, optic: options.optic, prune: options.prune }).best
+    : null;
+  return { variant, available: true, reason: null, best, alternatives, evaluated, stability: best && outer ? stability(weapon, ranked, settings) : null, ceiling };
 }
 
 /** Scores a given set of attachments, for guide builds and the compare view. Problems are listed, not fixed. */
@@ -501,7 +511,7 @@ export function optimize(data: GameData, settings: Settings): OptimizeResult {
   const weapon = data.weapons.find(item => item.id === settings.weaponId);
   const warnings: string[] = [];
   if (!weapon) {
-    const missing: ClassResult = { variant: 'standard', available: false, reason: 'Choose a weapon.', best: null, alternatives: [], evaluated: 0, stability: null };
+    const missing: ClassResult = { variant: 'standard', available: false, reason: 'Choose a weapon.', best: null, alternatives: [], evaluated: 0, stability: null, ceiling: null };
     return { stock: null, standard: missing, apex: { ...missing, variant: 'apex' }, baseTtkMs: null, warnings: ['Choose a weapon.'], gear: null, meta: [] };
   }
   if (weapon.apex && !weapon.apex.mods) warnings.push(`CODMunity lists no stat changes for ${weapon.apex.name}. Its build only accounts for the slots it blocks.`);

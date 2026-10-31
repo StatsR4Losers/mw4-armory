@@ -1,11 +1,12 @@
 import { data, supported } from '../data/game';
-import { fullModel } from '../engine';
+import { fullModel, sharedPart } from '../engine';
 import { Icon } from '../components/Icon';
 
 const sources = [
   { title: 'CODMunity attachment stats, via COD Loadout', url: 'https://codloadout.gitlab.io/data/mw4-community-stats.json', note: 'Base stats for every gun and each attachment\'s multiplier on each gun. Snapshot from Oct 28, after the patch that day. Spot-checked by hand against CODMunity\'s VEL 46 and Kastov 762 pages: every value checked matched.' },
   { title: 'CODMunity weapon pages', url: 'https://codmunity.gg/weapon-stats/mw4', note: 'Which attachments fit each gun and the weapon level that unlocks each one. Read Oct 30. Also the source of the damage profiles used for time to kill.' },
   { title: 'CODMunity weapon page data: rechamber and hitscan', url: 'https://codmunity.gg/weapon/mw4/mosin-nagant', note: 'Each gun\'s rechamber time, sway while rechambering, pre-fire delay and hitscan range, and the bolts, triggers and lasers that change them. COD Loadout\'s files leave these out. Read from all 28 pages by npm run fetch on Oct 30.' },
+  { title: 'Activision: create-a-class and shared attachments', url: 'https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class', note: 'Each attachment unlocks once, then works on every weapon that uses it. A level that would give a part you already own is skipped with a Bonus Level Up. The progression post adds that weapon prestige relocks the prestiged gun\'s parts but not shared parts on other guns. Read Oct 30.' },
   { title: 'Activision launch weapon guide', url: 'https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige', note: 'Weapon names, Apex attachments and the slots each Apex blocks.' },
   { title: 'COD Loadout renders', url: 'https://codloadout.gitlab.io/credits/', note: 'Weapon renders and attachment icons, bundled with the site. Artwork belongs to Activision.' },
   { title: 'Guide builds: CODMunity, Game8 and WZStats', url: 'https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/630961', note: 'Each site\'s builds for every gun, with import codes where the site published one, plus Game8\'s and WZStats\' perk and equipment picks. Read in a browser on Oct 30. Names are matched to this site\'s parts; obvious typos are matched, anything else is shown crossed out and left out of the score.' },
@@ -24,6 +25,7 @@ export function DataView() {
     { label: 'Guns with full Gunsmith stats', value: `${guns.length} of ${data.weapons.length}`, note: `No data for ${unsupported.map(w => w.name).join(', ')}.` },
     { label: 'Attachments', value: data.attachments ? Object.keys(data.attachments).length.toLocaleString() : '0', note: `${entries.toLocaleString()} gun and attachment pairs with unlock levels and stat changes.` },
     { label: 'Time-to-kill model', value: `${guns.length - partial.length} guns`, note: `Automatics by chest TTK; bolt-action, semi-auto and pistols by shots to kill. ${partial.map(w => w.name).join(', ')} get handling-only scoring.` },
+    { label: 'Shared attachments', value: `${Object.keys(data.attachments).filter(id => sharedPart(data, id)).length} parts`, note: 'Listed by the same name on two or more guns, so unlocking one on any of them counts for all. Magazines and No Stock stay gun-specific.' },
     { label: 'Site builds read for intent', value: `${Object.keys(data.consensus ?? {}).length} guns`, note: `${Object.values(data.consensus ?? {}).filter(item => item.clear).length} lean clearly toward one playstyle. Each gun opens on that playstyle.` },
     { label: 'Guide builds', value: guideBuilds.length.toLocaleString(), note: `${guideBuilds.filter(build => build.code).length} with an import code, from ${Object.keys(data.metaSources).join(', ')}.` },
     { label: 'Perks, equipment and streaks', value: `${data.gear.length} items`, note: `${data.gear.filter(item => item.cost != null).length} killstreak costs and ${data.gear.filter(item => item.tier != null).length} perk tier scores.` },
@@ -50,7 +52,9 @@ export function DataView() {
         <li>Optics have no stat data, so sniper builds keep their own scope and other builds treat an optic as a free slot cost. Game8 measured up to 70 ms of ADS difference between optics.</li>
         <li>Site builds run parts the data lists with little or no effect, like shotgun chokes and the ZLR Competition-B6 bolt. Their real effects are not published, and those builds score lower here than they may play.</li>
         <li>Damage range attachments are applied by stretching each damage band by their multiplier. CODMunity lists range as a percent, not in meters.</li>
-        <li>The MAR-9 page on CODMunity has no unlock table, so its attachments show "Lv ?" and are always available.</li>
+        <li>The MAR-9 page on CODMunity has no unlock table, so its attachments have no level, are always available, and never unlock anything on other guns.</li>
+        <li>Nobody publishes which parts are shared. The site infers it from names: a part two guns list by the same name counts as one shared part, except magazines and No Stock, whose generic names, like 60 Round Drum, cover different calibers.</li>
+        <li>Activision says weapon prestige relocks all attachments on the prestiged gun. The site reads that as including shared parts unlocked on other guns, until you re-level it. Marks on a part override either reading.</li>
         <li>COD Loadout lists 20 more parts for the M4 than CODMunity's M4 page does, including Han 86 parts and the Schlager Visiv-5. The site follows each gun's own CODMunity page and leaves them out.</li>
         <li>Shotguns and the Hyeon Burst are scored on handling, recoil and fire rate only. The data has no pellet spread, shotgun one-shot range, slug damage or burst delay.</li>
         <li>The Oct 28 patch raised arm and hand damage on five SMGs from 0.95x to 1x. The damage profiles already reflect it. Chest-hit kill times did not change.</li>

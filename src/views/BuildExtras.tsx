@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { attachmentImage, data, slotName, sortSlots } from '../data/game';
 import { GEAR_SLOTS, streakCost } from '../engine/gear';
-import { playstyleById } from '../engine';
+import { playstyleById, unlockHint, unlockState } from '../engine';
 import type { Playstyle } from '../engine';
 import { Icon } from '../components/Icon';
 import type { GearItem, GearResult, GearSlot, OptimizeResult, ScoredMeta, Settings, WeaponData } from '../types';
@@ -90,7 +90,7 @@ function SiteRead({ weapon, result, style, onStyle }: { weapon: WeaponData; resu
   </div>;
 }
 
-export function SitePicks({ weapon, result, activeKey, style, onStyle, onCompare, onCopy }: { weapon: WeaponData; result: OptimizeResult; activeKey: string; style: Playstyle; onStyle: (id: string) => void; onCompare: (key: string) => void; onCopy: (text: string, message?: string) => void }) {
+export function SitePicks({ weapon, result, settings, activeKey, style, onStyle, onCompare, onCopy }: { weapon: WeaponData; result: OptimizeResult; settings: Settings; activeKey: string; style: Playstyle; onStyle: (id: string) => void; onCompare: (key: string) => void; onCopy: (text: string, message?: string) => void }) {
   const [source, setSource] = useState('all');
   const [showAll, setShowAll] = useState(false);
   const metas = result.meta.map((meta, index) => ({ meta, key: `meta:${index}` }));
@@ -102,6 +102,7 @@ export function SitePicks({ weapon, result, activeKey, style, onStyle, onCompare
   const ours = (apex: boolean) => (apex ? result.apex.best : result.standard.best);
   const versus = (meta: ScoredMeta) => { const mine = ours(meta.apex); return meta.build && mine ? meta.build.score - mine.score : null; };
   const versusText = (meta: ScoredMeta) => { const value = versus(meta); if (value === null) return ''; return Math.abs(value) < .5 ? 'ties the optimizer' : value > 0 ? `${Math.round(value)} ms ahead of the optimizer` : `${Math.round(-value)} ms behind the optimizer`; };
+  const owned = (id: string) => unlockState(data, weapon.id, id, settings).unlocked;
   const card = ({ meta, key }: typeof metas[number], top: boolean) => <article key={key} className={`site-card ${top ? 'top' : ''} ${activeKey === key ? 'active' : ''}`}>
     <header>
       <div className="site-name">
@@ -115,7 +116,7 @@ export function SitePicks({ weapon, result, activeKey, style, onStyle, onCompare
       </div>
     </header>
     <ul className="site-parts">
-      {sortSlots(meta.attachments).map(id => { const image = attachmentImage(id); return <li key={id} title={slotName(data.attachments[id].slot)}>{image ? <img src={image} alt=""/> : <Icon name="grid" size={12}/>}{data.attachments[id].name}</li>; })}
+      {sortSlots(meta.attachments).map(id => { const image = attachmentImage(id); const have = owned(id); return <li key={id} className={have ? '' : 'not-owned'} title={have ? slotName(data.attachments[id].slot) : `${slotName(data.attachments[id].slot)}. Not unlocked yet: ${unlockHint(data, weapon.id, id, settings)}`}>{have ? image ? <img src={image} alt=""/> : <Icon name="grid" size={12}/> : <Icon name="lock" size={12}/>}{data.attachments[id].name}</li>; })}
       {meta.unmatched.map(name => <li key={name} className="unmatched" title="Not in this gun's data, so not scored">{name}</li>)}
     </ul>
     <div className="site-foot">

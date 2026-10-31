@@ -63,6 +63,18 @@ export function GuideView() {
     </section>
 
     <section className="guide-section">
+      <h2>Shared attachments</h2>
+      <p className="lede">MW4 unlocks each attachment once. After that it works on every gun that takes it, per Activision.</p>
+      <ul className="facts-list">
+        <li>The same part unlocks at a different level on each gun. 5.56 NATO Overpressured is level 3 on the M4 and level 59 on the Han 86, so the quickest way to a part is often another gun.</li>
+        <li>When a weapon level would give you a part you already own, the game skips that level with a Bonus Level Up. Every shared part you own makes the next gun that uses it level faster.</li>
+        <li>Prestiging a gun relocks its own parts. Your other guns keep the shared parts it unlocked.</li>
+        <li>On the Build tab, enter your levels under Your other guns. The optimizer counts their shared parts, and under the build it lists what each missing part would add and the fewest levels to it.</li>
+        <li>CODMunity does not mark which parts are shared. This site counts a part as shared when two or more guns list it by the same name, except magazines and No Stock, which reuse generic names across calibers. If the game disagrees, press I have it or Don't have it on that part.</li>
+      </ul>
+    </section>
+
+    <section className="guide-section">
       <h2>Account prestige</h2>
       <div className="two-col">
         <div className="card-plain"><h3>Classic</h3><p>+20% XP, one Permanent Unlock Token and bonus cosmetics. Relocks your level unlocks and Create-a-Class progress.</p></div>
@@ -84,7 +96,7 @@ export function GuideView() {
         <li><span>1</span><div><b>Level the gun.</b> The 8 Military camos unlock on their own at set weapon levels.</div></li>
         <li><span>2</span><div><b>Work the 3 Special camos as they open.</b> Each challenge opens at a weapon level, and the last one opens at max level. Some need an attachment: the Han 86's Stormwave needs silencer kills.</div></li>
         <li><span>3</span><div><b>At max level, finish the last Special and get Gold.</b> Gold is 15 kills in one multiplayer match, which is easiest with your full build.</div></li>
-        <li><span>4</span><div><b>Prestige the gun right after Gold.</b> Its level goes back to 1 and every attachment relocks except the Apex and blueprint attachments. Camos stay. Weapon XP earned at max level probably goes nowhere, as in earlier games, but Activision has not confirmed that.</div></li>
+        <li><span>4</span><div><b>Prestige the gun right after Gold.</b> Its level goes back to 1 and every attachment relocks except the Apex and blueprint attachments. Your other guns keep the shared parts it unlocked. Camos stay. Weapon XP earned at max level probably goes nowhere, as in earlier games, but Activision has not confirmed that.</div></li>
         <li><span>5</span><div><b>Re-level it.</b> Pyroclast unlocks right away, Pyroclast Terminus at max level again. After that the gun enters Weapon Prestige Master with nothing else reset: Pyroclast Scatter at level 150 and Pyroclast Cascade at 250.</div></li>
         <li><span>6</span><div><b>Grind Platinum and beyond on prestiged guns.</b> Platinum opens once every gun in the class has Gold. Harmonic Break opens after Platinum on all 33 guns, then Divergence and the three Mastery camos per mode. These are not tied to weapon level, so they progress while the gun earns XP toward Pyroclast.</div></li>
       </ol>

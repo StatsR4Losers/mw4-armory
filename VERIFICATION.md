@@ -1,10 +1,10 @@
 # Verification
 
-Checked October 30, 2026, after the rebuild from the ChatGPT version, and again after per-class playstyles, the one-shot kill model and the site-build reading.
+Checked October 30, 2026, after the rebuild from the ChatGPT version, again after per-class playstyles, the one-shot kill model and the site-build reading, and again after shared attachment unlocks.
 
 ## Automated
 
-`npm test` runs 23 checks, all passing:
+`npm test` runs 31 checks, all passing:
 
 - Attachment values in the bundled data match what CODMunity shows on the VEL 46 and Kastov 762 pages, read by hand.
 - Every loadout entry points at a known attachment, no unlock sits above the gun's max level, and every Apex can unlock.
@@ -25,6 +25,14 @@ Checked October 30, 2026, after the rebuild from the ChatGPT version, and again 
 - Player level, kills per life, Hardline and locks hold. A locked streak stays even above the band.
 - The CODMunity VEL 46 Versatile Apex build keeps its code and its five parts. Across five guns, no fully matched, legal guide build without an optic outscores the optimizer's class at the same settings.
 - Scoring a hand-made build reports Apex-blocked slots, two parts in one slot, and parts that do not fit the gun.
+- A shared part counts once another gun reaches its level there: 5.56 NATO Overpressured on a level 10 Han 86 unlocks with the M4 at level 3 and not at level 2. The search then uses it.
+- Magazines and No Stock never share, and the MAR-9's level-less entries never unlock anything on other guns.
+- A prestiged gun loses shared parts from other guns, keeps its Apex, and still shares its earlier unlocks as if at max level.
+- Hand marks win over levels. A mark on a shared part applies on every gun, and one on a gun-specific part only on that gun.
+- Without an armory, every gun at levels 1, 20 and 45 gets exactly the parts the old level-only rule gave it.
+- Marking the Kastov 762's most valuable part as not unlocked removes it from the best build, and the full-unlock build shown beside it is the old best, at the same score.
+- A level 5 Warlord on Slugs reports that the slug unlocks at level 10 there or on the Rezi 12, and runs it once the Rezi 12 is at level 10.
+- Unlock routes sort by levels left: for a level 40 Han 86 with the M4 at 1 and the FiNN LMG at 50, the M4 (2 to go), then the FiNN (6), then the Han itself (19).
 
 `npm run build` passes the TypeScript check and builds `dist/`.
 
@@ -49,6 +57,16 @@ Checked in the dev server after the per-class playstyles:
 - At 375 px the reading panel fits with no horizontal page scroll.
 - The README screenshots were retaken from this state.
 
+Checked in the dev server after shared attachment unlocks:
+
+- On a level 10 Han 86, the level was stored for that gun and the panel under the build listed three missing parts at +15 ms, with routes such as "Level 24 on the FiNN LMG".
+- Typing FiNN LMG 30 and PPSh-41 10 under Your other guns put the Corvus LVL-40 and Schlager Visiv-5 into the build, tagged "FiNN LMG Lv 24" and "PPSh-41 Lv 4". The score rose from +82 to +94 ms.
+- Don't have it on the Corvus redid the build without it at +93 ms, named the old build "Previous build (earlier unlocks)", and showed a pin and an Undo. Undo put it back.
+- Ticking In Weapon Prestige on the Han 86 dropped both shared parts and enabled the Apex switch. The settings survived a page reload.
+- A level 20 M4 then ran the Corvus from the prestiged Han 86. Switching back to the Han 86 restored level 10.
+- A share link carries the level but not the armory.
+- At 375 px there is no horizontal page scroll, and the gun list and missing-parts panel fit. This pass also fixed the phone stat rows, which had been squeezed into the arrow column since the Build redesign.
+
 ## Data refresh
 
 - `npm run fetch -- --skip-levels` ran against COD Loadout on Oct 30. Both files downloaded, the rebuild reported no data changes, and the tests passed.
@@ -59,6 +77,7 @@ Checked in the dev server after the per-class playstyles:
 ## Not checked
 
 - No build was tested in the game, and no stat was measured in a private match.
+- Which parts are shared is inferred from names. It was not checked in the game, and neither was whether a prestiged gun can still use shared parts unlocked on other guns.
 - Copy to clipboard was not confirmed, because the test browser blocks clipboard writes. The app shows a message when that happens.
 - Timed over all 156 gun, playstyle and optic combinations: the slowest full search with stability is the KG-7 on Hardscope with the optic switch on, at 1.3 s. The median is 0.39 s, and the VEL 46 takes 0.36 s. All run off the main thread.
 - The hit spreads and miss rates for one-shot guns, and the rule that a bolt fires at the slower of its fire rate and rechamber, are assumptions. Nobody has published measurements for either.

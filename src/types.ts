@@ -73,6 +73,20 @@ export interface Settings {
   streakStyle: StreakStyle;
   gearLocks: Partial<Record<GearSlot, string>>;
   streakLocks: string[];
+  // What the player has unlocked on their other guns. The app adds it to each search from the device. It is not part
+  // of a saved class or a share link. Without it, only parts up to this gun's level count.
+  armory?: Armory;
+}
+
+/** The player's unlocks across guns. MW4 unlocks each shared part once, for every gun that takes it. See engine/unlocks.ts. */
+export interface Armory {
+  // Highest level reached on each gun. A gun with no entry counts as level 0.
+  levels: Record<string, number>;
+  // Guns in Weapon Prestige. Their level is the current one, and their earlier unlocks still count on other guns.
+  prestiged: string[];
+  // Parts marked by hand. Shared parts use the part id, gun-specific ones "weaponId:partId".
+  have: string[];
+  missing: string[];
 }
 
 export interface GearPick { id: string; value: number; reasons: string[]; locked: boolean }
@@ -112,5 +126,7 @@ export interface ClassResult {
   alternatives: BuildResult[];
   evaluated: number;
   stability: Stability | null;
+  // The best build with every part unlocked, when your unlocks leave some out. Null when nothing is missing.
+  ceiling: BuildResult | null;
 }
 export interface OptimizeResult { stock: BuildResult | null; standard: ClassResult; apex: ClassResult; baseTtkMs: number | null; warnings: string[]; gear: GearResult | null; meta: ScoredMeta[] }

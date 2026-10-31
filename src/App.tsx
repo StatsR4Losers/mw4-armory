@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { data, supported, weaponById } from './data/game';
 import { ROLES, playstyleById, playstyleFor, playstylesFor, roleOf } from './engine';
 import { metricIds } from './types';
-import type { BuildResult, GearSlot, OptimizeResult, Settings, StreakStyle, Weights } from './types';
+import type { Armory, BuildResult, GearSlot, OptimizeResult, Settings, StreakStyle, Weights } from './types';
 import { BuildView } from './views/BuildView';
 import { GuideView } from './views/GuideView';
 import { SavedView } from './views/SavedView';
@@ -76,15 +76,36 @@ function normalize(input: unknown): Settings {
   return next;
 }
 
+export const emptyArmory = (): Armory => ({ levels: {}, prestiged: [], have: [], missing: [] });
+
+// The armory is stored apart from the settings: it describes the player, not a class, so links and saved classes leave it out.
+function normalizeArmory(input: unknown): Armory {
+  const raw = (input && typeof input === 'object' ? input : {}) as Partial<Armory>;
+  const next = emptyArmory();
+  const guns = new Map(data.weapons.filter(supported).map(weapon => [weapon.id, weapon.maxLevel ?? 1]));
+  if (raw.levels && typeof raw.levels === 'object') for (const [id, level] of Object.entries(raw.levels)) {
+    if (guns.has(id) && typeof level === 'number' && Number.isFinite(level)) next.levels[id] = Math.max(0, Math.min(guns.get(id)!, Math.round(level)));
+  }
+  if (Array.isArray(raw.prestiged)) next.prestiged = [...new Set(raw.prestiged.filter((id): id is string => typeof id === 'string' && guns.has(id)))];
+  // Marks are a part id, or "weaponId:partId" for a gun-specific part.
+  const part = (key: unknown): key is string => typeof key === 'string' && !!data.attachments[key.includes(':') ? key.slice(key.indexOf(':') + 1) : key];
+  for (const key of ['have', 'missing'] as const) if (Array.isArray(raw[key])) next[key] = [...new Set(raw[key]!.filter(part))].slice(0, 500);
+  return next;
+}
+
+/** Your recorded level for a gun wins over the one stored with a class or a link, since it describes what you own now. */
+const withLevel = (settings: Settings, armory: Armory): Settings => settings.weaponId in armory.levels ? { ...settings, level: Math.max(1, armory.levels[settings.weaponId]) } : settings;
+
 function encode(value: unknown) { return btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(value)))).replace(/=+$/, ''); }
 function decode(value: string) { return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(value), c => c.charCodeAt(0)))); }
 
-function readInitial(): { settings: Settings; saved: SavedClass[]; compare: CompareItem[]; toast: string | null } {
-  let settings = defaultSettings(), saved: SavedClass[] = [], compare: CompareItem[] = [], toast: string | null = null;
+function readInitial(): { settings: Settings; saved: SavedClass[]; compare: CompareItem[]; armory: Armory; toast: string | null } {
+  let settings = defaultSettings(), saved: SavedClass[] = [], compare: CompareItem[] = [], armory = emptyArmory(), toast: string | null = null;
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
     if (stored) {
       settings = normalize(stored.settings);
+      armory = normalizeArmory(stored.armory);
       if (Array.isArray(stored.saved)) saved = stored.saved.filter((item: SavedClass) => item && typeof item.id === 'string' && weaponById(item.weaponId) && Array.isArray(item.attachments)).slice(0, 200);
       if (Array.isArray(stored.compare)) compare = stored.compare.filter((item: CompareItem) => item && typeof item.id === 'string' && supported(weaponById(item.weaponId) ?? data.weapons[0]) && Array.isArray(item.attachments)).slice(0, 3);
     }
@@ -93,7 +114,7 @@ function readInitial(): { settings: Settings; saved: SavedClass[]; compare: Comp
     try { settings = normalize(decode(decodeURIComponent(location.hash.slice(3)))); toast = 'Loaded the shared build settings.'; }
     catch { toast = 'That share link could not be read. Your own settings are loaded.'; }
   }
-  return { settings, saved, compare, toast };
+  return { settings: withLevel(settings, armory), saved, compare, armory, toast };
 }
 
 export default function App() {
@@ -103,6 +124,9 @@ export default function App() {
   const [saved, setSaved] = useState<SavedClass[]>(initial.current.saved);
   const [toast, setToast] = useState<string | null>(initial.current.toast);
   const [compare, setCompare] = useState<CompareItem[]>(initial.current.compare);
+  const [armory, setArmory] = useState<Armory>(initial.current.armory);
+  // Searches run with your armory, so parts unlocked on other guns count.
+  const run = useMemo(() => ({ ...settings, armory }), [settings, armory]);
   const [view, setView] = useState<View>('build');
   const [result, setResult] = useState<OptimizeResult | null>(null);
   const [busy, setBusy] = useState(true);
@@ -124,14 +148,14 @@ export default function App() {
         worker?.terminate();
       };
       worker.onerror = () => { if (id === latest.current) { setBusy(false); setError('The optimizer could not start. Reload the page.'); } };
-      worker.postMessage({ id, settings });
+      worker.postMessage({ id, settings: run });
     }, 90);
     return () => { window.clearTimeout(timer); worker?.terminate(); };
-  }, [settings]);
+  }, [run]);
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, saved, compare })); } catch { /* Storage can be full or blocked. */ }
-  }, [settings, saved, compare]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings, saved, compare, armory })); } catch { /* Storage can be full or blocked. */ }
+  }, [settings, saved, compare, armory]);
 
   useEffect(() => {
     if (!toast) return;
@@ -139,14 +163,18 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const change = (patch: Partial<Settings>) => setSettings(current => ({ ...current, ...patch }));
+  const change = (patch: Partial<Settings>) => {
+    setSettings(current => ({ ...current, ...patch }));
+    // The level slider records this gun's level, which counts toward shared parts on every other gun.
+    if (patch.level !== undefined) setArmory(current => ({ ...current, levels: { ...current.levels, [settings.weaponId]: patch.level! } }));
+  };
   const selectWeapon = (weaponId: string) => {
     const weapon = weaponById(weaponId);
     if (!weapon || !supported(weapon)) return;
     setSettings(current => {
       // A new gun opens on the playstyle its site builds fit best. The distance resets only when the playstyle changes.
       const style = openingStyle(weaponId);
-      return { ...current, weaponId, level: weapon.maxLevel ?? 1, locked: [], excluded: [], preset: style.id, ...(style.id === current.preset ? {} : { distanceM: style.distanceM }) };
+      return { ...current, weaponId, level: weaponId in armory.levels ? Math.max(1, armory.levels[weaponId]) : weapon.maxLevel ?? 1, locked: [], excluded: [], preset: style.id, ...(style.id === current.preset ? {} : { distanceM: style.distanceM }) };
     });
     setResult(null);
   };
@@ -187,10 +215,10 @@ export default function App() {
     </header>
     <main className="main">
       {/* The Build screen stays mounted so its before/after history survives a trip to another tab. */}
-      <div hidden={view !== 'build'}><BuildView settings={settings} change={change} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), playerLevel: settings.playerLevel })}/></div>
+      <div hidden={view !== 'build'}><BuildView settings={run} change={change} armory={armory} setArmory={setArmory} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), level: settings.level, playerLevel: settings.playerLevel })}/></div>
       {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
       {view === 'guide' && <GuideView/>}
-      {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(normalize(item.settings)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}
+      {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(withLevel(normalize(item.settings), armory)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}
       {view === 'data' && <DataView/>}
     </main>
     <footer className="footer"><span>MW4 Armory is a fan-made tool. Not affiliated with Activision or Infinity Ward.</span><span>Stats: CODMunity via COD Loadout. Guide builds: CODMunity, Game8, WZStats. Renders: COD Loadout.</span></footer>

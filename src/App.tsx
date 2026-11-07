@@ -211,11 +211,11 @@ export default function App() {
     setResult(null);
   };
   // From the Warzone page: open one gun's Warzone build on the Build screen, where unlocks, locks and the Apex apply.
-  const tuneWarzone = (weaponId: string, styleId: string) => {
+  const tuneWarzone = (weaponId: string, styleId: string, apex: boolean) => {
     setMode('wz');
     const weapon = weaponById(weaponId), style = playstyleById(styleId);
     if (!weapon || !supported(weapon) || !style) return;
-    setSettings(current => ({ ...current, mode: 'wz', weaponId, level: weaponId in armory.levels ? Math.max(1, armory.levels[weaponId]) : weapon.maxLevel ?? 1, preset: style.id, distanceM: style.distanceM, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], apex: false }));
+    setSettings(current => ({ ...current, mode: 'wz', weaponId, level: weaponId in armory.levels ? Math.max(1, armory.levels[weaponId]) : weapon.maxLevel ?? 1, preset: style.id, distanceM: style.distanceM, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], apex }));
     setResult(null);
     setView('build');
     window.scrollTo(0, 0);

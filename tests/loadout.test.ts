@@ -65,3 +65,38 @@ test('longer sight lines favour the sniper pair more than close quarters do', ()
   assert.ok(gap('long') < gap('close'));
   assert.ok(soloScore(sniper, 'long') > 0);
 });
+
+test('the Apex goes in only when its Warzone stats make the gun faster, and the reason is kept', async () => {
+  const { soloScore: solo } = await import('../src/engine/warzone.ts');
+  for (const weapon of data.weapons.filter(item => item.apex && data.warzone!.builds![item.id])) {
+    for (const half of ['long', 'close'] as const) {
+      const option = optionFor(data, weapon, half, undefined, 'mixed');
+      if (!option) continue;
+      assert.ok(option.apex, `${weapon.id} reports its Apex`);
+      if (!weapon.apex!.mods) assert.deepEqual([option.apex!.used, option.apex!.reason], [false, 'no-stats']);
+      if (option.apex!.used) {
+        // Rebuild it without the Apex to check the choice.
+        const plain = optionFor({ ...data, warzone: { ...data.warzone!, apexBuilds: {} } }, weapon, half, undefined, 'mixed')!;
+        assert.ok(solo(option, 'mixed') < solo(plain, 'mixed'), `${weapon.id} ${half}: Apex is faster`);
+        assert.ok(!option.attachments.some(id => weapon.apex!.blocks.includes(data.attachments[id].slot)), `${weapon.id}: no part in a blocked slot`);
+      }
+    }
+  }
+});
+
+test('Warzone gear fills every slot from the Season 1 lists, and each pick says why', async () => {
+  const { GEAR_STYLES, recommendWarzoneGear } = await import('../src/engine/wzgear.ts');
+  const gear = data.warzone!.gear!;
+  for (const style of Object.keys(GEAR_STYLES) as (keyof typeof GEAR_STYLES)[]) {
+    const result = recommendWarzoneGear(gear, style);
+    assert.deepEqual(result.perks.map(pick => gear.perks.find(perk => perk[0] === pick.id)![2]), [1, 2, 3], `${style}: one perk per slot`);
+    for (const pick of [...result.perks, result.lethal, result.tactical]) assert.ok(pick.reasons.length > 0, `${style}: ${pick.name} has a reason`);
+    assert.ok(gear.lethal.some(item => item[0] === result.lethal.id) && gear.tactical.some(item => item[0] === result.tactical.id));
+    assert.ok(result.elite && gear.elite.some(item => item[0] === result.elite!.id));
+  }
+  // The sniper gets anti-recon perks and a trap to guard its position.
+  const sniper = recommendWarzoneGear(gear, 'sniper');
+  assert.equal(sniper.perks[0].id, 'incognito');
+  assert.ok(['claymore', 'tripwire'].includes(sniper.lethal.id));
+  assert.equal(sniper.elite!.id, 'phantom');
+});

@@ -1,0 +1,81 @@
+{
+ "note": "Warzone Season 1 perks and equipment, and three sources' picks. Read by hand on 2026-11-07. Perks, slots and effects are Activision's. Tiers and combos are each site's own.",
+ "perks": [
+  ["field-medic", "Field Medic", 1, "Faster revives that restore full health, for you and the ally. More health while downed."],
+  ["hunter", "Hunter", 1, "Shows enemy footprints and nearby enemies, warns when you are targeted, outlines enemies you damage."],
+  ["surveyor", "Surveyor", 1, "A kill briefly reveals the rest of that squad. Shows enemies using Buy Stations or Contracts."],
+  ["incognito", "Incognito", 1, "Shorter radar reveals and Hunter outlines, no standard pings on you, slower enemy traps."],
+  ["stocked", "Stocked", 1, "One extra lethal and tactical, more explosive damage, full ammo when you pick up a loadout."],
+  ["mountaineer", "Mountaineer", 2, "Less fall damage and no landing stun, faster climbing, a combat roll."],
+  ["adaptive", "Adaptive", 2, "Faster sprint-to-fire while fully plated, faster movement with plates missing."],
+  ["drill-instructor", "Drill Instructor", 2, "Faster squad sprint. Long sprints start health regeneration."],
+  ["scavenger", "Scavenger", 2, "Enemies you kill drop ammo, equipment, plates and cash for your squad."],
+  ["deft-hands", "Deft Hands", 2, "Faster plating, equipment throws and crate captures, a speed boost while plating."],
+  ["berserker", "Berserker", 3, "Faster ADS, weapon swap and reload for a short time after a kill."],
+  ["survivor", "Survivor", 3, "Faster health regeneration start, resists flash, stun and shock, less explosive damage, no knockdown."],
+  ["quick-fix", "Quick Fix", 3, "A kill or a plate starts health regeneration at once."],
+  ["tempered", "Tempered", 3, "Two plates refill your armor, not three."],
+  ["wingman", "Wingman", 3, "Cheaper squad redeploys, and redeploys fire no visible flare."]
+ ],
+ "elite": [
+  ["athleticism", "Athleticism", "Better strafing and crouching, smaller ADS penalties while jumping and sliding."],
+  ["fieldcraft", "Fieldcraft", "Rapidly regenerates armor and equipment."],
+  ["phantom", "Phantom", "Undetectable by enemy recon killstreaks, equipment and perks."]
+ ],
+ "lethal": [
+  ["semtex", "Semtex", "Timed sticky grenade."],
+  ["frag", "Frag Grenade", "Cookable fragmentation grenade."],
+  ["throwing-knife", "Throwing Knife", "Lethal on impact to unarmored targets or with a headshot."],
+  ["c4", "C4", "Sticky explosive detonated remotely."],
+  ["claymore", "Claymore", "Proximity mine that now also hits a small area around itself."],
+  ["proximity-mine", "Proximity Mine", "Launches and detonates in the air. Sticks to passing vehicles."],
+  ["tripwire", "Tripwire Mine", "Throwable trap. Several can be linked into one network."],
+  ["thermite", "Thermite", "Sticky incendiary that hurts vehicles and armored targets."],
+  ["molotov", "Molotov", "Leaves burning pools where it lands."],
+  ["drill-charge", "Drill Charge", "Burrows through a surface before it explodes."]
+ ],
+ "tactical": [
+  ["smoke", "Smoke Grenade", "Blocks vision and automated targeting."],
+  ["stim", "Stim", "Starts health regeneration, boosts movement, refreshes Tactical Sprint."],
+  ["heartbeat", "Heartbeat Sensor", "Shows nearby enemies on a tablet."],
+  ["snapshot", "Snapshot Grenade", "Reveals nearby enemies where they stood."],
+  ["concussion", "Concussion Grenade", "Slows enemy reactions and blurs vision."],
+  ["flash", "Flash Grenade", "Blinds and deafens."],
+  ["shock", "Shock Charge", "Sticky trap that shocks enemies and disrupts equipment and vehicles."],
+  ["screamer", "Screamer Mine", "Proximity mine that suppresses and marks enemies."]
+ ],
+ "sources": {
+  "wzstats": {
+   "name": "WZStats Warzone tier lists",
+   "url": "https://wzstats.gg/warzone-2/loadouts/best-perks-tier-list",
+   "updated": "2026-11-07",
+   "note": "Perks, lethals and tacticals, Season 1. Combat Axe and Decoy appear in its lists but not in the Season 1 Warzone equipment, so they are left out.",
+   "meta": ["field-medic", "hunter", "surveyor", "scavenger", "tempered", "quick-fix", "semtex", "frag", "smoke", "heartbeat", "stim"],
+   "a": ["stocked", "incognito", "deft-hands", "drill-instructor", "mountaineer", "adaptive", "survivor", "berserker", "wingman", "c4", "molotov", "claymore", "concussion"]
+  },
+  "timesaver": {
+   "name": "TimeSaver Season 1 perk combos",
+   "url": "https://timesaver.gg/blog/mw4-warzone-perks-season-1-elite-perks-ghost-removed",
+   "updated": "2026-11-05",
+   "note": "Written before launch from the official descriptions.",
+   "combos": {
+    "aggressive": ["hunter", "adaptive", "tempered", "athleticism"],
+    "stealth": ["incognito", "mountaineer", "survivor", "phantom"],
+    "support": ["field-medic", "drill-instructor", "wingman", "fieldcraft"],
+    "resurgence": ["surveyor", "scavenger", "quick-fix", "fieldcraft"]
+   }
+  },
+  "activision": {
+   "name": "Activision's default Warzone loadouts",
+   "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes",
+   "updated": "2026-11-05",
+   "note": "The Season 1 default loadouts, as listed by mw4.gg.",
+   "loadouts": {
+    "assault": { "guns": ["m4", "x-58-nyx"], "items": ["stocked", "drill-instructor", "berserker", "semtex", "smoke"] },
+    "stalker": { "guns": ["iso-nightshade", "cronen-squall"], "items": ["hunter", "mountaineer", "quick-fix", "thermite", "stim"] },
+    "demolition": { "guns": ["type-73", "ppsh-41"], "items": ["field-medic", "scavenger", "tempered", "frag", "concussion"] },
+    "sniper": { "guns": ["kg-7-vulcan", "wz-55-striga"], "items": ["incognito", "deft-hands", "survivor", "tripwire", "snapshot"] }
+   }
+  }
+ }
+}

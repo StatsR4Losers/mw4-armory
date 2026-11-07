@@ -93,19 +93,39 @@ export function fightTime(weapon: WeaponData, stats: Record<string, number>, sty
   return sprinting * stats.stf + stats.ads + (bullets - 1) * interval + reloads * stats.reload + travel;
 }
 
+/** Whether a gun's Apex is in its build, and why. */
+export type ApexUse = { name: string; used: boolean; reason: 'faster' | 'slower' | 'no-stats' | 'no-build' } | null;
 /** A gun with one build: its stats after the build's parts, and its fight time at each distance in DISTANCES. */
-export interface Option { weapon: WeaponData; style: Playstyle; attachments: string[]; stats: Record<string, number>; times: (number | null)[] }
+export interface Option { weapon: WeaponData; style: Playstyle; attachments: string[]; stats: Record<string, number>; times: (number | null)[]; apex: ApexUse }
 
-/** One gun in one half of a loadout, with its stored best Warzone build. Null when the gun has no build for that job. */
-export function optionFor(data: GameData, weapon: WeaponData, half: Half, partnerRole?: Role): Option | null {
+function build(data: GameData, weapon: WeaponData, style: Playstyle, attachments: string[], withApex: boolean): Option | null {
+  const parts = new Map((data.loadouts[weapon.id] ?? []).map(([id, , mods]) => [id, mods]));
+  const mods = attachments.map(id => parts.get(id) ?? {});
+  if (withApex) mods.push(weapon.apex!.mods!);
+  const stats = applyMods(weapon.base!, mods);
+  const reference = classRecoil(data, roleOf(weapon));
+  const times = DISTANCES.map(d => fightTime(weapon, stats, style, d, reference));
+  return times.every(time => time === null) ? null : { weapon, style, attachments, stats, times, apex: null };
+}
+
+/**
+ * One gun in one half of a loadout, with its stored best Warzone build. The Apex build is used when its stat changes
+ * make the gun's own fights faster in this kind of match. Null when the gun has no build for that job.
+ */
+export function optionFor(data: GameData, weapon: WeaponData, half: Half, partnerRole?: Role, mix: MixId = 'mixed'): Option | null {
   const style = styleFor(weapon, half, partnerRole);
   const attachments = style && data.warzone?.builds?.[weapon.id]?.[style.id];
   if (!style || !attachments || !weapon.base) return null;
-  const parts = new Map((data.loadouts[weapon.id] ?? []).map(([id, , mods]) => [id, mods]));
-  const stats = applyMods(weapon.base, attachments.map(id => parts.get(id) ?? {}));
-  const reference = classRecoil(data, roleOf(weapon));
-  const times = DISTANCES.map(d => fightTime(weapon, stats, style, d, reference));
-  return times.every(time => time === null) ? null : { weapon, style, attachments, stats, times };
+  const plain = build(data, weapon, style, attachments, false);
+  if (!plain || !weapon.apex) return plain;
+  const name = weapon.apex.name;
+  if (!weapon.apex.mods) return { ...plain, apex: { name, used: false, reason: 'no-stats' } };
+  const apexParts = data.warzone?.apexBuilds?.[weapon.id]?.[style.id];
+  const withApex = apexParts && build(data, weapon, style, apexParts, true);
+  if (!withApex) return { ...plain, apex: { name, used: false, reason: 'no-build' } };
+  return soloScore(withApex, mix) < soloScore(plain, mix)
+    ? { ...withApex, apex: { name, used: true, reason: 'faster' } }
+    : { ...plain, apex: { name, used: false, reason: 'slower' } };
 }
 
 const mean = (values: number[], weights: readonly number[]) => values.reduce((sum, value, i) => sum + value * weights[i], 0) / weights.reduce((sum, w) => sum + w, 0);
@@ -134,12 +154,12 @@ export function pairScore(long: Option, close: Option, mix: MixId): Pair {
 /** Every allowed pair, fastest first. Each list holds the weapon ids allowed in that half. */
 export function bestPairs(data: GameData, mix: MixId, longIds: string[], closeIds: string[], limit = 5): Pair[] {
   const guns = new Map(data.weapons.map(weapon => [weapon.id, weapon]));
-  const longs = longIds.map(id => guns.get(id) && optionFor(data, guns.get(id)!, 'long')).filter((option): option is Option => !!option);
+  const longs = longIds.map(id => guns.get(id) && optionFor(data, guns.get(id)!, 'long', undefined, mix)).filter((option): option is Option => !!option);
   const pairs: Pair[] = [];
   for (const long of longs) for (const id of closeIds) {
     const gun = guns.get(id);
     if (!gun || id === long.weapon.id) continue;
-    const close = optionFor(data, gun, 'close', roleOf(long.weapon));
+    const close = optionFor(data, gun, 'close', roleOf(long.weapon), mix);
     if (close) pairs.push(pairScore(long, close, mix));
   }
   return pairs.sort((a, b) => a.score - b.score).slice(0, limit);

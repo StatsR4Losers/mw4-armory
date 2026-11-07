@@ -48,6 +48,8 @@ The Warzone tab builds a two-gun loadout. Pick what you want in each slot, such 
 
 A fight's time is aiming in, every bullet a kill through 300 health takes with misses counted, a reload when the magazine runs dry, and bullet travel. Misses grow with distance, faster for SMGs than rifles and slowest for snipers, and a build with less recoil than its class keeps hitting farther. Those distances, and how often fights happen at each range, are this project's assumptions. Movement speed is not scored, so an LMG can top the list on paper.
 
+Each result is a full loadout laid out like the in-game one: primary and secondary with every part, three perks, an Elite perk to look for in the match, a lethal and a tactical. Every gun is built twice, with and without its Apex, and the card says whether the Apex is on and why. Apex damage conversions are not modeled, and some Apex attachments have no Warzone stats yet. Perks and equipment come from the Season 1 Warzone lists and are scored from WZStats' Warzone tier lists, TimeSaver's perk combos and Activision's default loadouts, for a playstyle that follows the guns or one you pick. Each pick lists its reasons.
+
 Tune in Build opens any gun's Warzone build on the Build screen, where your unlocks, locks and the Apex apply. A switch at the top of the Build screen moves between Multiplayer and Warzone. Warzone uses each gun's Warzone tuning from CODMunity: base stats, damage, every part's changes and the Apex. Kills take 300 damage, 150 health plus three 50-point plates, so magazine size and bullet velocity count for more. Each class gets Warzone playstyles after CODMunity's own: long range, close range, sniper support and sniper. CODMunity's Warzone builds sit under the optimizer's pick with their codes. Perks and killstreaks are multiplayer picks, so Warzone leaves them out.
 
 ### Shows what each patch changed
@@ -101,6 +103,7 @@ Shotguns and the Hyeon Burst are scored on handling, recoil and fire rate only, 
 | Season 1 guns (Cronen Osprey, CSG-35) and damage profiles after the Nov 6 patch | CODMunity weapon pages | Nov 7, 2026 |
 | Season 1 patch changes | Infinity Ward's [Season 1 patch notes](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes), transcribed in `research/raw/patch-notes.json` | Nov 7, 2026 |
 | Warzone stats, part changes and site builds | CODMunity's Warzone records on each MW4 weapon page | Nov 7, 2026 |
+| Warzone perks and equipment, and picks | Activision's [Warzone Season 1 notes](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-mw4-warzone-season-1-patch-notes), [WZStats](https://wzstats.gg/warzone-2/loadouts/best-perks-tier-list), [TimeSaver](https://timesaver.gg/blog/mw4-warzone-perks-season-1-elite-perks-ghost-removed), in `research/raw/warzone-gear.json` | Nov 7, 2026 |
 | Site builds, codes and gear picks | CODMunity, [Game8](https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/630961), [WZStats](https://wzstats.gg/) | Oct 30, 2026 |
 | Killstreak costs | Activision's launch post, via COD Loadout and LFCarry | Oct 19, 2026 |
 | Perk tier lists | [GameRant](https://gamerant.com/call-of-duty-modern-warfare-4-cod-mw4-best-perks-tier-list/), [games.gg](https://games.gg/call-of-duty-modern-warfare-4/guides/best-mw4-perks-tier-list/) | Oct 26 and 29, 2026 |
@@ -129,7 +132,7 @@ npm run dev
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Starts the site at http://127.0.0.1:5173 |
-| `npm test` | Runs 42 engine, data, unlock, gear, Warzone and loadout checks |
+| `npm test` | Runs 44 engine, data, unlock, gear, Warzone and loadout checks |
 | `npm run build` | Typechecks and writes the static site to `dist/` |
 | `npm run data` | Rebuilds `src/data/game.json` from `research/raw/`, rereads the site builds for intent and finds each gun's best Warzone build per playstyle, in about 20 seconds. Add `-- --verbose` to list every near match and unmatched site part |
 | `npm run fetch` | Downloads fresh stat files, unlock tables and rechamber and hitscan stats, rebuilds the data, prints what changed per gun and runs the tests |

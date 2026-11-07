@@ -291,11 +291,18 @@ if (warzoneRaw) {
   for (const weapon of view.weapons) {
     if (!wz.loadouts[weapon.id] || !fullModel(weapon)) continue;
     for (const style of playstylesFor(weapon)) {
-      const best = optimizeClass(view, weapon, { mode: 'wz', weaponId: weapon.id, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutral, distanceM: style.distanceM, apex: false, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] }, false).best;
+      const settings = { mode: 'wz' as const, weaponId: weapon.id, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutral, distanceM: style.distanceM, apex: false, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed' as const, gearLocks: {}, streakLocks: [] };
+      const best = optimizeClass(view, weapon, settings, false).best;
       if (best) (wz.builds[weapon.id] ??= {})[style.id] = best.attachments;
+      // An Apex with Warzone stat changes gets its own build, in the slots it leaves open.
+      if (weapon.apex?.mods) {
+        const apexBest = optimizeClass(view, weapon, settings, true).best;
+        if (apexBest) ((wz.apexBuilds ??= {})[weapon.id] ??= {})[style.id] = apexBest.attachments;
+      }
     }
   }
   setPlaystyleMode('mp'); resetCaches();
+  wz.gear = read('research/raw/warzone-gear.json');
   warzone = wz;
   const fallbacks = Object.values(wz.fallback).reduce((n, list) => n + list.length, 0);
   console.log(`Warzone: ${Object.keys(wz.weapons).length} guns, ${Object.values(wz.meta).reduce((n, list) => n + list.length, 0)} CODMunity Warzone builds, ${fallbacks} parts without a Warzone record keep multiplayer numbers`);

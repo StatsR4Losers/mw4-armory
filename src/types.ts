@@ -39,6 +39,18 @@ export interface GameData {
 }
 /** Multiplayer, or the same guns tuned for Warzone. */
 export type Mode = 'mp' | 'wz';
+/** Warzone perks and equipment as [id, name, slot, effect] or [id, name, effect], and three sources' picks. */
+export interface WarzoneGear {
+  perks: [id: string, name: string, slot: number, effect: string][];
+  elite: [id: string, name: string, effect: string][];
+  lethal: [id: string, name: string, effect: string][];
+  tactical: [id: string, name: string, effect: string][];
+  sources: {
+    wzstats: { name: string; url: string; updated: string; note: string; meta: string[]; a: string[] };
+    timesaver: { name: string; url: string; updated: string; note: string; combos: Record<string, string[]> };
+    activision: { name: string; url: string; updated: string; note: string; loadouts: Record<string, { guns: string[]; items: string[] }> };
+  };
+}
 export interface WarzoneData {
   retrieved: string;
   // Health counts plates: 150 base and three plates of 50 make 300.
@@ -51,6 +63,10 @@ export interface WarzoneData {
   consensus: Record<string, Consensus>;
   // Each gun's best build under each of its Warzone playstyles, every part unlocked, no Apex. The Warzone page pairs these.
   builds?: Record<string, Record<string, string[]>>;
+  // The same with the gun's Apex on, for guns whose Apex has Warzone stat changes. The page uses it when it is faster.
+  apexBuilds?: Record<string, Record<string, string[]>>;
+  // Warzone perks and equipment, and the sources' picks. engine/wzgear.ts recommends from it.
+  gear?: WarzoneGear;
   // CODMunity's most-used Warzone guns per playstyle: [weapon id, pick rate in percent].
   popularity?: Record<string, [string, number][]>;
 }

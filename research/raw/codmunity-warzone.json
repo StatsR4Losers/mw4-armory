@@ -8,6 +8,56 @@
   "attachments": 5,
   "plates": 3
  },
+ "popularity": {
+  "Long Range": [
+   [
+    "cronen-osprey",
+    22
+   ],
+   [
+    "m4",
+    11.7
+   ],
+   [
+    "han-86",
+    7.9
+   ]
+  ],
+  "Close Range": [
+   [
+    "vel-46",
+    20
+   ],
+   [
+    "iso-nightshade",
+    6.7
+   ],
+   [
+    "x-58-nyx",
+    2
+   ]
+  ],
+  "Sniper": [
+   [
+    "kg-7-vulcan",
+    9.1
+   ],
+   [
+    "mosin-nagant",
+    3.3
+   ],
+   [
+    "astaroth-57",
+    0.8
+   ]
+  ],
+  "Sniper Support": [
+   [
+    "cronen-osprey",
+    22
+   ]
+  ]
+ },
  "weapons": {
   "han-86": {
    "base": {

@@ -9,15 +9,18 @@ import { SavedView } from './views/SavedView';
 import type { SavedClass } from './views/SavedView';
 import { DataView } from './views/DataView';
 import { PatchView } from './views/PatchView';
+import { WarzoneView } from './views/WarzoneView';
+import { NEEDS_OPTIC } from './engine/warzone';
 import { CompareView } from './views/CompareView';
 import type { CompareItem } from './views/CompareView';
 import { Icon } from './components/Icon';
 
 const STORAGE_KEY = 'mw4-armory-v2';
 const GEAR_SLOT_IDS: GearSlot[] = ['tactical', 'lethal', 'field', 'perk1', 'perk2', 'perk3'];
-type View = 'build' | 'compare' | 'patch' | 'guide' | 'saved' | 'data';
+type View = 'build' | 'warzone' | 'compare' | 'patch' | 'guide' | 'saved' | 'data';
 const views: { id: View; label: string; icon: string }[] = [
   { id: 'build', label: 'Build', icon: 'target' },
+  ...(hasWarzone ? [{ id: 'warzone' as const, label: 'Warzone', icon: 'drop' }] : []),
   { id: 'compare', label: 'Compare', icon: 'grid' },
   { id: 'patch', label: 'Patch notes', icon: 'patch' },
   { id: 'guide', label: 'Guide', icon: 'book' },
@@ -207,6 +210,16 @@ export default function App() {
     setSettings(current => ({ ...current, mode: next, weaponId: fresh.weaponId, preset: fresh.preset, distanceM: fresh.distanceM, locked: [], excluded: [], apex: false }));
     setResult(null);
   };
+  // From the Warzone page: open one gun's Warzone build on the Build screen, where unlocks, locks and the Apex apply.
+  const tuneWarzone = (weaponId: string, styleId: string) => {
+    setMode('wz');
+    const weapon = weaponById(weaponId), style = playstyleById(styleId);
+    if (!weapon || !supported(weapon) || !style) return;
+    setSettings(current => ({ ...current, mode: 'wz', weaponId, level: weaponId in armory.levels ? Math.max(1, armory.levels[weaponId]) : weapon.maxLevel ?? 1, preset: style.id, distanceM: style.distanceM, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], apex: false }));
+    setResult(null);
+    setView('build');
+    window.scrollTo(0, 0);
+  };
   const saveClass = (variant: 'standard' | 'apex', build: BuildResult) => {
     const weapon = weaponById(settings.weaponId)!;
     const label = variant === 'apex' ? weapon.apex?.name ?? 'Apex' : 'No Apex';
@@ -236,6 +249,7 @@ export default function App() {
       {/* The Build screen stays mounted so its before/after history survives a trip to another tab. */}
       <div hidden={view !== 'build'}><BuildView settings={run} change={change} armory={armory} setArmory={setArmory} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onPatch={openPatch} onMode={hasWarzone ? switchMode : null} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), level: settings.level, playerLevel: settings.playerLevel })}/></div>
       {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
+      {view === 'warzone' && <WarzoneView onTune={tuneWarzone}/>}
       {view === 'patch' && <PatchView focus={patchFocus?.split('#')[0] ?? null} key={patchFocus ?? 'patch'} onBuild={weaponId => { selectWeapon(weaponId); setView('build'); window.scrollTo(0, 0); }}/>}
       {view === 'guide' && <GuideView/>}
       {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(withLevel(normalize(item.settings), armory)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}

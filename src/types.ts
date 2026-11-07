@@ -49,6 +49,10 @@ export interface WarzoneData {
   fallback: Record<string, string[]>;
   meta: Record<string, MetaBuild[]>;
   consensus: Record<string, Consensus>;
+  // Each gun's best build under each of its Warzone playstyles, every part unlocked, no Apex. The Warzone page pairs these.
+  builds?: Record<string, Record<string, string[]>>;
+  // CODMunity's most-used Warzone guns per playstyle: [weapon id, pick rate in percent].
+  popularity?: Record<string, [string, number][]>;
 }
 /** One row of a patch note: stat, before, after, and whether the change helps the player ('up'), hurts ('down') or neither (''). */
 export type PatchRow = [stat: string, before: string, after: string, direction: 'up' | 'down' | ''];

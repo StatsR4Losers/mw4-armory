@@ -42,9 +42,13 @@ Each slot is picked from what Game8 runs on that gun, what Game8 and WZStats run
 
 ![Perks, equipment and killstreaks with the reasons for each pick](docs/screenshots/perks.png)
 
-### Optimizes for Warzone too
+### Builds Warzone loadouts
 
-A switch at the top of the Build screen moves between Multiplayer and Warzone. Warzone uses each gun's Warzone tuning from CODMunity: base stats, damage, every part's changes and the Apex. Kills take 300 damage, 150 health plus three 50-point plates, so magazine size and bullet velocity count for more. Each class gets Warzone playstyles after CODMunity's own: long range, close range, sniper support and sniper. CODMunity's Warzone builds sit under the optimizer's pick with their codes. Perks and killstreaks are multiplayer picks, so Warzone leaves them out.
+The Warzone tab builds a two-gun loadout. Pick what you want in each slot, such as any rifle and any SMG, any sniper, or one gun you already run, and say whether your matches are close quarters, mixed or long sight lines. Every pair runs each gun's best Warzone build and is scored on how fast it wins fights from 5 to 150 m, taking each fight with whichever gun is faster. A strip shows which gun takes which distances, so a sniper and an SMG that cover each other rank above two guns that overlap. Lists below rank every long-range and close-range gun on its own, which answers "what is the best sniper?", with CODMunity's Warzone pick rates beside them.
+
+A fight's time is aiming in, every bullet a kill through 300 health takes with misses counted, a reload when the magazine runs dry, and bullet travel. Misses grow with distance, faster for SMGs than rifles and slowest for snipers, and a build with less recoil than its class keeps hitting farther. Those distances, and how often fights happen at each range, are this project's assumptions. Movement speed is not scored, so an LMG can top the list on paper.
+
+Tune in Build opens any gun's Warzone build on the Build screen, where your unlocks, locks and the Apex apply. A switch at the top of the Build screen moves between Multiplayer and Warzone. Warzone uses each gun's Warzone tuning from CODMunity: base stats, damage, every part's changes and the Apex. Kills take 300 damage, 150 health plus three 50-point plates, so magazine size and bullet velocity count for more. Each class gets Warzone playstyles after CODMunity's own: long range, close range, sniper support and sniper. CODMunity's Warzone builds sit under the optimizer's pick with their codes. Perks and killstreaks are multiplayer picks, so Warzone leaves them out.
 
 ### Shows what each patch changed
 
@@ -125,9 +129,9 @@ npm run dev
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Starts the site at http://127.0.0.1:5173 |
-| `npm test` | Runs 37 engine, data, unlock, gear and Warzone checks |
+| `npm test` | Runs 42 engine, data, unlock, gear, Warzone and loadout checks |
 | `npm run build` | Typechecks and writes the static site to `dist/` |
-| `npm run data` | Rebuilds `src/data/game.json` from `research/raw/` and rereads the site builds for intent, in about 45 seconds. Add `-- --verbose` to list every near match and unmatched site part |
+| `npm run data` | Rebuilds `src/data/game.json` from `research/raw/`, rereads the site builds for intent and finds each gun's best Warzone build per playstyle, in about 20 seconds. Add `-- --verbose` to list every near match and unmatched site part |
 | `npm run fetch` | Downloads fresh stat files, unlock tables and rechamber and hitscan stats, rebuilds the data, prints what changed per gun and runs the tests |
 
 `npm run fetch` reads one CODMunity page every 5 seconds, so it takes about 3 minutes. Its requests identify themselves as this tool. If a page fails, that gun keeps its previous data. `npm run fetch -- --skip-levels` keeps the unlock table, `--skip-pages` skips the CODMunity pages and refreshes only the stat files, and `--skip-stats` keeps the current COD Loadout files. The same page reads refresh the Warzone numbers and CODMunity's Warzone builds, and give new guns their stats until COD Loadout lists them. Site builds were collected in a browser, so `fetch` does not refresh them.

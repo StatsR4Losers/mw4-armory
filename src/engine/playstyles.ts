@@ -152,36 +152,37 @@ export const PLAYSTYLES: Playstyle[] = [
     weights: weights({ ads: 1.1, stf: .6, ttk: 1, fireRate: 1, recoil: 2, mobility: .3, adsMove: .3, flinch: .2, magazine: .1, reload: .05, velocity: 1, sway: .1, swap: .4 }),
   },
   // Warzone, after CODMunity's Warzone playstyles: long range, close range, sniper support and sniper. A full kill takes
-  // 300 damage through plates, so magazine size counts for far more than in multiplayer, and fights run longer.
+  // 300 damage through plates, so magazine size counts for more than in multiplayer, and fights run longer. Magazine
+// weights were set so builds land near CODMunity's Warzone builds: 45 to 60 rounds on rifles, few drums on SMGs.
   {
     id: 'wz-ar-long', role: 'ar', mode: 'wz', name: 'Long range', distanceM: 40, gear: 'long', optic: 'choice',
     blurb: 'The main gun for 30 to 60 m fights. Recoil, bullet velocity and a magazine that kills through plates.',
-    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .2, adsMove: .2, flinch: .5, magazine: 1.2, reload: .3, velocity: 1.5, sway: .3 }),
+    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .2, adsMove: .2, flinch: .5, magazine: .6, reload: .3, velocity: 1.5, sway: .3 }),
   },
   {
     id: 'wz-ar-close', role: 'ar', mode: 'wz', name: 'Close range', distanceM: 15, gear: 'close', optic: 'choice',
     blurb: 'A rifle built to push buildings. ADS, sprint-to-fire and recoil, with a big magazine.',
-    weights: weights({ ads: 1, stf: 1, ttk: 1, fireRate: 1, recoil: 2.5, mobility: 1, adsMove: .6, flinch: .2, hipfire: .2, magazine: 1, reload: .2, velocity: 1 }),
+    weights: weights({ ads: 1, stf: 1, ttk: 1, fireRate: 1, recoil: 2.5, mobility: 1, adsMove: .6, flinch: .2, hipfire: .2, magazine: .5, reload: .2, velocity: 1 }),
   },
   {
     id: 'wz-smg-close', role: 'smg', mode: 'wz', name: 'Close range', distanceM: 10, gear: 'close', optic: 'choice',
     blurb: 'The close-range half of a Warzone loadout. Movement, sprint-to-fire and enough bullets for a full kill.',
-    weights: weights({ ads: .9, stf: 1.3, ttk: 1, fireRate: 1, recoil: 2, mobility: 1.5, adsMove: .8, flinch: .1, hipfire: .4, magazine: 1.2, reload: .2, velocity: .6 }),
+    weights: weights({ ads: .9, stf: 1.3, ttk: 1, fireRate: 1, recoil: 2, mobility: 1.5, adsMove: .8, flinch: .1, hipfire: .4, magazine: .5, reload: .2, velocity: .6 }),
   },
   {
     id: 'wz-smg-support', role: 'smg', mode: 'wz', name: 'Sniper support', distanceM: 8, gear: 'close', optic: 'choice',
     blurb: 'The secondary behind a sniper. Swap speed, sprint-to-fire and movement come first.',
-    weights: weights({ ads: 1, stf: 1.5, ttk: 1, fireRate: 1, recoil: 1.2, mobility: 2, adsMove: 1, hipfire: .6, magazine: .8, reload: .2, velocity: .4, swap: 1 }),
+    weights: weights({ ads: 1, stf: 1.5, ttk: 1, fireRate: 1, recoil: 1.2, mobility: 2, adsMove: 1, hipfire: .6, magazine: .3, reload: .2, velocity: .4, swap: 1 }),
   },
   {
     id: 'wz-lmg-long', role: 'lmg', mode: 'wz', name: 'Long range', distanceM: 45, gear: 'long', optic: 'choice',
     blurb: 'Hold a ridge or a roof. Recoil and bullet velocity, with ADS you can live with.',
-    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .1, adsMove: .1, flinch: .5, magazine: .6, reload: .4, velocity: 1.5, sway: .3 }),
+    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .1, adsMove: .1, flinch: .5, magazine: .3, reload: .4, velocity: 1.5, sway: .3 }),
   },
   {
     id: 'wz-dmr-long', role: 'dmr', mode: 'wz', name: 'Long range', distanceM: 50, gear: 'long', optic: 'choice', aim: AIMS.paced,
     blurb: 'Semi-auto shots at range. Recoil between shots, bullet velocity and flinch.',
-    weights: weights({ ads: .7, stf: .3, ttk: 1, fireRate: 1, recoil: 3, mobility: .2, adsMove: .2, flinch: .6, magazine: .5, reload: .1, velocity: 1.5, sway: .4 }),
+    weights: weights({ ads: .7, stf: .3, ttk: 1, fireRate: 1, recoil: 3, mobility: .2, adsMove: .2, flinch: .6, magazine: .4, reload: .1, velocity: 1.5, sway: .4 }),
   },
   {
     id: 'wz-bolt-long', role: 'bolt', mode: 'wz', name: 'Long range', distanceM: 55, gear: 'long', optic: 'choice', aim: AIMS.aimed,

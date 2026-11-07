@@ -166,6 +166,17 @@ export function parseWarzoneBuilds(html: string): SiteBuild[] {
   return [...builds.values()];
 }
 
+/** CODMunity's most-used Warzone guns per playstyle, as [weapon id, pick rate in percent]. Every page carries the list. */
+export function parseWarzonePopularity(html: string): Record<string, [string, number][]> {
+  const start = html.indexOf('pairings:'), list = start < 0 ? '' : html.slice(start, html.indexOf('patchDays:', start));
+  if (!/link:"warzone"/.test(list)) return {};
+  const out: Record<string, [string, number][]> = {};
+  for (const [, playstyle, body] of list.matchAll(/playstyle:"([^"]+)",weapons:(?:\$R\[\d+\]=)?\[(.*?)\]\}/g)) {
+    out[playstyle] = [...body.matchAll(/slug:"([^"]+)",game:"mw4"[^}]*?popularity:([0-9.]+)/g)].map(([, slug, value]) => [slug, Math.round(Number(value) * 10) / 10]);
+  }
+  return out;
+}
+
 /** Warzone's health, plates and attachment limit, from the game settings every CODMunity page carries. */
 export function parseWarzoneRules(html: string) {
   const match = html.match(/health:(\d+),healthPerPlate:(\d+),icon:"[^"]*",maxAttachments:(\d+),maxPlates:(\d+),name:"Warzone"/);
@@ -205,6 +216,7 @@ export async function refreshPages(levels: boolean) {
   try { previousWarzone = readJson(warzonePath); } catch { /* first run */ }
   const warzone: Record<string, (PageExtras & { builds: SiteBuild[] }) | unknown> = {};
   let rules: ReturnType<typeof parseWarzoneRules> = null;
+  let popularity: Record<string, [string, number][]> = {};
   console.log(`CODMunity weapon pages, ${ids.length} of them, about ${Math.ceil(ids.length * 7 / 60)} minutes`);
   for (const [index, id] of ids.entries()) {
     const html = await get(`https://codmunity.gg/weapon/mw4/${id}`);
@@ -220,6 +232,7 @@ export async function refreshPages(levels: boolean) {
     if (wz) warzone[id] = { ...wz, builds: parseWarzoneBuilds(html!) };
     else if (previousWarzone.weapons[id]) warzone[id] = previousWarzone.weapons[id];
     rules ??= html ? parseWarzoneRules(html) : null;
+    if (html && !Object.keys(popularity).length) popularity = parseWarzonePopularity(html);
     console.log(`  ${String(index + 1).padStart(2)}/${ids.length} ${id}: ${levels ? (rows.length ? `${rows.length} unlock rows` : old.length ? 'unlocks failed, kept old rows' : 'no unlock table') + ', ' : ''}${found ? `${Object.keys(found.attachments).length} parts with extra stats` : 'extra stats failed'}, ${wz ? `Warzone ${Object.keys(wz.mods ?? {}).length} parts` : 'no Warzone record'}`);
     await sleep(5_000);
   }
@@ -228,7 +241,9 @@ export async function refreshPages(levels: boolean) {
   writeJson(warzonePath, {
     source: 'https://codmunity.gg/weapon/mw4/', retrieved: today,
     note: 'Warzone records (game warzone-2, sourceGame mw4) on each MW4 weapon page: base stats, damage, each part\'s changes, and the free Warzone build cards. Builds are [label, code, parts, apex, updated].',
-    rules: rules ?? { health: 300, plate: 50, attachments: 5, plates: 3 }, weapons: warzone,
+    rules: rules ?? { health: 300, plate: 50, attachments: 5, plates: 3 },
+    popularity: Object.keys(popularity).length ? popularity : (previousWarzone as { popularity?: unknown }).popularity ?? {},
+    weapons: warzone,
   });
   if (kept.length) console.log(`  Kept older unlock rows for ${kept.join(', ')}. Run again later to refresh them.`);
   if (keptExtras.length) console.log(`  Kept older extra stats for ${keptExtras.join(', ')}.`);

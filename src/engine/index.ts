@@ -76,7 +76,7 @@ const ttkCache = new Map<string, number | null>();
 
 /** Average TTK over fights from half to one and a half times the typical distance. */
 export function averageTtk(weapon: WeaponData, distanceM: number, rangeMult = 1, magazine = weapon.magazine, rpm = weapon.rpm): number | null {
-  const key = `${weapon.id}|${distanceM}|${rangeMult}|${magazine}|${rpm}`;
+  const key = `${weapon.id}|${weapon.health}|${distanceM}|${rangeMult}|${magazine}|${rpm}`;
   if (ttkCache.has(key)) return ttkCache.get(key)!;
   if (ttkCache.size > 20_000) ttkCache.clear();
   const value = computeAverageTtk(weapon, distanceM, rangeMult, magazine, rpm);
@@ -101,7 +101,7 @@ const killCache = new Map<string, { hits: number; oneShot: number }>();
 
 /** Expected hits to kill from full health, and the share of hits that kill at once, for one damage band. */
 function bandKill(weapon: WeaponData, index: number, aim: Aim) {
-  const key = `${weapon.id}|${index}|${aim.name}`;
+  const key = `${weapon.id}|${weapon.health}|${index}|${aim.name}`;
   const cached = killCache.get(key);
   if (cached) return cached;
   const regions = weapon.damage![index].regions, health = weapon.health;
@@ -129,7 +129,7 @@ function cached<T extends { hits: number; oneShot: number } | number | null>(key
 
 /** Hits to kill and one-shot share, averaged over fights from half to one and a half times the distance. */
 export function killAt(weapon: WeaponData, distanceM: number, rangeMult: number, aim: Aim): { hits: number; oneShot: number } | null {
-  return cached(`k|${weapon.id}|${distanceM}|${rangeMult}|${aim.name}`, () => computeKillAt(weapon, distanceM, rangeMult, aim));
+  return cached(`k|${weapon.id}|${weapon.health}|${distanceM}|${rangeMult}|${aim.name}`, () => computeKillAt(weapon, distanceM, rangeMult, aim));
 }
 
 function computeKillAt(weapon: WeaponData, distanceM: number, rangeMult: number, aim: Aim): { hits: number; oneShot: number } | null {
@@ -161,7 +161,7 @@ export function shotInterval(weapon: WeaponData, stats: Record<string, number>) 
 /** Bullet travel time averaged over the fight window. Bullets hit instantly inside the hitscan range, and velocity
  * attachments stretch that range by the same multiplier: CODMunity shows the Mosin's 35 m becoming 42 m with +20% velocity. */
 function travelMs(weapon: WeaponData, stats: Record<string, number>, distanceM: number): number {
-  return cached(`t|${weapon.id}|${distanceM}|${stats.bv}`, () => computeTravel(weapon, stats, distanceM));
+  return cached(`t|${weapon.id}|${weapon.base!.hitscan_range}|${distanceM}|${stats.bv}`, () => computeTravel(weapon, stats, distanceM));
 }
 
 function computeTravel(weapon: WeaponData, stats: Record<string, number>, distanceM: number) {

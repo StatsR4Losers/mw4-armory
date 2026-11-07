@@ -4,9 +4,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { baseCatalog } from './source/base-catalog.ts';
 import { weaponStatOverrides } from './source/stat-overrides.ts';
 import { consensusFor } from '../src/engine/consensus.ts';
-import { resetCaches, setPlaystyleMode } from '../src/engine/index.ts';
+import { fullModel, optimizeClass, playstylesFor, resetCaches, setPlaystyleMode } from '../src/engine/index.ts';
 import { modeView } from '../src/data/mode.ts';
-import type { GameData, WarzoneData } from '../src/types.ts';
+import { NEEDS_OPTIC } from '../src/engine/warzone.ts';
+import { metricIds } from '../src/types.ts';
+import type { GameData, WarzoneData, Weights } from '../src/types.ts';
 
 type Mods = Record<string, number>;
 type LevelRow = [name: string, slot: string, level: number, label: string];
@@ -240,12 +242,12 @@ for (const weapon of weapons) {
 
 // Warzone: the same guns, parts and unlock levels, with the Warzone numbers from each CODMunity page. A part with no
 // Warzone record keeps its multiplayer changes and is listed in fallback.
-type WarzoneRaw = { retrieved: string; rules: WarzoneData['rules']; weapons: Record<string, { stats?: Mods; base: Mods; damage?: DamageBand[]; attachments: Record<string, Mods>; mods?: Record<string, Mods>; builds: [string, string, string[], string | null, string][] }> };
+type WarzoneRaw = { retrieved: string; rules: WarzoneData['rules']; popularity?: WarzoneData['popularity']; weapons: Record<string, { stats?: Mods; base: Mods; damage?: DamageBand[]; attachments: Record<string, Mods>; mods?: Record<string, Mods>; builds: [string, string, string[], string | null, string][] }> };
 let warzoneRaw: WarzoneRaw | null = null;
 try { warzoneRaw = read('research/raw/codmunity-warzone.json'); } catch { /* no Warzone snapshot yet */ }
 let warzone: WarzoneData | undefined;
 if (warzoneRaw) {
-  const wz: WarzoneData = { retrieved: warzoneRaw.retrieved, rules: warzoneRaw.rules, weapons: {}, loadouts: {}, fallback: {}, meta: {}, consensus: {} };
+  const wz: WarzoneData = { retrieved: warzoneRaw.retrieved, rules: warzoneRaw.rules, popularity: warzoneRaw.popularity ?? {}, weapons: {}, loadouts: {}, fallback: {}, meta: {}, consensus: {} };
   for (const weapon of weapons) {
     const page = warzoneRaw.weapons[weapon.id];
     if (!page?.stats || !loadouts[weapon.id]) continue;
@@ -281,6 +283,17 @@ if (warzoneRaw) {
     if (!wz.loadouts[weapon.id] || !weapon.base) continue;
     const found = consensusFor({ ...view, consensus: {} }, weapon);
     if (found) wz.consensus[weapon.id] = found;
+  }
+  // The Warzone page pairs guns instantly, so each gun's best build per Warzone playstyle is found here, with every part
+  // unlocked and no Apex. The Build screen still tunes any one gun to the player's own unlocks.
+  wz.builds = {};
+  const neutral = Object.fromEntries(metricIds.map(id => [id, 1])) as Weights;
+  for (const weapon of view.weapons) {
+    if (!wz.loadouts[weapon.id] || !fullModel(weapon)) continue;
+    for (const style of playstylesFor(weapon)) {
+      const best = optimizeClass(view, weapon, { mode: 'wz', weaponId: weapon.id, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutral, distanceM: style.distanceM, apex: false, optic: NEEDS_OPTIC.has(style.id), locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] }, false).best;
+      if (best) (wz.builds[weapon.id] ??= {})[style.id] = best.attachments;
+    }
   }
   setPlaystyleMode('mp'); resetCaches();
   warzone = wz;

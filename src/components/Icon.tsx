@@ -7,6 +7,7 @@ export function Icon({ name, size = 18, style }: { name: string; size?: number; 
     target: <><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M1 12h4m14 0h4"/></>,
     weapon: <><path d="M3 9h13l2-2h3v6h-8l-2 3H7l1-3H3zM5 9V6m11 7v5h-3v-5"/></>,
     save: <><path d="M5 3h13l3 3v15H3V3h2z"/><path d="M7 3v6h10V3M7 21v-8h10v8"/></>,
+    drop: <><path d="M4 11a8 8 0 0 1 16 0z"/><path d="m5 11 7 9 7-9M12 11v9"/></>,
     patch: <><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7m-7 4h5"/></>,
     data: <><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></>,
     arrow: <><path d="M5 12h14m-6-6 6 6-6 6"/></>,

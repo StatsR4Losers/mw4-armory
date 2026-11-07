@@ -11,6 +11,7 @@ import type { SavedClass } from './SavedView';
 import { ClassSetup, SitePicks } from './BuildExtras';
 import { OtherGuns, UnlockGap, unlockTag } from './Unlocks';
 import { patchFor } from './PatchView';
+import { Typed, Roll } from '../components/Terminal';
 
 type Props = {
   settings: Settings; change: (patch: Partial<Settings>) => void; selectWeapon: (id: string) => void;
@@ -168,7 +169,7 @@ export function BuildView({ settings, change, armory, setArmory, selectWeapon, r
             <span className="eyebrow">Best build · {style.name} · {settings.distanceM} m</span>
             <h2>{settings.apex && weapon.apex ? <><Icon name="bolt" size={18}/>{weapon.apex.name}</> : 'No Apex'}</h2>
           </div>
-          {best && <div className="build-score" title="Estimated milliseconds of fight time saved against the stock gun"><strong>{signedMs(best.score)}</strong><span>vs stock</span></div>}
+          {best && <div className="build-score" title="Estimated milliseconds of fight time saved against the stock gun"><strong><Roll value={signedMs(best.score)}/></strong><span>vs stock</span></div>}
         </header>
 
         <div className="build-switches">
@@ -301,7 +302,7 @@ function Hero({ weapon, result, settings, busy, onPatch }: { weapon: WeaponData;
   return <section className="hero">
     <div className="hero-copy">
       <span className="eyebrow">{settings.mode === 'wz' ? `Warzone · ${weapon.category}` : weapon.category}{busy && <i className="spinner" aria-label="Calculating"/>}</span>
-      <h1>{weapon.name}</h1>
+      <h1><Typed text={weapon.name}/></h1>
       <dl className="facts">{facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}<small>{fact.unit}</small></dd></div>)}</dl>
       {patched && <button className={`patch-chip ${patched.isNew ? 'new' : patched.change?.verdict}`} onClick={() => onPatch?.(weapon.id)} title="See what the patch changed">
         <Icon name="patch" size={14}/>{patched.isNew ? `New in ${patched.patch.title}` : `${patched.change!.verdict === 'buff' ? 'Buffed' : 'Nerfed'} in ${patched.patch.title}`}<Icon name="arrow" size={13}/>

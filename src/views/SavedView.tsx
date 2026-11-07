@@ -1,6 +1,7 @@
 import { attachmentImage, data, hideMissing, slotName, sortSlots, weaponById, weaponImage } from '../data/game';
 import { Icon } from '../components/Icon';
 import type { Settings } from '../types';
+import { Typed } from '../components/Terminal';
 
 export type SavedClass = {
   id: string; name: string; weaponId: string; variant: 'standard' | 'apex'; attachments: string[]; gear?: string[];
@@ -11,7 +12,7 @@ export function SavedView({ saved, onLoad, onDelete, onCopy, onBuild, onCompare 
   return <div className="saved">
     <header className="page-head">
       <span className="eyebrow">Saved</span>
-      <h1>Your classes</h1>
+      <h1><Typed text="Your classes"/></h1>
       <p>Stored in this browser only. Each one keeps the exact attachments you saved, even if the data changes later.</p>
     </header>
     {saved.length === 0 ? <div className="empty">

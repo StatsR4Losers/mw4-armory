@@ -1,6 +1,7 @@
 import { data, supported } from '../data/game';
 import { fullModel, sharedPart } from '../engine';
 import { Icon } from '../components/Icon';
+import { Typed } from '../components/Terminal';
 
 const sources = [
   { title: 'CODMunity attachment stats, via COD Loadout', url: 'https://codloadout.gitlab.io/data/mw4-community-stats.json', note: 'Base stats for every gun and each attachment\'s multiplier on each gun. Snapshot from Oct 28, after the patch that day. Spot-checked by hand against CODMunity\'s VEL 46 and Kastov 762 pages: every value checked matched.' },
@@ -37,7 +38,7 @@ export function DataView() {
   return <div className="data-view">
     <header className="page-head">
       <span className="eyebrow">Data</span>
-      <h1>Where the numbers come from</h1>
+      <h1><Typed text="Where the numbers come from"/></h1>
       <p>Community-measured launch data, version {data.version}. None of it is published by Activision, and patches change it.</p>
     </header>
     <section className="coverage">{coverage.map(item => <div key={item.label}><span>{item.label}</span><strong>{item.value}</strong><p>{item.note}</p></div>)}</section>

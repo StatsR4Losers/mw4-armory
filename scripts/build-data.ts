@@ -1,8 +1,9 @@
 // Builds src/data/game.json from the raw source snapshots in research/raw.
 // Run with: npm run data
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { baseCatalog } from './source/base-catalog.ts';
 import { weaponStatOverrides } from './source/stat-overrides.ts';
+import { partRules } from './source/part-rules.ts';
 import { consensusFor } from '../src/engine/consensus.ts';
 import { fullModel, optimizeClass, playstylesFor, resetCaches, setPlaystyleMode } from '../src/engine/index.ts';
 import { modeView } from '../src/data/mode.ts';
@@ -48,6 +49,8 @@ const metaById = new Map<string, any>(attachmentMeta.attachments.map((item: any)
 const problems: string[] = [];
 
 const attachments: Record<string, { name: string; slot: string; kind: string; image: boolean }> = {};
+// COD Loadout's metadata says which parts it has art for. Icons added later for newer guns sit in public/assets too.
+const hasIcon = (id: string, picture?: unknown) => !!picture || existsSync(new URL(`public/assets/attachments/${id}.webp`, root));
 const loadouts: Record<string, [id: string, level: number, mods: Mods][]> = {};
 
 const weapons = baseCatalog.weapons.map(weapon => {
@@ -64,7 +67,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     const id = slug(name);
     const meta = metaById.get(id);
     if (!meta) problems.push(`${weapon.id}: no attachment record for "${name}" (${id})`);
-    attachments[id] ??= { name, slot: slotId(slot), kind: label || meta?.about || '', image: !!meta?.picture };
+    attachments[id] ??= { name, slot: slotId(slot), kind: label || meta?.about || '', image: hasIcon(id, meta?.picture) };
     list.push([id, level, { ...statMods[id] ?? {}, ...extraFor(weapon.id, extras[weapon.id]?.attachments[name] ?? {}) }]);
   }
   for (const id of Object.keys(statMods)) {
@@ -74,7 +77,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     // CODMunity's MAR-9 page has no attachment table. Its stat entries stay usable with level 0, shown as unpublished.
     const meta = metaById.get(id);
     if (!rows.length && meta) {
-      attachments[id] ??= { name: meta.name, slot: meta.type, kind: meta.about ?? '', image: !!meta.picture };
+      attachments[id] ??= { name: meta.name, slot: meta.type, kind: meta.about ?? '', image: hasIcon(id, meta.picture) };
       list.push([id, 0, statMods[id]]);
     } else problems.push(`${weapon.id}: stat entry ${id} has no unlock row`);
   }
@@ -87,6 +90,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     level: apexRow?.[2] ?? weapon.apex.unlockLevel ?? weapon.maxLevel,
     blocks: weapon.apex.blockedSlots.map(slotId),
     // A missing entry means the source lists no stat change, not a known zero effect.
+    ...(partRules[weapon.id]?.apexOnly ? { parts: partRules[weapon.id].apexOnly } : {}),
     mods: (() => {
       const extra = extraFor(weapon.id, extras[weapon.id]?.attachments[weapon.apex!.name] ?? extras[weapon.id]?.attachments[apexRow?.[0] ?? ''] ?? {});
       const fromPage = stats.weapons[weapon.id] ? undefined : pageMods[slug(apexRow?.[0] ?? '')] ?? pageMods[weapon.apex!.id];
@@ -115,8 +119,17 @@ const weapons = baseCatalog.weapons.map(weapon => {
     base: listedBase ? { ...listedBase, ...extraFor(weapon.id, page?.base ?? {}) } : null,
     damage: profile ?? null,
     apex,
+    ...(partRules[weapon.id]?.blocks ? { partBlocks: partRules[weapon.id].blocks } : {}),
   };
 });
+// A rule that names a part or slot the gun does not have is a typo, and would silently do nothing.
+for (const [weaponId, rule] of Object.entries(partRules)) {
+  const list = loadouts[weaponId] ?? [];
+  const slots = new Set(list.map(([id]) => attachments[id].slot));
+  for (const id of [...rule.apexOnly ?? [], ...Object.keys(rule.blocks ?? {})]) if (!list.some(entry => entry[0] === id)) throw new Error(`part-rules: ${weaponId} has no part ${id}`);
+  for (const slot of Object.values(rule.blocks ?? {}).flat()) if (!slots.has(slot)) throw new Error(`part-rules: ${weaponId} has no ${slot} slot`);
+  if (rule.apexOnly && !weapons.find(weapon => weapon.id === weaponId)?.apex) throw new Error(`part-rules: ${weaponId} has no Apex`);
+}
 
 // Perks, equipment and killstreaks: Activision's launch catalog, plus kill costs and two perk tier lists.
 const streakCosts: Record<string, number> = read('research/raw/streak-costs.json').costs;

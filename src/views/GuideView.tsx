@@ -1,4 +1,5 @@
 import { Icon } from '../components/Icon';
+import { Typed } from '../components/Terminal';
 
 const sources = [
   { title: 'Activision: Modern Warfare 4 progression and prestige (Oct 19)', url: 'https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige' },
@@ -40,7 +41,7 @@ export function GuideView() {
   return <div className="guide">
     <header className="page-head">
       <span className="eyebrow">Leveling guide</span>
-      <h1>Prestige, camos and where to grind</h1>
+      <h1><Typed text="Prestige, camos and where to grind"/></h1>
       <p>The order that wastes the least XP, from Activision's progression rules and what guides and players report. Anything not from Activision is marked.</p>
     </header>
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import raw from '../src/data/game.json' with { type: 'json' };
-import { ATTACHMENT_LIMIT, PLAYSTYLES, STABILITY, TIE_MS, applyMods, evaluateBuild, killAt, metrics, missedShotMs, optimize, optimizeClass, playstyleById, playstyleFor, playstylesFor, roleOf, score, slugAmmo, ttkAt, weightsFor } from '../src/engine/index.ts';
+import { ATTACHMENT_LIMIT, LOWER_BETTER, PLAYSTYLES, STABILITY, TIE_MS, applyMods, evaluateBuild, killAt, metrics, missedShotMs, optimize, optimizeClass, playstyleById, playstyleFor, playstylesFor, roleOf, score, slugAmmo, ttkAt, weightsFor } from '../src/engine/index.ts';
 import { consensusFor } from '../src/engine/consensus.ts';
 import { metricIds } from '../src/types.ts';
 import type { BuildResult, GameData, Settings, Weights } from '../src/types.ts';
@@ -61,7 +61,7 @@ test('time to kill follows the damage bands and stretches with range', () => {
 
 test('pruning never changes the winner: matches a full brute-force search', () => {
   const cases: [string, string, boolean][] = [['vel-46', 'smg-mid', false], ['vel-46', 'smg-rush', true], ['kastov-762', 'ar-long', false], ['m4', 'ar-control', true],
-    ['rezi-12', 'shotgun-hip', false], ['warlord', 'shotgun-slug', false], ['iso-nightshade', 'smg-rush', true], ['mosin-nagant', 'bolt-quickscope', false], ['kg-7-vulcan', 'sniper-hardscope', false], ['sang-9mm', 'pistol-sidearm', false]];
+    ['m4', 'ar-long', true], ['m4', 'ar-control', false], ['rezi-12', 'shotgun-hip', false], ['warlord', 'shotgun-slug', false], ['iso-nightshade', 'smg-rush', true], ['mosin-nagant', 'bolt-quickscope', false], ['kg-7-vulcan', 'sniper-hardscope', false], ['sang-9mm', 'pistol-sidearm', false]];
   for (const [id, preset, apex] of cases) {
     const s = settings(id, { preset, distanceM: playstyleById(preset)!.distanceM });
     const fast = optimizeClass(data, weapon(id), s, apex);
@@ -69,6 +69,12 @@ test('pruning never changes the winner: matches a full brute-force search', () =
     assert.ok(full.evaluated > fast.evaluated, `${id} pruning should cut the search`);
     assert.ok(Math.abs(fast.best!.score - full.best!.score) < 1e-9, `${id} ${preset} ${apex}: ${fast.best!.score} vs ${full.best!.score}`);
   }
+  // A part that closes slots can only drop out to one that closes the same ones or more, so locking a rear grip
+  // still finds the best stock that fits beside it.
+  const s = settings('m4', { preset: 'ar-control', distanceM: playstyleById('ar-control')!.distanceM, locked: ['zlr-phase-grip'] });
+  const fast = optimizeClass(data, weapon('m4'), s, true), full = optimizeClass(data, weapon('m4'), s, true, { prune: false, keep: 1 });
+  assert.ok(!fast.best!.attachments.includes('hurricane-stock'));
+  assert.ok(Math.abs(fast.best!.score - full.best!.score) < 1e-9, `${fast.best!.score} vs ${full.best!.score}`);
 });
 
 test('builds are legal: one per slot, at most five, Apex blocked slots stay empty', () => {
@@ -81,7 +87,62 @@ test('builds are legal: one per slot, at most five, Apex blocked slots stay empt
       assert.equal(new Set(slots).size, slots.length, `${item.id} repeats a slot`);
       assert.ok(!slots.includes('optic'), `${item.id} used an optic with optics off`);
       if (build.apex) for (const blocked of item.apex!.blocks) assert.ok(!slots.includes(blocked), `${item.id} used blocked ${blocked}`);
+      if (!build.apex) for (const id of item.apex?.parts ?? []) assert.ok(!build.attachments.includes(id), `${item.id} ran ${id} without its Apex`);
+      for (const id of build.attachments) for (const closed of item.partBlocks?.[id] ?? []) assert.ok(!slots.includes(closed), `${item.id}: ${id} closes ${closed}`);
     }
+  }
+});
+
+test('the M4 Hurricane parts need the Apex, and Hurricane Stock closes the rear grip and barrel', () => {
+  const m4 = weapon('m4');
+  assert.deepEqual(m4.apex!.parts, ['hurricane-stock', 'hurricane-grip']);
+  assert.deepEqual(m4.partBlocks, { 'hurricane-stock': ['rear-grip', 'barrel'] });
+  // Locking Hurricane Stock keeps it in the Apex build, takes the rear grip out, and leaves no build without the Apex.
+  for (const preset of playstylesFor(m4).map(style => style.id)) {
+    const result = optimize(data, settings('m4', { preset, locked: ['hurricane-stock'] }));
+    assert.equal(result.standard.available, false);
+    assert.match(result.standard.reason!, /Hurricane Stock is locked in, but it only fits with M4 Hurricane on/);
+    const apex = result.apex.best!;
+    assert.ok(apex.attachments.includes('hurricane-stock'), preset);
+    assert.ok(!apex.attachments.map(slot).some(name => name === 'rear-grip' || name === 'barrel'), `${preset}: ${apex.attachments}`);
+  }
+  // Without the lock, no playstyle's no-Apex build runs a Hurricane part. Before the rule, Aggressive ran Hurricane Stock.
+  for (const preset of playstylesFor(m4).map(style => style.id)) for (const optic of [false, true]) {
+    const plain = optimize(data, settings('m4', { preset, optic, distanceM: playstyleById(preset)!.distanceM })).standard.best!;
+    assert.ok(!plain.attachments.some(id => m4.apex!.parts!.includes(id)), `${preset}: ${plain.attachments}`);
+  }
+  const both = optimize(data, settings('m4', { locked: ['hurricane-stock', 'zlr-phase-grip'] })).apex;
+  assert.equal(both.available, false);
+  assert.match(both.reason!, /Hurricane Stock blocks the rear grip slot/);
+  // The build checker names the same problems in a site or custom build.
+  const s = settings('m4');
+  assert.ok(evaluateBuild(data, m4, s, ['hurricane-stock', 'zlr-phase-grip'], true).issues.includes('Hurricane Stock blocks the rear grip slot.'));
+  assert.ok(evaluateBuild(data, m4, s, ['ft-cannonade-7', 'hurricane-stock'], false).issues.includes('Hurricane Stock only fits with M4 Hurricane on.'));
+  assert.deepEqual(evaluateBuild(data, m4, s, ['hurricane-grip', 'zlr-phase-grip', 'demo-dozer-stock'], true).issues, []);
+});
+
+test('a part that closes slots is never paired with a part in them, and pruning keeps the best that fits', () => {
+  // With its real numbers Hurricane Stock rarely wins, so this copy makes it far better than any stock. The search
+  // has to take it and give up the rear grip, or keep the rear grip and drop to a stock that fits beside it.
+  // Every stat any stock changes, 20% better than the best stock, so it beats them all and pruning would drop them.
+  const stocks = data.loadouts.m4.filter(([id]) => slot(id) === 'stock').map(entry => entry[2]);
+  const boosted = Object.fromEntries([...new Set(stocks.flatMap(Object.keys))].map(stat => {
+    const values = stocks.map(values => values[stat] ?? 1);
+    return [stat, LOWER_BETTER.has(stat) ? Math.min(...values) * .8 : Math.max(...values) * 1.2];
+  }));
+  const strong: GameData = { ...data, loadouts: { ...data.loadouts, m4: data.loadouts.m4.map(([id, level, values]) => [id, level, id === 'hurricane-stock' ? boosted : values]) } };
+  for (const preset of playstylesFor(weapon('m4')).map(style => style.id)) {
+    const s = settings('m4', { preset, distanceM: playstyleById(preset)!.distanceM });
+    const best = optimizeClass(strong, weapon('m4'), s, true).best!;
+    assert.ok(best.attachments.includes('hurricane-stock'), `${preset}: ${best.attachments}`);
+    assert.ok(!best.attachments.map(slot).includes('rear-grip'), `${preset}: ${best.attachments}`);
+    const plain = optimizeClass(strong, weapon('m4'), s, false).best!;
+    assert.ok(!plain.attachments.includes('hurricane-stock'), `${preset} ran Hurricane Stock without the Apex: ${plain.attachments}`);
+    const grip = { ...s, locked: ['zlr-phase-grip'] };
+    const fast = optimizeClass(strong, weapon('m4'), grip, true), full = optimizeClass(strong, weapon('m4'), grip, true, { prune: false, keep: 1 });
+    assert.ok(!fast.best!.attachments.includes('hurricane-stock'), `${preset}: ${fast.best!.attachments}`);
+    assert.ok(fast.best!.attachments.map(slot).includes('stock'), `${preset} should still find a stock: ${fast.best!.attachments}`);
+    assert.ok(Math.abs(fast.best!.score - full.best!.score) < 1e-9, `${preset}: ${fast.best!.score} vs ${full.best!.score}`);
   }
 });
 

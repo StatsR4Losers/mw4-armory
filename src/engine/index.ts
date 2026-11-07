@@ -44,7 +44,7 @@ export const ATTACHMENT_LIMIT = 5;
 const EXCESS_RECOIL = .05;
 // Recoil weights are calibrated on the VEL 46, whose missed shot costs 63 ms.
 const REFERENCE_SHOT_MS = 60_000 / 952;
-const LOWER_BETTER = new Set(['rechamber', 'rechamber_aim', 'pre_fire_delay', 'ads', 'ads_out', 'stf', 'reload', 'raise_speed', 'drop_speed', 'vert_recoil', 'horiz_recoil', 'vert_gun_kick', 'horiz_gun_kick', 'ads_idle_sway', 'ads_gun_bob', 'hip_idle_sway', 'hip_gun_bob', 'hip_turn_sway', 'flinch_received']);
+export const LOWER_BETTER = new Set(['rechamber', 'rechamber_aim', 'pre_fire_delay', 'ads', 'ads_out', 'stf', 'reload', 'raise_speed', 'drop_speed', 'vert_recoil', 'horiz_recoil', 'vert_gun_kick', 'horiz_gun_kick', 'ads_idle_sway', 'ads_gun_bob', 'hip_idle_sway', 'hip_gun_bob', 'hip_turn_sway', 'flinch_received']);
 const METRIC_STATS: Record<MetricId, string[]> = {
   ads: ['ads'], stf: ['stf'], recoil: ['vert_recoil', 'horiz_recoil', 'vert_gun_kick', 'horiz_gun_kick'], ttk: ['range', 'mag_size'],
   mobility: ['movement', 'sprint', 'tac_sprint', 'strafe_movement'], adsMove: ['ads_movement'], flinch: ['flinch_received'],
@@ -52,7 +52,8 @@ const METRIC_STATS: Record<MetricId, string[]> = {
   fireRate: ['rpm', 'mag_size', 'rechamber', 'pre_fire_delay'], swap: ['raise_speed'], steady: ['rechamber_aim'],
 };
 
-type Option = { id: string; slot: string; level: number; mods: Mods };
+// blocks lists the slots this part closes when it is on.
+type Option = { id: string; slot: string; level: number; mods: Mods; blocks: string[] };
 
 export function applyMods(base: Record<string, number>, mods: Mods[]): Record<string, number> {
   const out = { ...base };
@@ -257,6 +258,8 @@ function relevantStats(weights: Weights) {
 
 /** True when a is at least as good as b on every scored stat and strictly better on one. */
 function dominates(a: Option, b: Option, stats: string[]) {
+  // A part that closes a slot the other leaves open can lose to it once that slot is filled, whatever its stats.
+  if (a.blocks.some(slot => !b.blocks.includes(slot))) return false;
   let strictly = false;
   for (const stat of stats) {
     const x = a.mods[stat] ?? 1, y = b.mods[stat] ?? 1;
@@ -279,7 +282,12 @@ export function opticOn(settings: Pick<Settings, 'optic'>, style: Playstyle) { r
 export function availableOptions(data: GameData, weapon: WeaponData, settings: Settings): Option[] {
   return (data.loadouts[weapon.id] ?? [])
     .filter(([id]) => !settings.excluded.includes(id) && unlockState(data, weapon.id, id, settings).unlocked)
-    .map(([id, level, mods]) => ({ id, slot: data.attachments[id].slot, level, mods }));
+    .map(([id, level, mods]) => ({ id, slot: data.attachments[id].slot, level, mods, blocks: weapon.partBlocks?.[id] ?? [] }));
+}
+
+/** Whether a part fits beside the ones already chosen: neither closes the other's slot. */
+function fits(option: Pick<Option, 'slot' | 'blocks'>, chosen: Pick<Option, 'slot' | 'blocks'>[]) {
+  return !chosen.some(other => other.blocks.includes(option.slot) || option.blocks.includes(other.slot));
 }
 
 export function apexState(weapon: WeaponData, settings: Pick<Settings, 'level' | 'armory'>): { available: boolean; reason: string | null } {
@@ -358,8 +366,12 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
   const style = playstyleFor(weapon, settings.preset);
   const slug = slugAmmo(data, weapon);
   const open = availableOptions(data, weapon, settings);
-  const pool = open.filter(option => style.ammo !== 'pellets' || option.id !== slug?.[0]);
+  // Parts like the M4's Hurricane Stock only exist with the Apex on.
+  const apexOnly = new Set(weapon.apex?.parts ?? []);
+  const pool = open.filter(option => (style.ammo !== 'pellets' || option.id !== slug?.[0]) && (useApex || !apexOnly.has(option.id)));
   const locked = settings.locked.filter(id => (data.loadouts[weapon.id] ?? []).some(entry => entry[0] === id));
+  const needsApex = useApex ? undefined : locked.find(id => apexOnly.has(id));
+  if (needsApex) return empty(`${data.attachments[needsApex].name} is locked in, but it only fits with ${weapon.apex!.name} on.`);
   if (style.ammo === 'slug') {
     if (!slug) return empty(`${weapon.name} has no slug ammunition.`);
     if (!open.some(option => option.id === slug[0])) return empty(`${data.attachments[slug[0]].name} is not unlocked yet. It unlocks at ${unlockHint(data, weapon.id, slug[0], settings) || `weapon level ${slug[1]}`}.`);
@@ -374,8 +386,15 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
   for (const id of locked) {
     const option = pool.find(item => item.id === id)!;
     if (lockedSlots.has(option.slot)) return empty(`Two locked attachments use the ${option.slot.replace('-', ' ')} slot.`);
+    const clash = [...lockedSlots.values()].find(other => !fits(option, [other]));
+    if (clash) {
+      const [closer, closed] = clash.blocks.includes(option.slot) ? [clash, option] : [option, clash];
+      return empty(`${data.attachments[closer.id].name} and ${data.attachments[closed.id].name} are both locked, but ${data.attachments[closer.id].name} blocks the ${closed.slot.replace('-', ' ')} slot.`);
+    }
     lockedSlots.set(option.slot, option);
   }
+  // A locked part's closed slots are out of the search, the same as the Apex's.
+  for (const option of lockedSlots.values()) for (const slot of option.blocks) blocked.add(slot);
   if (lockedSlots.size > ATTACHMENT_LIMIT) return empty(`Lock at most ${ATTACHMENT_LIMIT} attachments.`);
 
   const weights = weightsFor(settings, style);
@@ -398,7 +417,7 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
     // such as the optics, which all list no changes. The first is the lowest unlock level.
     const kept = list.filter(option => !list.some(other => other !== option && dominates(other, option, stats)));
     const seen = new Set<string>();
-    slots.set(slot, kept.filter(option => { const key = stats.map(stat => option.mods[stat] ?? 1).join(); if (seen.has(key)) return false; seen.add(key); return true; }));
+    slots.set(slot, kept.filter(option => { const key = stats.map(stat => option.mods[stat] ?? 1).join() + '|' + option.blocks.join(); if (seen.has(key)) return false; seen.add(key); return true; }));
   }
   const requireOptic = optic && blocked.has('optic') === false && slots.has('optic');
   const required = new Set([...lockedSlots.keys(), ...(requireOptic ? ['optic'] : [])]);
@@ -428,7 +447,7 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
     const slot = order[index];
     if (!required.has(slot)) visit(index + 1, chosen);
     if (chosen.length >= ATTACHMENT_LIMIT) return;
-    for (const option of slots.get(slot)!) visit(index + 1, [...chosen, option]);
+    for (const option of slots.get(slot)!) if (fits(option, chosen)) visit(index + 1, [...chosen, option]);
   };
   visit(0, []);
   const best = top[0] ?? null;
@@ -470,13 +489,18 @@ export function optimizeClass(data: GameData, weapon: WeaponData, settings: Sett
 export function evaluateBuild(data: GameData, weapon: WeaponData, settings: Settings, attachmentIds: string[], useApex: boolean): { build: BuildResult | null; issues: string[] } {
   if (!weapon.base) return { build: null, issues: [`No attachment stat data is published for ${weapon.name}.`] };
   const issues: string[] = [];
-  const known = new Map((data.loadouts[weapon.id] ?? []).map(([id, level, mods]) => [id, { id, slot: data.attachments[id].slot, level, mods }]));
+  const known = new Map((data.loadouts[weapon.id] ?? []).map(([id, level, mods]) => [id, { id, slot: data.attachments[id].slot, level, mods, blocks: weapon.partBlocks?.[id] ?? [] }]));
   const chosen: Option[] = [];
   for (const id of attachmentIds) {
     const option = known.get(id);
     if (!option) { issues.push(`${data.attachments[id]?.name ?? id} is not listed for the ${weapon.name}.`); continue; }
     if (chosen.some(item => item.slot === option.slot)) issues.push(`Two parts use the ${option.slot.replace('-', ' ')} slot.`);
     if (useApex && weapon.apex?.blocks.includes(option.slot)) issues.push(`${weapon.apex.name} blocks the ${option.slot.replace('-', ' ')} slot.`);
+    if (!useApex && weapon.apex?.parts?.includes(id)) issues.push(`${data.attachments[id].name} only fits with ${weapon.apex.name} on.`);
+    for (const other of chosen) {
+      if (other.blocks.includes(option.slot)) issues.push(`${data.attachments[other.id].name} blocks the ${option.slot.replace('-', ' ')} slot.`);
+      if (option.blocks.includes(other.slot)) issues.push(`${data.attachments[id].name} blocks the ${other.slot.replace('-', ' ')} slot.`);
+    }
     chosen.push(option);
   }
   if (chosen.length > ATTACHMENT_LIMIT) issues.push(`${chosen.length} attachments, one more than the game allows.`);

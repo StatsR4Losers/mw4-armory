@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Armory terminal mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* A 90s terminal: nothing eases. State changes are instant, motion moves in steps, hover inverts. */
+:root {
+  --bg: #000;
+  --orange: #ff8a1f;
+  --orange-dim: rgba(255, 138, 31, .6);
+  --line: rgba(255, 138, 31, .32);
+  --line-2: rgba(255, 138, 31, .6);
+  --red: #ff2a2a;
+  --green: #4dff9a;
+  --green-dim: rgba(77, 255, 154, .14);
+  --apex: #a98bff;
+  --text: #f4ecdc;
+  --soft: #d9c7a6;
+  --muted: #a8916c;
+  --serif: 'Noto Serif JP', 'Times New Roman', serif;
+  --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--text); font: 14px/1.5 var(--mono); min-height: 100vh; overflow-x: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0l28 16v32L28 64 0 48V16zM28 64v33' fill='none' stroke='%23ff8a1f' stroke-opacity='.07'/%3E%3C/svg%3E");
+}
+/* scanlines, and a phosphor flicker every few seconds */
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px); animation: flicker 7s steps(1) infinite; }
+@keyframes flicker { 0%, 96%, 98% { background-color: transparent; } 97%, 99% { background-color: rgba(255,138,31,.03); } }
+
+.label { font: 600 11px/1 var(--cond); letter-spacing: .18em; text-transform: uppercase; color: var(--orange); }
+.jp { font: 700 10px/1 var(--serif); letter-spacing: .1em; color: var(--muted); }
+.hazard { height: 8px; background: repeating-linear-gradient(-45deg, var(--orange) 0 10px, #000 10px 20px); background-size: 28.28px 8px; animation: hazard 1.2s steps(4) infinite; }
+@keyframes hazard { to { background-position: 28.28px 0; } }
+.cursor { display: inline-block; width: .55em; height: 1em; margin-left: 3px; vertical-align: -.12em; background: currentColor; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+button { font: inherit; color: inherit; }
+
+/* ---------- boot ---------- */
+#boot { position: fixed; inset: 0; z-index: 100; background: #000; display: flex; flex-direction: column; justify-content: center; padding: 0 12vw; cursor: pointer; }
+#boot .bootmark { font: 900 64px/.9 var(--serif); transform: scaleY(1.25); transform-origin: left bottom; color: var(--orange); margin-bottom: 34px; }
+#boot pre { margin: 0; font: 500 13px/1.75 var(--mono); color: var(--soft); min-height: 11em; }
+#boot pre b { color: var(--green); font-weight: 500; }
+#boot .bar { margin-top: 20px; height: 8px; border: 1px solid var(--line-2); max-width: 520px; padding: 1px; }
+#boot .bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, var(--orange) 0 10px, transparent 10px 12px); }
+#boot .skip { margin-top: 14px; font: 500 10px var(--mono); color: var(--muted); letter-spacing: .1em; }
+#boot.gone { animation: bootout .3s steps(3) forwards; }
+@keyframes bootout { to { clip-path: inset(50% 0 50% 0); } }
+
+/* ---------- top bar ---------- */
+header { display: flex; align-items: stretch; border-bottom: 1px solid var(--line-2); background: #000; position: relative; z-index: 2; }
+.brand { display: flex; align-items: center; gap: 14px; padding: 10px 22px; border-right: 1px solid var(--line-2); }
+.brand-mark { width: 30px; height: 34px; background: var(--red); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); display: grid; place-items: center; font: 900 13px var(--serif); color: #000; }
+.brand-name { font: 900 22px/1 var(--serif); letter-spacing: .02em; transform: scaleY(1.2); transform-origin: left; }
+.brand-sub { margin-top: 5px; }
+nav { display: flex; flex: 1; }
+nav a { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 0 18px; border-right: 1px solid var(--line); color: var(--soft); text-decoration: none; font: 600 14px/1 var(--cond); letter-spacing: .14em; text-transform: uppercase; }
+nav a small { font: 500 10px var(--mono); color: var(--muted); letter-spacing: .05em; }
+nav a:hover, nav a.on { background: var(--orange); color: #000; }
+nav a:hover small, nav a.on small { color: #000; }
+nav a.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; background: var(--red); animation: blink 1.1s steps(1) infinite; }
+.status { display: flex; align-items: center; gap: 18px; padding: 0 22px; font: 500 11px var(--mono); color: var(--muted); }
+.status b { color: var(--green); font-weight: 500; }
+.led { width: 8px; height: 8px; background: var(--green); animation: blink 1.4s steps(1) infinite; }
+.wave { width: 120px; height: 26px; }
+.wave polyline { fill: none; stroke: var(--green); stroke-width: 1.2; stroke-dasharray: 6 3; animation: wave 1.2s steps(6) infinite; }
+@keyframes wave { to { stroke-dashoffset: -18; } }
+
+main { max-width: 1320px; margin: 0 auto; padding: 64px 28px 110px; }
+
+/* ---------- entry: blocks print in on a clock, with one overbright frame ---------- */
+.in { visibility: hidden; }
+.run .in { animation: print .24s steps(1) forwards; animation-delay: calc(var(--d, 0) * 1ms); }
+@keyframes print {
+  0% { visibility: visible; filter: brightness(2.4) contrast(1.3); }
+  34% { visibility: visible; filter: none; opacity: .4; }
+  67% { visibility: visible; opacity: 1; }
+  100% { visibility: visible; }
+}
+
+/* ---------- title card ---------- */
+.titlecard { position: relative; display: grid; grid-template-columns: auto 1fr auto; gap: 36px; align-items: end; padding-bottom: 26px; border-bottom: 1px solid var(--line-2); }
+.titlecard::after { content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--orange); }
+.run .titlecard::after { animation: rule .9s steps(16) .2s forwards; }
+@keyframes rule { to { width: 100%; } }
+.titlecard h1 { margin: 0; font: 900 76px/.86 var(--serif); letter-spacing: -.01em; transform: scaleY(1.28); transform-origin: bottom left; color: var(--text); }
+.titlecard h1 span { display: block; clip-path: inset(0 100% 0 0); }
+/* seven letters each, revealed a letter per step */
+.run .titlecard h1 span { animation: wipe .56s steps(7) forwards; }
+.run .titlecard h1 span + span { animation-delay: .56s; }
+@keyframes wipe { to { clip-path: inset(0 0 0 0); } }
+.titlecard h1 .o { color: var(--orange); }
+.titlecard p { max-width: 560px; color: var(--soft); font-size: 13px; margin: 0; }
+.titlecard .jp { font-size: 13px; margin-bottom: 12px; display: block; }
+.radar { width: 120px; height: 120px; position: relative; border: 1px solid var(--line-2); border-radius: 50%; margin-bottom: 4px;
+  background: radial-gradient(circle, transparent 0 29%, var(--line) 30% 30.6%, transparent 31% 59%, var(--line) 60% 60.6%, transparent 61%),
+    linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat, linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat; }
+.radar::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, rgba(255,138,31,.5), transparent 40deg); animation: sweep 3s steps(24) infinite; }
+@keyframes sweep { to { transform: rotate(360deg); } }
+.radar i { position: absolute; width: 6px; height: 6px; background: var(--green); animation: blip 3s steps(1) infinite; }
+.radar i:nth-child(1) { left: 70%; top: 28%; animation-delay: .25s; }
+.radar i:nth-child(2) { left: 30%; top: 64%; animation-delay: 1.9s; }
+@keyframes blip { 0%, 100% { opacity: 0; } 4% { opacity: 1; } 30% { opacity: .4; } 45% { opacity: 0; } }
+.radar-cap { text-align: center; margin-top: 6px; }
+
+/* ---------- controls ---------- */
+.controls { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; border: 1px solid var(--line); border-top: 0; margin-bottom: 30px; }
+.ctl { padding: 14px 16px; border-right: 1px solid var(--line); }
+.ctl:last-child { border-right: 0; }
+.ctl .label { display: block; margin-bottom: 9px; }
+.seg { display: flex; gap: 4px; }
+.seg button { flex: 1; background: none; border: 1px solid var(--line-2); color: var(--soft); font: 600 13px/1 var(--cond); letter-spacing: .1em; text-transform: uppercase; padding: 8px 6px; cursor: pointer; }
+.seg button:hover, .seg button.on { background: var(--orange); color: #000; border-color: var(--orange); }
+.seg button.on::before { content: '▶ '; }
+.seg button:active { background: var(--text); }
+select { width: 100%; appearance: none; -webkit-appearance: none; border-radius: 0; border: 1px solid var(--line-2); background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23ff8a1f'/%3E%3C/svg%3E") right 10px center no-repeat;
+  padding: 7px 28px 7px 10px; font: 500 13px var(--mono); color: var(--text); cursor: pointer; }
+select:hover { background-color: var(--orange); color: #000; }
+select option { background: #000; color: var(--text); }
+
+/* ---------- loadout frame ---------- */
+.frame { position: relative; border: 1px solid var(--line-2); background: rgba(7,5,4,.92); }
+.frame > .c { position: absolute; width: 18px; height: 18px; border: 2px solid var(--orange); z-index: 3; }
+.c.tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.c.tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+.c.bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+.c.br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+.frame-head { display: flex; align-items: stretch; border-bottom: 1px solid var(--line-2); }
+.rank { background: var(--orange); color: #000; padding: 10px 16px; font: 900 34px/1 var(--serif); display: grid; place-items: center; min-width: 76px; }
+.frame-title { flex: 1; padding: 12px 18px; }
+.frame-title h2 { margin: 6px 0 0; font: 700 30px/1 var(--cond); letter-spacing: .06em; text-transform: uppercase; min-height: 30px; }
+.frame-title h2 .sep { color: var(--orange); padding: 0 8px; }
+.readout { padding: 12px 22px; border-left: 1px solid var(--line-2); text-align: right; min-width: 200px; }
+.readout .num { font: 600 44px/1 var(--mono); color: var(--green); text-shadow: 0 0 10px rgba(77,255,154,.4); font-variant-numeric: tabular-nums; }
+.readout .num small { font-size: 18px; margin-left: 4px; }
+.readout .sub { font: 500 10px var(--mono); color: var(--muted); margin-top: 4px; }
+
+/* recalculating overlay */
+.recalc { position: absolute; inset: 0; z-index: 4; display: none; background: rgba(0,0,0,.86); }
+.recalc.on { display: grid; align-items: start; justify-items: center; padding-top: 150px; }
+.recalc div { text-align: center; }
+.recalc strong { display: block; font: 700 30px/1 var(--cond); letter-spacing: .3em; color: var(--red); animation: blink .4s steps(1) infinite; }
+.recalc em { display: block; margin-top: 10px; font: 500 12px var(--mono); font-style: normal; color: var(--soft); }
+.recalc .bar { width: 280px; height: 8px; margin: 14px auto 0; border: 1px solid var(--line-2); padding: 1px; }
+.recalc .bar i { display: block; height: 100%; width: 0; background: repeating-linear-gradient(90deg, var(--orange) 0 10px, transparent 10px 12px); }
+.recalc.on .bar i { animation: fill .7s steps(10) forwards; }
+@keyframes fill { to { width: 100%; } }
+
+/* coverage */
+.coverage { padding: 14px 18px 16px; border-bottom: 1px solid var(--line); }
+.coverage-top { display: flex; justify-content: space-between; margin-bottom: 9px; }
+.legend { display: flex; gap: 16px; font: 500 11px var(--mono); color: var(--soft); }
+.legend span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 6px; vertical-align: -1px; background: currentColor; }
+.legend .a { color: var(--orange); } .legend .b { color: var(--green); }
+.cells { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+.cell { height: 34px; display: grid; place-items: center; font: 600 12px var(--mono); visibility: hidden; cursor: pointer; border: 0; padding: 0; }
+.run .cell { animation: print .2s steps(1) forwards; animation-delay: calc(500ms + var(--i) * 60ms); }
+.cell.a { background: rgba(255,138,31,.85); color: #000; }
+.cell.b { background: rgba(77,255,154,.75); color: #000; }
+.cell:hover, .cell.cur { background: var(--text); color: #000; outline: 2px solid var(--text); outline-offset: 1px; }
+.cov-read { margin-top: 8px; font: 500 12px var(--mono); color: var(--muted); }
+.cov-read b { color: var(--text); font-weight: 500; }
+.cov-read .hit { color: var(--orange); }
+.cov-read .hit.b { color: var(--green); }
+
+/* body grid */
+.body { display: grid; grid-template-columns: 1.15fr 1fr; }
+.weapons { border-right: 1px solid var(--line-2); }
+.weapon { padding: 16px 18px 18px; border-bottom: 1px solid var(--line); }
+.weapon:last-child { border-bottom: 0; }
+.weapon-top { display: flex; justify-content: space-between; align-items: center; }
+.tag { font: 500 11px var(--mono); color: var(--green); border: 1px solid rgba(77,255,154,.45); padding: 2px 7px; }
+.tag.new { color: var(--red); border-color: rgba(255,42,42,.6); animation: blink 1s steps(1) infinite; }
+
+/* gun scan: tinted render, drawn in a slice at a time, then a stepped beam refreshes it */
+.scan { position: relative; height: 128px; margin: 10px 0 6px; border: 1px solid var(--line); overflow: hidden;
+  background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 20px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 20px 100%; }
+.scan img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 6px 30px; clip-path: inset(0 100% 0 0);
+  filter: grayscale(1) contrast(1.5) brightness(1.15) sepia(1) saturate(5) hue-rotate(-12deg); mix-blend-mode: screen; }
+.scan.green img { filter: grayscale(1) contrast(1.5) brightness(1.2) sepia(1) saturate(5) hue-rotate(80deg); }
+.run .scan img { animation: wipe .8s steps(12) forwards; animation-delay: calc(var(--d, 0) * 1ms + 300ms); }
+.scan .beam { position: absolute; top: 0; bottom: 0; width: 4px; left: -6px; pointer-events: none; background: rgba(255,235,210,.85); box-shadow: 0 0 0 1px rgba(255,138,31,.6); }
+.scan.green .beam { background: rgba(220,255,235,.85); box-shadow: 0 0 0 1px rgba(77,255,154,.6); }
+.run .scan .beam { animation: beam 4s steps(1) infinite; animation-delay: calc(var(--d, 0) * 1ms + 1200ms); }
+@keyframes beam { 0% { left: 0; } 5% { left: 10%; } 10% { left: 20%; } 15% { left: 30%; } 20% { left: 40%; } 25% { left: 50%; } 30% { left: 60%; } 35% { left: 70%; } 40% { left: 80%; } 45% { left: 90%; } 50%, 100% { left: 110%; } }
+.scan .ref, .scan .ref2 { position: absolute; font: 500 10px var(--mono); color: var(--muted); }
+.scan .ref { left: 8px; bottom: 6px; } .scan .ref2 { right: 8px; top: 6px; }
+.scan .ref .cursor { width: 6px; height: 9px; }
+
+.weapon h3 { margin: 0; font: 700 26px/1 var(--cond); letter-spacing: .05em; text-transform: uppercase; min-height: 26px; }
+.meta { font: 500 12px var(--mono); color: var(--muted); margin-top: 4px; }
+.apex { display: flex; align-items: center; gap: 12px; margin: 12px 0; border: 1px solid; padding: 7px 10px; font: 500 12px var(--mono); }
+.apex b { font: 700 12px/1 var(--cond); letter-spacing: .16em; padding: 4px 7px; color: #000; white-space: nowrap; }
+.apex.on { border-color: var(--apex); color: var(--text); }
+.apex.on b { background: var(--apex); animation: blink 1.6s steps(1) infinite; }
+.apex.off { border-color: var(--line-2); color: var(--muted); background: repeating-linear-gradient(-45deg, rgba(255,138,31,.08) 0 8px, transparent 8px 16px); }
+.apex.off b { background: var(--muted); }
+
+/* attachments */
+.parts { list-style: none; margin: 0; padding: 0; }
+.parts li { display: grid; grid-template-columns: 104px 48px 1fr auto; align-items: center; gap: 12px; padding: 5px 6px 5px 4px; border-bottom: 1px dashed var(--line); visibility: hidden; }
+.parts li:hover { background: var(--orange); color: #000; }
+.parts li:hover .slot-name, .parts li:hover .ok { color: #000; }
+.parts li:hover .icon-well { border-color: #000; background: #000; }
+.run .parts li { animation: print .2s steps(1) forwards; animation-delay: calc(var(--d, 0) * 1ms + 700ms + var(--i) * 110ms); }
+.parts .slot-name { font: 600 12px var(--cond); letter-spacing: .14em; text-transform: uppercase; color: var(--orange-dim); }
+.icon-well { position: relative; width: 48px; height: 40px; display: grid; place-items: center; border: 1px solid var(--line); background: rgba(255,138,31,.08); }
+.icon-well::before, .icon-well::after { content: ''; position: absolute; width: 5px; height: 5px; border: 1px solid var(--orange); }
+.icon-well::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.icon-well::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+.icon-well img { width: 38px; height: 34px; object-fit: contain; }
+.parts .part-name { font: 500 13px var(--mono); }
+.parts .ok { font: 600 11px var(--mono); color: var(--green); visibility: hidden; }
+.run .parts .ok { animation: print .2s steps(1) forwards; animation-delay: calc(var(--d, 0) * 1ms + 1000ms + var(--i) * 110ms); }
+.tune { display: inline-block; margin-top: 12px; padding: 4px 8px; background: none; border: 1px solid var(--orange); cursor: pointer; font: 600 12px var(--cond); letter-spacing: .16em; text-transform: uppercase; color: var(--orange); }
+.tune:hover { background: var(--orange); color: #000; }
+.tune:active { background: var(--text); }
+
+/* gear */
+.gear { display: grid; grid-template-columns: 1fr 1fr; align-content: start; }
+.slot { position: relative; padding: 14px 16px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+.slot:nth-child(2n) { border-right: 0; }
+.slot:hover { box-shadow: inset 0 0 0 1px var(--orange); }
+.slot:hover .gear-icon { border-color: var(--orange); background: rgba(255,138,31,.22); }
+.slot-head { display: flex; justify-content: space-between; align-items: baseline; }
+.slot-main { display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: center; margin: 9px 0 8px; }
+.gear-icon { position: relative; width: 58px; height: 58px; border: 1px solid var(--line-2); display: grid; place-items: center; overflow: hidden; background: rgba(255,138,31,.1);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); }
+.gear-icon .mask { width: 44px; height: 44px; background: var(--orange); -webkit-mask: var(--src) center / contain no-repeat; mask: var(--src) center / contain no-repeat; }
+.elite .gear-icon .mask { background: var(--apex); }
+.gear-icon img { width: 48px; height: 48px; object-fit: contain; }
+.slot h4 { margin: 0 0 3px; font: 700 21px/1 var(--cond); letter-spacing: .05em; text-transform: uppercase; }
+.slot p { margin: 0; font-size: 12px; color: var(--soft); }
+.votes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+.vote { border: 1px solid var(--line); padding: 4px 6px 5px; font: 600 9px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.vote em { display: block; font: 500 11px var(--mono); font-style: normal; letter-spacing: .04em; margin-top: 2px; }
+.vote.no em { color: #6b5a42; }
+.vote.yes.lit { border-color: rgba(77,255,154,.6); color: var(--green); background: var(--green-dim); animation: litflash .16s steps(1); }
+@keyframes litflash { 0% { background: var(--green); color: #000; } }
+.tally { font: 600 11px var(--mono); color: var(--green); }
+.tally.lo { color: var(--orange); }
+.next { margin-top: 8px; font: 500 11px var(--mono); color: var(--muted); }
+.elite { background: repeating-linear-gradient(-45deg, rgba(169,139,255,.06) 0 8px, transparent 8px 16px); }
+.elite h4 { color: var(--apex); }
+
+.foot { display: flex; justify-content: space-between; padding: 9px 16px; border-top: 1px solid var(--line-2); font: 500 10px var(--mono); color: var(--muted); }
+
+/* patch ticker, moving a character width at a time */
+.ticker { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; align-items: stretch; height: 30px; background: #000; border-top: 1px solid var(--line-2); font: 500 12px/30px var(--mono); }
+.ticker .tl { flex: none; padding: 0 14px; background: var(--red); color: #000; font: 700 13px/30px var(--cond); letter-spacing: .2em; }
+.ticker .track { overflow: hidden; flex: 1; }
+.ticker .run-t { display: inline-flex; gap: 48px; white-space: nowrap; padding-left: 24px; }
+.ticker .run-t span b { color: var(--orange); font-weight: 500; }
+.ticker .run-t span .up { color: var(--green); } .ticker .run-t span .down { color: var(--red); }
+
+@media (max-width: 900px) {
+  header { flex-wrap: wrap; } nav { order: 3; flex-basis: 100%; overflow-x: auto; border-top: 1px solid var(--line); } nav a { padding: 10px 14px; }
+  .status { display: none; }
+  main { padding: 44px 16px 90px; }
+  .titlecard { grid-template-columns: 1fr; gap: 18px; } .titlecard h1 { font-size: 52px; } .radar-box { display: none; }
+  .controls { grid-template-columns: 1fr; } .ctl { border-right: 0; border-bottom: 1px solid var(--line); }
+  .body { grid-template-columns: 1fr; } .weapons { border-right: 0; border-bottom: 1px solid var(--line-2); }
+  .gear { grid-template-columns: 1fr; } .slot { border-right: 0; }
+  .frame-head { flex-wrap: wrap; } .readout { flex-basis: 100%; border-left: 0; border-top: 1px solid var(--line-2); text-align: left; }
+  .cell { height: 28px; font-size: 9px; }
+  .coverage-top { flex-direction: column; gap: 8px; }
+  .parts li { grid-template-columns: 82px 44px 1fr auto; gap: 8px; }
+  #boot { padding: 0 24px; } #boot .bootmark { font-size: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+  .scan .beam { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="boot" title="Click to skip">
+  <div class="bootmark">ARMORY</div>
+  <pre id="bootlog"></pre>
+  <div class="bar"><i id="bootbar"></i></div>
+  <div class="skip">CLICK TO SKIP</div>
+</div>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">兵</div>
+    <div><div class="brand-name">ARMORY</div><div class="brand-sub jp">兵装最適化システム · MW4</div></div>
+  </div>
+  <nav>
+    <a href="#"><small>01</small>Build</a>
+    <a href="#" class="on" aria-current="page"><small>02</small>Warzone</a>
+    <a href="#"><small>03</small>Compare</a>
+    <a href="#"><small>04</small>Patch</a>
+    <a href="#"><small>05</small>Guide</a>
+    <a href="#"><small>06</small>Saved</a>
+    <a href="#"><small>07</small>Data</a>
+  </nav>
+  <div class="status">
+    <svg class="wave" viewBox="0 0 120 26" aria-hidden="true"><polyline points="0,13 10,13 14,4 18,22 22,13 40,13 44,8 48,18 52,13 70,13 74,2 78,24 82,13 100,13 104,9 108,17 112,13 120,13"/></svg>
+    <span class="led"></span><span>STATS <b>10.28</b></span><span>PATCH <b>S1 11.06</b></span><span>WZ <b>11.07</b></span>
+  </div>
+</header>
+<div class="hazard"></div>
+
+<main id="page">
+  <section class="titlecard">
+    <h1><span>WARZONE</span><span class="o">LOADOUT</span></h1>
+    <div class="in" style="--d:350">
+      <span class="jp">二挺兵装 · 戦闘距離分析</span>
+      <p>Pick what you want in each slot, or leave it open. Every pair runs each gun's best Warzone build and is scored on how fast it wins fights from 5 to 150 m, with whichever gun is faster at each distance. A kill takes 300 damage through plates.</p>
+    </div>
+    <div class="radar-box in" style="--d:500"><div class="radar"><i></i><i></i></div><div class="radar-cap label">Pairs scanned · <span id="pairs">0</span></div></div>
+  </section>
+
+  <section class="controls in" style="--d:250">
+    <div class="ctl"><span class="label" id="l-preset">Preset</span><div class="seg" data-seg role="group" aria-labelledby="l-preset"><button class="on" aria-pressed="true">Rifle + SMG</button><button aria-pressed="false">Sniper + SMG</button><button aria-pressed="false">Any</button></div></div>
+    <div class="ctl"><label class="label" for="long">Long-range gun</label><select id="long" data-recalc></select></div>
+    <div class="ctl"><label class="label" for="close">Close-range gun</label><select id="close" data-recalc></select></div>
+    <div class="ctl"><span class="label" id="l-mix">Engagement</span><div class="seg" data-seg role="group" aria-labelledby="l-mix"><button aria-pressed="false">Close</button><button class="on" aria-pressed="true">Mixed</button><button aria-pressed="false">Long</button></div></div>
+  </section>
+
+  <article class="frame in" id="card" style="--d:400">
+    <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+    <div class="recalc" id="recalc"><div><strong>RECALCULATING</strong><em>Pairing every rifle with every SMG</em><div class="bar"><i></i></div></div></div>
+    <div class="frame-head">
+      <div class="rank">01</div>
+      <div class="frame-title"><span class="label">Loadout · Aggressive</span> <span class="jp">&nbsp;推奨配置</span><h2 data-type="HAN 86 / CSG-35"></h2></div>
+      <div class="readout"><span class="label">Avg fight time</span><div class="num"><span id="ttk">0.00</span><small>s</small></div><div class="sub">BEST OF 48 PAIRS</div></div>
+    </div>
+
+    <div class="coverage">
+      <div class="coverage-top"><span class="label">Range coverage · who wins each distance (m)</span><div class="legend"><span class="b">CSG-35</span><span class="a">Han 86</span></div></div>
+      <div class="cells" id="cells"></div>
+      <div class="cov-read" id="covread">CSG-35 takes <b>5 to 15 m</b>. Han 86 takes <b>20 to 150 m</b>.</div>
+    </div>
+
+    <div class="body">
+      <div class="weapons">
+        <div class="weapon" style="--d:0">
+          <div class="weapon-top"><span><span class="label">Primary</span> <span class="jp">主兵装</span></span><span class="tag">7.9% PICK RATE</span></div>
+          <div class="scan"><img src="/assets/weapons/han-86.webp" alt="Han 86"><span class="beam"></span><span class="ref2">AR · 60 RND</span><span class="ref">SCAN 01<span class="cursor"></span></span></div>
+          <h3 data-type="HAN 86"></h3>
+          <div class="meta">AR · LONG RANGE · ADS 359 MS · 60 ROUNDS</div>
+          <div class="apex on"><b>APEX ON</b>Han X20 Skybreaker. Wins fights faster here.</div>
+          <ul class="parts" data-parts='[["Muzzle","FSS IS300","/assets/attachments/fss-is300.webp"],["Laser","Schlager Visiv-5","/assets/attachments/schlager-visiv-5.webp"],["Underbarrel","FSS Tac90 Grip","/assets/attachments/fss-tac90-grip.webp"],["Magazine","60 Round Drum","/assets/attachments/60-round-drum.webp"],["Rear grip","FTAC Griplord 80","/assets/attachments/ftac-griplord-80.webp"]]'></ul>
+          <button class="tune" data-tune="han-86">Tune in Build ▶</button>
+        </div>
+        <div class="weapon" style="--d:350">
+          <div class="weapon-top"><span><span class="label">Secondary</span> <span class="jp">副兵装</span></span><span class="tag new">NEW · S1</span></div>
+          <div class="scan green"><img src="csg-35.webp" alt="CSG-35"><span class="beam"></span><span class="ref2">SMG · 40 RND</span><span class="ref">SCAN 02<span class="cursor"></span></span></div>
+          <h3 data-type="CSG-35"></h3>
+          <div class="meta">SMG · CLOSE RANGE · ADS 127 MS · 40 ROUNDS</div>
+          <div class="apex off"><b>APEX OFF</b>CSG Crossfire. Not scored, no Warzone stats published.</div>
+          <ul class="parts" data-parts='[["Laser","SZ Gen.6 PEQ","/assets/attachments/sz-gen-6-peq.webp"],["Underbarrel","Grip Strap","icons/grip_strap_mw4_icon.webp"],["Magazine","40 Round Mag","/assets/attachments/40-round-mag.webp"],["Rear grip","XRK TAC Grip","icons/xrk_tac_grip_mw4_icon.webp"],["Stock","XRK Slight Stock","icons/xrk_slight_stock_mw4_icon.webp"]]'></ul>
+          <button class="tune" data-tune="csg-35">Tune in Build ▶</button>
+        </div>
+      </div>
+
+      <div class="gear" id="gear"></div>
+    </div>
+    <div class="foot"><span>SRC · CODMUNITY WZ 11.07 · WZSTATS · TIMESAVER · ACTIVISION</span><span>HEALTH 150 + 3×50 PLATES · 5 ATTACHMENTS</span></div>
+  </article>
+</main>
+
+<div class="ticker" aria-label="Season 1 patch changes">
+  <span class="tl">PATCH S1</span>
+  <div class="track"><div class="run-t" id="ticker"></div></div>
+</div>
+
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Gun lists for the two selects, every gun with Warzone builds
+const LONG = ['Han 86', 'M4', 'Patriot XMR', 'Kastov 762', 'Oden', 'Axion', 'Cronen Squall', 'Cronen Osprey'];
+const CLOSE = ['ISO Nightshade', 'VEL 46', 'Wz.55 Striga', 'PPSh-41', 'X-58 Nyx', 'CSG-35'];
+const fill = (id, any, list) => document.getElementById(id).innerHTML = `<option>${any}</option>` + list.map(n => `<option>${n}</option>`).join('');
+fill('long', 'Any assault rifle', LONG);
+fill('close', 'Any SMG', CLOSE);
+
+// Gear: [slot label, name, effect, icon, kind ('mask' tints a line icon, 'img' keeps the photo), votes [wzstats, timesaver, activision], next, class]
+const GEAR = [
+  ['Perk 1', 'Hunter', 'Shows enemy footprints and nearby enemies, warns when you are targeted.', 'icons/hunter_mw4wz_icon_color.png', 'mask', ['Meta', 'Combo', 'Default'], 'Field Medic'],
+  ['Perk 2', 'Adaptive', 'Faster sprint-to-fire while fully plated, faster movement with plates missing.', 'icons/adaptive_mw4wz_icon_color.png', 'mask', ['A tier', 'Combo', null], 'Mountaineer'],
+  ['Perk 3', 'Tempered', 'Two plates refill your armor, not three.', 'icons/tempered_mw4wz_icon_color.png', 'mask', ['Meta', 'Combo', null], 'Quick Fix'],
+  ['Elite · found in match', 'Athleticism', 'Better strafing and crouching, smaller ADS penalties while jumping and sliding.', 'icons/athleticism_mw4wz_icon_color.png', 'mask', [null, 'Combo', null], null, 'elite'],
+  ['Lethal', 'Semtex', 'Timed sticky grenade. Sticks and kills on a push.', 'icons/semtex_mw4_equip_icon.png', 'img', ['Meta', null, 'Default'], 'Frag Grenade'],
+  ['Tactical', 'Stim', 'Starts health regeneration, refreshes Tactical Sprint.', 'icons/mw4_tactical_Stim.png', 'img', ['Meta', null, 'Default'], 'Smoke Grenade'],
+];
+const SOURCES = ['WZStats', 'TimeSaver', 'Activision'];
+document.getElementById('gear').innerHTML = GEAR.map(([slot, name, effect, icon, kind, votes, next, cls], i) => {
+  const art = kind === 'mask' ? `<span class="mask" style="--src:url('${icon}')"></span>` : `<img src="${icon}" alt="">`;
+  return `<div class="slot in ${cls ?? ''}" style="--d:${900 + i * 120}">
+    <div class="slot-head"><span class="label">${slot}</span><span class="tally ${votes.filter(Boolean).length < 2 ? 'lo' : ''}">0/3</span></div>
+    <div class="slot-main"><div class="gear-icon">${art}</div><div><h4>${name}</h4><p>${effect}</p></div></div>
+    <div class="votes">${votes.map((v, j) => `<div class="vote ${v ? 'yes' : 'no'}">${SOURCES[j]}<em>${v ?? '-'}</em></div>`).join('')}</div>
+    ${next ? `<div class="next">NEXT · ${next.toUpperCase()}</div>` : ''}
+  </div>`;
+}).join('');
+
+// Attachment rows with icons; rows take their weapon's delay
+document.querySelectorAll('[data-parts]').forEach(list => {
+  list.innerHTML = JSON.parse(list.dataset.parts).map(([slot, name, icon], i) =>
+    `<li style="--i:${i}"><span class="slot-name">${slot}</span><span class="icon-well"><img src="${icon}" alt=""></span><span class="part-name">${name}</span><span class="ok">[OK]</span></li>`).join('');
+});
+document.querySelectorAll('.weapon').forEach(w => w.querySelectorAll('.parts li, .scan').forEach(el => el.style.setProperty('--d', w.style.getPropertyValue('--d'))));
+
+// Coverage cells are buttons: click or hover one to read it out. A cursor steps through them on its own.
+const DIST = [5, 10, 15, 20, 30, 40, 50, 60, 75, 100, 125, 150];
+const winner = d => d <= 15 ? ['b', 'CSG-35'] : ['a', 'Han 86'];
+const cells = document.getElementById('cells'), covread = document.getElementById('covread');
+cells.innerHTML = DIST.map((d, i) => `<button class="cell ${winner(d)[0]}" style="--i:${i}" data-d="${d}" aria-label="${d} m, ${winner(d)[1]} wins">${d}</button>`).join('');
+const readCell = d => { const [k, name] = winner(d); covread.innerHTML = `&gt; ${String(d).padStart(3, '0')} M · <span class="hit ${k}">${name.toUpperCase()}</span> WINS THIS RANGE<span class="cursor"></span>`; };
+let pinned = null, cur = 0, sweep = null;
+function stepCursor() {
+  if (pinned != null) return;
+  cells.querySelectorAll('.cell').forEach((c, i) => c.classList.toggle('cur', i === cur));
+  readCell(DIST[cur]); cur = (cur + 1) % DIST.length;
+}
+cells.addEventListener('mouseover', e => { const c = e.target.closest('.cell'); if (c) readCell(+c.dataset.d); });
+cells.addEventListener('click', e => {
+  const c = e.target.closest('.cell'); if (!c) return;
+  pinned = pinned === +c.dataset.d ? null : +c.dataset.d;
+  cells.querySelectorAll('.cell').forEach(x => x.classList.toggle('cur', pinned != null && +x.dataset.d === pinned));
+  if (pinned != null) readCell(pinned);
+});
+
+// Ticker, from the Season 1 Patch screen. Moves one character width per tick.
+const TICK = [
+  ['M4', '26-28 m', '370 → 296 ms', 'up'], ['VEL 46', '24-25 m', '378 → 441 ms', 'down'], ['Mosin Nagant', '37-40 m', '2 → 1 shots', 'up'],
+  ['NEW', 'Cronen Osprey', 'AR · 882 rpm', ''], ['NEW', 'CSG-35', 'SMG · 1200 rpm', ''],
+];
+const tick = document.getElementById('ticker');
+const tickHtml = TICK.map(([a, b, c, dir]) => `<span><b>${a}</b> ${b} · <span class="${dir}">${c}</span></span>`).join('');
+tick.innerHTML = tickHtml + tickHtml;
+let tx = 0, tickPaused = false;
+tick.parentElement.addEventListener('mouseenter', () => tickPaused = true);
+tick.parentElement.addEventListener('mouseleave', () => tickPaused = false);
+if (!reduce) setInterval(() => { if (tickPaused) return; tx = (tx + 7.2) % (tick.scrollWidth / 2); tick.style.transform = `translateX(${-tx}px)`; }, 90);
+
+const timers = [];
+// Numbers roll random digits on a clock, then lock
+function rollTo(el, to, ms, digits) {
+  if (reduce) { el.textContent = to.toFixed(digits); return; }
+  const end = Date.now() + ms;
+  const t = setInterval(() => {
+    if (Date.now() >= end) { clearInterval(t); el.textContent = to.toFixed(digits); return; }
+    el.textContent = (Math.random() * to * 2).toFixed(digits);
+  }, 70);
+}
+// Text types out a character per tick behind a block cursor
+function typeOut(el, text, delay) {
+  el.textContent = '';
+  const out = document.createElement('span'), cursor = document.createElement('span');
+  cursor.className = 'cursor'; el.append(out, cursor);
+  if (reduce) { out.textContent = text; cursor.remove(); return; }
+  let i = 0;
+  timers.push(setTimeout(function next() {
+    out.innerHTML = text.slice(0, ++i).replace(' / ', ' <span class="sep">/</span> ');
+    if (i < text.length) timers.push(setTimeout(next, 45)); else timers.push(setTimeout(() => cursor.remove(), 900));
+  }, delay));
+}
+
+function play() {
+  timers.splice(0).forEach(clearTimeout);
+  clearInterval(sweep);
+  const page = document.getElementById('page');
+  page.classList.remove('run'); void page.offsetWidth; page.classList.add('run');
+  document.querySelectorAll('.vote').forEach(v => v.classList.remove('lit'));
+  document.querySelectorAll('.tally').forEach(t => t.textContent = '0/3');
+  rollTo(document.getElementById('ttk'), 1.59, 1100, 2);
+  rollTo(document.getElementById('pairs'), 48, 1300, 0);
+  document.querySelectorAll('[data-type]').forEach((el, i) => typeOut(el, el.dataset.type, 450 + i * 300));
+  // Votes light one source at a time, then the tally settles
+  document.querySelectorAll('.slot').forEach((slot, i) => {
+    const tally = slot.querySelector('.tally');
+    let lit = 0;
+    slot.querySelectorAll('.vote').forEach((v, j) => timers.push(setTimeout(() => {
+      if (v.classList.contains('yes')) { v.classList.add('lit'); tally.textContent = `${++lit}/3`; }
+    }, reduce ? 0 : 1400 + i * 160 + j * 240)));
+  });
+  cur = 0;
+  timers.push(setTimeout(() => { stepCursor(); sweep = setInterval(stepCursor, 450); }, reduce ? 0 : 1600));
+}
+
+// Any control change flashes the overlay, then the card plays again
+function recalc() {
+  const rc = document.getElementById('recalc');
+  rc.classList.remove('on'); void rc.offsetWidth; rc.classList.add('on');
+  setTimeout(() => { rc.classList.remove('on'); play(); }, reduce ? 0 : 750);
+}
+document.querySelectorAll('[data-seg]').forEach(seg => seg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || b.classList.contains('on')) return;
+  seg.querySelectorAll('button').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b); });
+  recalc();
+}));
+document.querySelectorAll('[data-recalc]').forEach(s => s.addEventListener('change', recalc));
+// In the app these open the Build screen with the gun and its Warzone build loaded
+document.querySelectorAll('[data-tune]').forEach(b => b.addEventListener('click', () => { b.textContent = 'Opening Build ▶'; setTimeout(() => b.textContent = 'Tune in Build ▶', 900); }));
+
+// Boot log
+const LOG = [
+  'ARMORY TERMINAL · BUILD S1.11.07', 'LINK CODMUNITY WZ ............ <b>OK</b>', 'LOAD 35 WEAPONS · 637 PARTS ... <b>OK</b>',
+  'APPLY PATCH S1 11.06 ......... <b>OK</b>', 'HEALTH 150 + 3 PLATES ........ <b>300</b>', 'PAIR LONG × CLOSE ............ <b>48</b>', 'READY',
+];
+const boot = document.getElementById('boot'), log = document.getElementById('bootlog'), bar = document.getElementById('bootbar');
+let done = false;
+function endBoot() { if (done) return; done = true; boot.classList.add('gone'); setTimeout(() => boot.remove(), 300); play(); }
+boot.addEventListener('click', endBoot);
+if (reduce || sessionStorage.getItem('booted')) { boot.remove(); done = true; play(); }
+else {
+  try { sessionStorage.setItem('booted', '1'); } catch {}
+  LOG.forEach((line, i) => setTimeout(() => { if (done) return; log.innerHTML += line + '\n'; bar.style.width = `${(i + 1) / LOG.length * 100}%`; }, 160 + i * 190));
+  setTimeout(endBoot, 160 + LOG.length * 190 + 350);
+}
+</script>
+</body>
+</html>

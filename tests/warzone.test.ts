@@ -86,3 +86,44 @@ test('the optimizer finds a legal Warzone build within the 5-part limit', () => 
   assert.ok(best.score > 0);
   assert.equal(new Set(best.attachments.map(id => wz.attachments[id].slot)).size, best.attachments.length);
 });
+
+test('stored Warzone builds follow the Apex and part rules', () => {
+  for (const [kind, apexOn] of [['builds', false], ['apexBuilds', true]] as const) {
+    for (const [id, byStyle] of Object.entries(mp.warzone![kind] ?? {})) {
+      const gun = mp.weapons.find(item => item.id === id)!;
+      for (const [style, parts] of Object.entries(byStyle)) {
+        const slots = parts.map(part => mp.attachments[part].slot);
+        if (!apexOn) for (const part of gun.apex?.parts ?? []) assert.ok(!parts.includes(part), `${id} ${style} runs ${part} without its Apex`);
+        if (apexOn) for (const closed of gun.apex!.blocks) assert.ok(!slots.includes(closed), `${id} ${style} uses blocked ${closed}`);
+        for (const part of parts) for (const closed of gun.partBlocks?.[part] ?? []) assert.ok(!slots.includes(closed), `${id} ${style}: ${part} closes ${closed}`);
+      }
+    }
+  }
+});
+
+test('silenced barrels close the muzzle slot in every playstyle and mode', () => {
+  const silenced = Object.entries(mp.attachments).filter(([, part]) => part.kind === 'Silenced Barrel').map(([id]) => id);
+  const guns = mp.weapons.filter(gun => mp.loadouts[gun.id]?.some(([id]) => silenced.includes(id)));
+  assert.deepEqual(guns.map(gun => gun.id).sort(), ['axion', 'han-86', 'kastov-762', 'mar-9', 'oris-8-6', 'ppsh-41']);
+  for (const gun of guns) for (const id of silenced) if (mp.loadouts[gun.id].some(entry => entry[0] === id)) assert.deepEqual(gun.partBlocks?.[id], ['muzzle'], `${gun.id}: ${id}`);
+  let paired = 0;
+  for (const mode of ['mp', 'wz'] as const) inMode(mode, () => {
+    const data = mode === 'mp' ? mp : wz;
+    for (const gun of guns) {
+      const view = data.weapons.find(item => item.id === gun.id)!;
+      if (!view.base) continue;
+      for (const style of playstylesFor(view)) for (const optic of [false, true]) {
+        const settings: Settings = { mode, weaponId: gun.id, level: gun.maxLevel!, preset: style.id, emphasis: neutral(), distanceM: style.distanceM, apex: false, optic, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
+        const result = optimize(data, settings);
+        for (const build of [result.standard.best, result.apex.best]) {
+          if (!build?.attachments.some(id => silenced.includes(id))) continue;
+          paired++;
+          assert.ok(!build.attachments.some(id => data.attachments[id].slot === 'muzzle'), `${mode} ${gun.id} ${style.id}: ${build.attachments}`);
+        }
+      }
+    }
+  });
+  // Before the rule, nine builds here ran a silenced barrel with a muzzle. Eight still pick the barrel. If too few did,
+  // the check above would pass without testing anything.
+  assert.ok(paired >= 5, `only ${paired} builds ran a silenced barrel`);
+});

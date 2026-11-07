@@ -1,12 +1,15 @@
 // Shared data contract. Game data comes from research/raw through scripts/build-data.ts.
 export type Mods = Record<string, number>;
 export interface DamageBand { minM: number; maxM: number | null; regions: Record<string, number> }
-export interface ApexData { id: string; name: string; description: string; level: number | null; blocks: string[]; mods: Mods | null }
+// parts lists attachments the game only offers with this Apex on, like the M4's Hurricane Stock.
+export interface ApexData { id: string; name: string; description: string; level: number | null; blocks: string[]; mods: Mods | null; parts?: string[] }
 export interface WeaponData {
   id: string; name: string; category: string; slot: 'primary' | 'secondary' | 'melee'; description: string;
   unlockLevel: number; maxLevel: number | null; fireMode: 'auto' | 'semi' | 'burst' | 'single' | null;
   rpm: number | null; magazine: number | null; health: number;
   base: Record<string, number> | null; damage: DamageBand[] | null; apex: ApexData | null;
+  // Slots a part closes when it is on, by part id. Hurricane Stock on the M4 closes the rear grip and barrel.
+  partBlocks?: Record<string, string[]>;
 }
 export interface AttachmentInfo { name: string; slot: string; kind: string; image: boolean }
 export type GearSlot = 'tactical' | 'lethal' | 'field' | 'perk1' | 'perk2' | 'perk3';

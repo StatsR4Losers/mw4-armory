@@ -14,6 +14,7 @@ import { NEEDS_OPTIC } from './engine/warzone';
 import { CompareView } from './views/CompareView';
 import type { CompareItem } from './views/CompareView';
 import { Icon } from './components/Icon';
+import { Boot, Ticker, Wave } from './components/Terminal';
 
 const STORAGE_KEY = 'mw4-armory-v2';
 const GEAR_SLOT_IDS: GearSlot[] = ['tactical', 'lethal', 'field', 'perk1', 'perk2', 'perk3'];
@@ -233,18 +234,20 @@ export default function App() {
   };
 
   return <div className="app">
+    <Boot/>
     <header className="topbar">
       <button className="brand" onClick={() => setView('build')} aria-label="MW4 Armory home">
-        <span className="brand-mark" aria-hidden="true"><Icon name="target" size={18}/></span>
-        <span className="brand-name">MW4 <b>Armory</b></span>
+        <span className="brand-mark" aria-hidden="true">兵</span>
+        <span><span className="brand-name">ARMORY</span><span className="brand-sub jp">兵装最適化システム · MW4</span></span>
       </button>
       <nav className="nav" aria-label="Sections">
-        {views.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} aria-current={view === item.id ? 'page' : undefined} onClick={() => { if (item.id === 'patch') setPatchFocus(null); setView(item.id); }}>
-          <Icon name={item.icon} size={16}/><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}{item.id === 'compare' && compare.length > 0 && <i>{compare.length}</i>}
+        {views.map((item, index) => <button key={item.id} className={view === item.id ? 'active' : ''} aria-current={view === item.id ? 'page' : undefined} onClick={() => { if (item.id === 'patch') setPatchFocus(null); setView(item.id); }}>
+          <small aria-hidden="true">{String(index + 1).padStart(2, '0')}</small><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}{item.id === 'compare' && compare.length > 0 && <i>{compare.length}</i>}
         </button>)}
       </nav>
-      <span className="data-stamp">Stats {data.statsUpdated.slice(5).replace('-', '/')} · unlocks {data.checkedAt.slice(5).replace('-', '/')}</span>
+      <span className="data-stamp"><Wave/><span className="led" aria-hidden="true"/><span>STATS <b>{data.statsUpdated.slice(5).replace('-', '.')}</b></span>{data.patches[0] && <span>PATCH <b>{data.patches[0].date.slice(5).replace('-', '.')}</b></span>}<span>UNLOCKS <b>{data.checkedAt.slice(5).replace('-', '.')}</b></span></span>
     </header>
+    <div className="hazard" aria-hidden="true"/>
     <main className="main">
       {/* The Build screen stays mounted so its before/after history survives a trip to another tab. */}
       <div hidden={view !== 'build'}><BuildView settings={run} change={change} armory={armory} setArmory={setArmory} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onPatch={openPatch} onMode={hasWarzone ? switchMode : null} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), level: settings.level, playerLevel: settings.playerLevel })}/></div>
@@ -255,7 +258,8 @@ export default function App() {
       {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(withLevel(normalize(item.settings), armory)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}
       {view === 'data' && <DataView/>}
     </main>
-    <footer className="footer"><span>MW4 Armory is a fan-made tool. Not affiliated with Activision or Infinity Ward.</span><span>Stats: CODMunity via COD Loadout. Guide builds: CODMunity, Game8, WZStats. Renders: COD Loadout.</span></footer>
+    <footer className="footer"><span>MW4 Armory is a fan-made tool. Not affiliated with Activision or Infinity Ward.</span><span>Stats: CODMunity via COD Loadout. Guide builds: CODMunity, Game8, WZStats. Renders and icons: COD Loadout and CODMunity.</span></footer>
+    <Ticker onOpen={() => { setPatchFocus(null); setView('patch'); window.scrollTo(0, 0); }}/>
     {toast && <div className="toast" role="status"><Icon name="check" size={15}/>{toast}</div>}
   </div>;
 }

@@ -3,6 +3,7 @@ import { hideMissing, multiplayerData as data, shortCategory, weaponImage } from
 import { ttkAt } from '../engine';
 import { Icon } from '../components/Icon';
 import type { DamageBand, Patch, PatchRow, PatchWeapon, WeaponData } from '../types';
+import { Typed } from '../components/Terminal';
 
 // The before and now comparison scans this far, every half meter. Every damage band in the notes ends inside it.
 const SCAN_M = 60, STEP_M = .5;
@@ -57,7 +58,7 @@ export function PatchView({ focus, onBuild }: { focus: string | null; onBuild: (
   return <div className="data-view patch-view">
     <header className="page-head">
       <span className="eyebrow">Patch notes</span>
-      <h1>{patch.title} changes</h1>
+      <h1><Typed text={`${patch.title} changes`}/></h1>
       <p>Infinity Ward's {date} patch, transcribed from the <a href={patch.url} target="_blank" rel="noreferrer">official notes</a>. The optimizer already uses these numbers. Time to kill below is the stock gun with every bullet to the chest of a 100-health target.</p>
       {data.patches.length > 1 && <select aria-label="Patch" value={patch.id} onChange={event => setPatchId(event.target.value)}>
         {data.patches.map(item => <option key={item.id} value={item.id}>{item.title}, {item.date}</option>)}

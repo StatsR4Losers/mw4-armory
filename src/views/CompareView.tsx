@@ -3,7 +3,8 @@ import { attachmentImage, data, hideMissing, slotName, sortSlots, supported, wea
 import { evaluateBuild, playstyleFor } from '../engine';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
-import type { Settings } from '../types';
+import type { Settings, WeaponData } from '../types';
+import { Typed, Roll } from '../components/Terminal';
 
 export type CompareItem = { id: string; label: string; weaponId: string; attachments: string[]; apex: boolean };
 
@@ -17,8 +18,10 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
   }), [items, settings]);
   const rows = statRows(window_(settings.distanceM), metric => columns.some(column => column.style.weights[metric] > 0));
   const update = (id: string, patch: Partial<CompareItem>) => setItems(list => list.map(item => item.id === id ? { ...item, ...patch } : item));
-  const setSlot = (item: CompareItem, slot: string, attachmentId: string) => {
-    const rest = item.attachments.filter(id => data.attachments[id]?.slot !== slot);
+  // Picking a part that closes slots, like the M4's Hurricane Stock, takes out whatever sat in them.
+  const setSlot = (item: CompareItem, weapon: WeaponData, slot: string, attachmentId: string) => {
+    const closes = weapon.partBlocks?.[attachmentId] ?? [];
+    const rest = item.attachments.filter(id => data.attachments[id]?.slot !== slot && !closes.includes(data.attachments[id]?.slot));
     update(item.id, { attachments: attachmentId ? [...rest, attachmentId] : rest });
   };
   const addCustom = () => setItems(list => [...list.slice(list.length >= 3 ? 1 : 0), { id: crypto.randomUUID(), label: 'Custom build', weaponId: settings.weaponId, attachments: [], apex: false }]);
@@ -28,7 +31,7 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
     <header className="page-head with-actions">
       <div>
         <span className="eyebrow">Compare</span>
-        <h1>Builds side by side</h1>
+        <h1><Typed text="Builds side by side"/></h1>
         <p>Add builds from the Build tab, a guide site or your saved classes, or make your own here. Change any part and every number updates. Every column is measured against the baseline at {settings.distanceM} m, scored with your current playstyle, or with its own class's default playstyle when the gun is from another class. Use Make baseline to pick which one.</p>
       </div>
       <div className="head-actions">
@@ -43,8 +46,10 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
       <div className="row-actions"><button className="button" onClick={addCustom}>Start a custom build</button><button className="button ghost" onClick={onBuild}>Go to Build</button></div>
     </div> : <div className="compare-grid" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(260px, 1fr))` }}>
       {columns.map(({ item, weapon, build, issues }, index) => {
-        const slots = [...new Set((data.loadouts[weapon.id] ?? []).map(entry => data.attachments[entry[0]].slot))]
-          .filter(slot => !(item.apex && weapon.apex?.blocks.includes(slot)))
+        const closed = new Set(item.attachments.flatMap(id => weapon.partBlocks?.[id] ?? []));
+        const offered = (data.loadouts[weapon.id] ?? []).filter(([id]) => item.apex || !weapon.apex?.parts?.includes(id));
+        const slots = [...new Set(offered.map(entry => data.attachments[entry[0]].slot))]
+          .filter(slot => !(item.apex && weapon.apex?.blocks.includes(slot)) && !closed.has(slot))
           .sort((a, b) => SLOT_ORDER.indexOf(a) - SLOT_ORDER.indexOf(b));
         const chosenIn = (slot: string, list: string[]) => list.find(id => data.attachments[id]?.slot === slot) ?? '';
         const text = [`${weapon.name} · ${item.label}${item.apex && weapon.apex ? ` · ${weapon.apex.name}` : ''}`, ...sortSlots(item.attachments).map(id => `${slotName(data.attachments[id].slot)}: ${data.attachments[id].name}`)].join('\n');
@@ -60,8 +65,8 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
             <button className="icon-btn" aria-label={`Remove ${item.label}`} onClick={() => setItems(list => list.filter(other => other.id !== item.id))}><Icon name="close" size={14}/></button>
           </header>
           <div className="baseline-row">{index === 0 ? <span className="baseline-tag">Baseline</span> : <><span className="baseline-tag muted">vs {baseline.item.label}</span><button className="link" onClick={() => setItems(list => [item, ...list.filter(other => other.id !== item.id)])}>Make baseline</button></>}</div>
-          {weapon.apex && <label className="switch small"><input type="checkbox" checked={item.apex} onChange={event => update(item.id, { apex: event.target.checked, attachments: event.target.checked ? item.attachments.filter(id => !weapon.apex!.blocks.includes(data.attachments[id]?.slot)) : item.attachments })}/><span/>{weapon.apex.name}</label>}
-          {build && <div className="compare-edge"><strong>{build.score >= 0 ? '+' : '−'}{Math.abs(Math.round(build.score))}</strong><span>ms edge vs its stock</span>{index > 0 && baseline.build && baseline.weapon.id === weapon.id && <em className={build.score >= baseline.build.score ? 'good' : 'bad'}>{build.score >= baseline.build.score ? '+' : '−'}{Math.abs(Math.round(build.score - baseline.build.score))} ms vs baseline</em>}</div>}
+          {weapon.apex && <label className="switch small"><input type="checkbox" checked={item.apex} onChange={event => update(item.id, { apex: event.target.checked, attachments: event.target.checked ? item.attachments.filter(id => !weapon.apex!.blocks.includes(data.attachments[id]?.slot)) : item.attachments.filter(id => !weapon.apex!.parts?.includes(id)) })}/><span/>{weapon.apex.name}</label>}
+          {build && <div className="compare-edge"><strong><Roll value={`${build.score >= 0 ? '+' : '−'}${Math.abs(Math.round(build.score))}`}/></strong><span>ms edge vs its stock</span>{index > 0 && baseline.build && baseline.weapon.id === weapon.id && <em className={build.score >= baseline.build.score ? 'good' : 'bad'}>{build.score >= baseline.build.score ? '+' : '−'}{Math.abs(Math.round(build.score - baseline.build.score))} ms vs baseline</em>}</div>}
           <div className="compare-parts">{slots.map(slot => {
             const value = chosenIn(slot, item.attachments);
             const differs = index > 0 && baseline.weapon.id === weapon.id && value !== chosenIn(slot, baseline.item.attachments);
@@ -69,9 +74,9 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
             return <label key={slot} className={`compare-part ${differs ? 'diff' : ''} ${value ? '' : 'is-empty'}`}>
               <span className="part-slot">{slotName(slot)}</span>
               <span className="part-pick">{image ? <img src={image} alt=""/> : <i/>}
-                <select value={value} onChange={event => setSlot(item, slot, event.target.value)} aria-label={`${slotName(slot)} for ${item.label}`}>
+                <select value={value} onChange={event => setSlot(item, weapon, slot, event.target.value)} aria-label={`${slotName(slot)} for ${item.label}`}>
                   <option value="">None</option>
-                  {(data.loadouts[weapon.id] ?? []).filter(entry => data.attachments[entry[0]].slot === slot).map(([id, level]) => <option key={id} value={id}>{data.attachments[id].name}{level ? ` (Lv ${level})` : ''}</option>)}
+                  {offered.filter(entry => data.attachments[entry[0]].slot === slot).map(([id, level]) => <option key={id} value={id}>{data.attachments[id].name}{level ? ` (Lv ${level})` : ''}</option>)}
                 </select>
               </span>
             </label>;

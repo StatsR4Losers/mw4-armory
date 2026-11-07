@@ -1,12 +1,31 @@
 import raw from './game.json';
-import type { GameData, Mods, WeaponData } from '../types';
+import type { GameData, Mode, Mods, WeaponData } from '../types';
+import { modeView } from './mode';
+import { resetCaches, setPlaystyleMode } from '../engine';
 
-export const data = raw as unknown as GameData;
+const multiplayer = raw as unknown as GameData;
+// Every screen reads this one object. setMode swaps its contents between the multiplayer and Warzone views.
+export const data: GameData = { ...multiplayer };
+let mode: Mode = 'mp';
+export const currentMode = () => mode;
+export const hasWarzone = !!multiplayer.warzone;
+export function setMode(next: Mode = 'mp') {
+  if (next === 'wz' && !hasWarzone) next = 'mp';
+  if (next === mode) return;
+  mode = next;
+  Object.assign(data, modeView(multiplayer, next));
+  setPlaystyleMode(next);
+  resetCaches();
+}
+/** Multiplayer numbers, for the screens that only show multiplayer, like Patch notes. */
+export const multiplayerData = multiplayer;
 
 export const supported = (weapon: WeaponData) => !!weapon.base && !!data.loadouts[weapon.id]?.length;
 export const weaponById = (id: string) => data.weapons.find(weapon => weapon.id === id);
 export const asset = (path: string) => `${import.meta.env.BASE_URL}assets/${path}`;
 export const weaponImage = (id: string) => asset(`weapons/${id}.webp`);
+/** New guns can arrive before anyone publishes a render. Their image slot stays empty instead of a broken icon. */
+export const hideMissing = (event: { currentTarget: HTMLImageElement }) => { event.currentTarget.style.visibility = 'hidden'; };
 export const attachmentImage = (id: string) => data.attachments[id]?.image ? asset(`attachments/${id}.webp`) : null;
 
 export function attachmentEntry(weaponId: string, attachmentId: string): { level: number; mods: Mods } | null {

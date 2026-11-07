@@ -4,7 +4,9 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { baseCatalog } from './source/base-catalog.ts';
 import { weaponStatOverrides } from './source/stat-overrides.ts';
 import { consensusFor } from '../src/engine/consensus.ts';
-import type { GameData } from '../src/types.ts';
+import { resetCaches, setPlaystyleMode } from '../src/engine/index.ts';
+import { modeView } from '../src/data/mode.ts';
+import type { GameData, WarzoneData } from '../src/types.ts';
 
 type Mods = Record<string, number>;
 type LevelRow = [name: string, slot: string, level: number, label: string];
@@ -14,8 +16,15 @@ const read = (path: string) => JSON.parse(readFileSync(new URL(path, root), 'utf
 const stats = read('research/raw/mw4-community-stats.json');
 const attachmentMeta = read('research/raw/mw4-community-attachments.json');
 const levels: Record<string, LevelRow[]> = read('research/raw/codmunity-unlock-levels.json').weapons;
-// Rechamber, rechamber steadiness, pre-fire delay and hitscan range, read from CODMunity's weapon pages by npm run fetch.
-const extras: Record<string, { base: Record<string, number>; attachments: Record<string, Mods> }> = read('research/raw/codmunity-extra-stats.json').weapons;
+// Rechamber, rechamber steadiness, pre-fire delay, hitscan range and damage by distance, read from CODMunity's weapon
+// pages by npm run fetch. Guns COD Loadout does not cover yet also get their base stats and attachment changes there.
+type DamageBand = { minM: number; maxM: number | null; regions: Record<string, number> };
+const extras: Record<string, { base: Record<string, number>; attachments: Record<string, Mods>; stats?: Record<string, number>; damage?: DamageBand[]; mods?: Record<string, Mods> }> = read('research/raw/codmunity-extra-stats.json').weapons;
+// Patch notes transcribed by hand. Base stat changes apply over a COD Loadout snapshot taken before the patch.
+type PatchWeapon = { id: string; base?: Mods; damageBefore?: DamageBand[] };
+const patchNotes: { patches: { id: string; date: string; weapons: PatchWeapon[] }[] } = read('research/raw/patch-notes.json');
+const patchBase = (weaponId: string) => Object.assign({}, ...patchNotes.patches.filter(patch => patch.date > stats.meta.updated)
+  .sort((a, b) => a.date.localeCompare(b.date)).map(patch => patch.weapons.find(item => item.id === weaponId)?.base ?? {}));
 // Only bolt-action rifles use the rechamber: both shotguns list the same 733 ms, the Rezi is semi-automatic, and no
 // source says what it does on a shotgun.
 const BOLT_ACTIONS = new Set(['mosin-nagant', 'oris-8-6', 'kg-7-vulcan', 'astaroth-57']);
@@ -42,7 +51,10 @@ const loadouts: Record<string, [id: string, level: number, mods: Mods][]> = {};
 const weapons = baseCatalog.weapons.map(weapon => {
   const overrides = weaponStatOverrides[weapon.id] ?? {};
   const rows = levels[weapon.id] ?? [];
-  const statMods: Record<string, Mods> = stats.attachments[weapon.id] ?? {};
+  const page = extras[weapon.id];
+  // A gun COD Loadout lists keeps its numbers. A newer gun takes them from its CODMunity page, keyed the same way.
+  const pageMods: Record<string, Mods> = Object.fromEntries(Object.entries(page?.mods ?? {}).map(([name, mods]) => [slug(name), mods]));
+  const statMods: Record<string, Mods> = stats.attachments[weapon.id] ?? pageMods;
   const apexRow = rows.find(row => slotId(row[1]) === 'apex');
   const list: [string, number, Mods][] = [];
   for (const [name, slot, level, label] of rows) {
@@ -55,6 +67,8 @@ const weapons = baseCatalog.weapons.map(weapon => {
   }
   for (const id of Object.keys(statMods)) {
     if (list.some(entry => entry[0] === id)) continue;
+    // A page lists its Apex among the attachments. It is read below.
+    if (statMods === pageMods && apexRow && id === slug(apexRow[0])) continue;
     // CODMunity's MAR-9 page has no attachment table. Its stat entries stay usable with level 0, shown as unpublished.
     const meta = metaById.get(id);
     if (!rows.length && meta) {
@@ -73,11 +87,15 @@ const weapons = baseCatalog.weapons.map(weapon => {
     // A missing entry means the source lists no stat change, not a known zero effect.
     mods: (() => {
       const extra = extraFor(weapon.id, extras[weapon.id]?.attachments[weapon.apex!.name] ?? extras[weapon.id]?.attachments[apexRow?.[0] ?? ''] ?? {});
-      const listed = stats.apex[weapon.id];
+      const fromPage = stats.weapons[weapon.id] ? undefined : pageMods[slug(apexRow?.[0] ?? '')] ?? pageMods[weapon.apex!.id];
+      const listed = stats.apex[weapon.id] ?? (fromPage && Object.keys(fromPage).length ? fromPage : undefined);
       return listed || Object.keys(extra).length ? { ...listed ?? {}, ...extra } : null;
     })(),
   };
-  const profile = (overrides as any).damageProfile ?? weapon.damageProfile;
+  // The page's damage profile is the newest reading. Guns with no damage model here, like shotguns, stay without one.
+  const fallback = (overrides as any).damageProfile ?? weapon.damageProfile;
+  const profile = page?.damage && (fallback || !stats.weapons[weapon.id]) ? page.damage : fallback;
+  const listedBase = stats.weapons[weapon.id] ? { ...stats.weapons[weapon.id], ...patchBase(weapon.id) } : page?.stats;
   return {
     id: weapon.id,
     name: weapon.name,
@@ -92,7 +110,7 @@ const weapons = baseCatalog.weapons.map(weapon => {
     rpm: (overrides as any).rpm ?? weapon.rpm,
     magazine: weapon.magazine,
     health: (overrides as any).stats?.health ?? 100,
-    base: stats.weapons[weapon.id] ? { ...stats.weapons[weapon.id], ...extraFor(weapon.id, extras[weapon.id]?.base ?? {}) } : null,
+    base: listedBase ? { ...listedBase, ...extraFor(weapon.id, page?.base ?? {}) } : null,
     damage: profile ?? null,
     apex,
   };
@@ -209,6 +227,8 @@ const out = {
   meta,
   metaGear,
   metaSources: Object.fromEntries([codmunity, game8, wzstats].map(source => [source.source, { name: source.source, url: source.url, retrieved: source.retrieved }])),
+  // Newest patch first, for the Patch screen.
+  patches: [...patchNotes.patches].sort((a, b) => b.date.localeCompare(a.date)),
 };
 // What each gun's site builds are tuned for, scored with the same engine the site uses.
 const consensus: Record<string, unknown> = {};
@@ -217,7 +237,57 @@ for (const weapon of weapons) {
   const found = consensusFor({ ...out, consensus: {} } as unknown as GameData, weapon);
   if (found) consensus[weapon.id] = found;
 }
-writeFileSync(new URL('src/data/game.json', root), JSON.stringify({ ...out, consensus }));
+
+// Warzone: the same guns, parts and unlock levels, with the Warzone numbers from each CODMunity page. A part with no
+// Warzone record keeps its multiplayer changes and is listed in fallback.
+type WarzoneRaw = { retrieved: string; rules: WarzoneData['rules']; weapons: Record<string, { stats?: Mods; base: Mods; damage?: DamageBand[]; attachments: Record<string, Mods>; mods?: Record<string, Mods>; builds: [string, string, string[], string | null, string][] }> };
+let warzoneRaw: WarzoneRaw | null = null;
+try { warzoneRaw = read('research/raw/codmunity-warzone.json'); } catch { /* no Warzone snapshot yet */ }
+let warzone: WarzoneData | undefined;
+if (warzoneRaw) {
+  const wz: WarzoneData = { retrieved: warzoneRaw.retrieved, rules: warzoneRaw.rules, weapons: {}, loadouts: {}, fallback: {}, meta: {}, consensus: {} };
+  for (const weapon of weapons) {
+    const page = warzoneRaw.weapons[weapon.id];
+    if (!page?.stats || !loadouts[weapon.id]) continue;
+    const mods: Record<string, Mods> = Object.fromEntries(Object.entries(page.mods ?? {}).map(([name, value]) => [slug(name), value]));
+    const fallback: string[] = [];
+    wz.loadouts[weapon.id] = loadouts[weapon.id].map(([id, level, mpMods]) => {
+      const extra = extraFor(weapon.id, page.attachments[attachments[id].name] ?? {});
+      if (mods[id]) return [id, level, { ...mods[id], ...extra }];
+      // Optics carry no stat changes in either mode, only rechamber steadiness.
+      if (attachments[id].slot === 'optic') return [id, level, extra];
+      if (Object.keys(mpMods).length) fallback.push(id);
+      return [id, level, mpMods];
+    });
+    if (fallback.length) wz.fallback[weapon.id] = fallback;
+    const apexName = levels[weapon.id]?.find(row => slotId(row[1]) === 'apex')?.[0] ?? weapon.apex?.name ?? '';
+    const apexMods = mods[slug(apexName)];
+    wz.weapons[weapon.id] = {
+      base: { range: 100, ...page.stats, ...extraFor(weapon.id, page.base) },
+      // Shotguns and launchers have no damage model in multiplayer, and none in Warzone either.
+      damage: weapon.damage && page.damage ? page.damage : null,
+      apex: apexMods && Object.keys(apexMods).length ? apexMods : null,
+    };
+    const url = `https://codmunity.gg/weapon/mw4/${weapon.id}`;
+    wz.meta[weapon.id] = page.builds.map(([label, code, parts, apex, updated]) => {
+      const match = matchParts(weapon.id, parts);
+      return { source: 'CODMunity', label, apex: !!apex || match.apex, code: code || null, attachments: match.attachments, unmatched: match.unmatched, url, updated: updated || null, note: null };
+    });
+  }
+  // Read the Warzone site builds for intent under the Warzone playstyles.
+  const view = modeView({ ...out, consensus, warzone: wz } as unknown as GameData, 'wz');
+  setPlaystyleMode('wz'); resetCaches();
+  for (const weapon of view.weapons) {
+    if (!wz.loadouts[weapon.id] || !weapon.base) continue;
+    const found = consensusFor({ ...view, consensus: {} }, weapon);
+    if (found) wz.consensus[weapon.id] = found;
+  }
+  setPlaystyleMode('mp'); resetCaches();
+  warzone = wz;
+  const fallbacks = Object.values(wz.fallback).reduce((n, list) => n + list.length, 0);
+  console.log(`Warzone: ${Object.keys(wz.weapons).length} guns, ${Object.values(wz.meta).reduce((n, list) => n + list.length, 0)} CODMunity Warzone builds, ${fallbacks} parts without a Warzone record keep multiplayer numbers`);
+}
+writeFileSync(new URL('src/data/game.json', root), JSON.stringify({ ...out, consensus, ...(warzone ? { warzone } : {}) }));
 console.log(`weapons ${weapons.length}, with stats ${weapons.filter(w => loadouts[w.id]).length}, attachments ${Object.keys(attachments).length}, entries ${Object.values(loadouts).reduce((n, l) => n + l.length, 0)}`);
 console.log(`gear ${gear.length}, guide builds ${Object.values(meta).reduce((n, l) => n + l.length, 0)}, guide gear picks ${Object.values(metaGear).reduce((n, l) => n + l.length, 0)}, unmatched guide parts ${unmatchedNames.size}`);
 if (process.argv.includes('--verbose')) {

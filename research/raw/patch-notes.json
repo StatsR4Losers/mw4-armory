@@ -1,0 +1,1449 @@
+{
+ "source": "Infinity Ward patch notes, transcribed by hand. damageBefore is each gun's damage profile before the patch, kept so the site can show time to kill before and after.",
+ "patches": [
+  {
+   "id": "season-1",
+   "title": "Season 1",
+   "date": "2026-11-06",
+   "url": "https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes",
+   "read": "2026-11-07",
+   "newWeapons": [
+    {
+     "id": "cronen-osprey",
+     "note": "5.56 assault rifle with the highest fire rate in its class, per the notes. Season 1 Battle Pass."
+    },
+    {
+     "id": "csg-35",
+     "note": "SMG the notes say can be dual-wielded akimbo. Season 1 Battle Pass."
+    }
+   ],
+   "weapons": [
+    {
+     "id": "axion",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage range 1",
+         "34.8 m",
+         "38.61 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Handling",
+       "rows": [
+        [
+         "Muzzle velocity",
+         "415 m/s",
+         "470 m/s",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "base": {
+      "bv": 470
+     },
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 23,
+       "regions": {
+        "head": 32,
+        "neck": 26,
+        "chest": 26,
+        "stomach": 24,
+        "upperarm": 24,
+        "lowerarm": 24,
+        "upperleg": 24,
+        "lowerleg": 24
+       }
+      },
+      {
+       "minM": 23,
+       "maxM": 34,
+       "regions": {
+        "head": 29,
+        "neck": 24,
+        "chest": 24,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 22,
+        "lowerleg": 22
+       }
+      },
+      {
+       "minM": 34,
+       "maxM": null,
+       "regions": {
+        "head": 27,
+        "neck": 22,
+        "chest": 22,
+        "stomach": 20,
+        "upperarm": 20,
+        "lowerarm": 20,
+        "upperleg": 20,
+        "lowerleg": 20
+       }
+      }
+     ]
+    },
+    {
+     "id": "han-86",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.25x",
+         "1.3x",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 30,
+       "regions": {
+        "head": 28,
+        "neck": 23,
+        "chest": 23,
+        "stomach": 23,
+        "upperarm": 23,
+        "lowerarm": 23,
+        "upperleg": 23,
+        "lowerleg": 23
+       }
+      },
+      {
+       "minM": 30,
+       "maxM": null,
+       "regions": {
+        "head": 23,
+        "neck": 19,
+        "chest": 19,
+        "stomach": 19,
+        "upperarm": 19,
+        "lowerarm": 19,
+        "upperleg": 19,
+        "lowerleg": 19
+       }
+      }
+     ]
+    },
+    {
+     "id": "hyeon-burst",
+     "verdict": "nerf",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage 1",
+         "24",
+         "25",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Apex: Hyeon Hyperburst",
+       "rows": [
+        [
+         "Maximum damage",
+         "30",
+         "23",
+         "down"
+        ],
+        [
+         "Maximum damage range",
+         "24.64 m",
+         "30.99 m",
+         "up"
+        ],
+        [
+         "Medium damage 1",
+         "28",
+         "Removed",
+         ""
+        ],
+        [
+         "Medium damage range 1",
+         "36.58 m",
+         "Removed",
+         ""
+        ],
+        [
+         "Minimum damage",
+         "25",
+         "20",
+         "down"
+        ]
+       ]
+      }
+     ],
+     "flag": "CODMunity's post-patch record also lowers the close-range headshot from 41 to 40. The notes don't list it. The site uses CODMunity's numbers.",
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 21,
+       "regions": {
+        "head": 41,
+        "neck": 34,
+        "chest": 34,
+        "stomach": 31,
+        "upperarm": 31,
+        "lowerarm": 31,
+        "upperleg": 31,
+        "lowerleg": 31
+       }
+      },
+      {
+       "minM": 21,
+       "maxM": 43,
+       "regions": {
+        "head": 31,
+        "neck": 26,
+        "chest": 26,
+        "stomach": 24,
+        "upperarm": 24,
+        "lowerarm": 24,
+        "upperleg": 24,
+        "lowerleg": 24
+       }
+      },
+      {
+       "minM": 43,
+       "maxM": null,
+       "regions": {
+        "head": 28,
+        "neck": 24,
+        "chest": 24,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 22,
+        "lowerleg": 22
+       }
+      }
+     ]
+    },
+    {
+     "id": "kastov-762",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage 1",
+         "24",
+         "25",
+         "up"
+        ],
+        [
+         "Medium damage range 1",
+         "40.13 m",
+         "42.16 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.33x",
+         "1.35x",
+         "up"
+        ],
+        [
+         "Neck",
+         "1.08x",
+         "1.1x",
+         "up"
+        ],
+        [
+         "Upper torso",
+         "1.08x",
+         "1.1x",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 27,
+       "regions": {
+        "head": 39,
+        "neck": 32,
+        "chest": 32,
+        "stomach": 30,
+        "upperarm": 30,
+        "lowerarm": 30,
+        "upperleg": 30,
+        "lowerleg": 30
+       }
+      },
+      {
+       "minM": 27,
+       "maxM": 40,
+       "regions": {
+        "head": 31,
+        "neck": 25,
+        "chest": 25,
+        "stomach": 24,
+        "upperarm": 24,
+        "lowerarm": 24,
+        "upperleg": 24,
+        "lowerleg": 24
+       }
+      },
+      {
+       "minM": 40,
+       "maxM": null,
+       "regions": {
+        "head": 29,
+        "neck": 23,
+        "chest": 23,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 22,
+        "lowerleg": 22
+       }
+      }
+     ]
+    },
+    {
+     "id": "m4",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "25.91 m",
+         "27.94 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.25x",
+         "1.3x",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Apex: M4 Hurricane",
+       "rows": [
+        [
+         "Maximum damage range",
+         "10.49 m",
+         "11.68 m",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 26,
+       "regions": {
+        "head": 28,
+        "neck": 23,
+        "chest": 23,
+        "stomach": 23,
+        "upperarm": 23,
+        "lowerarm": 23,
+        "upperleg": 23,
+        "lowerleg": 23
+       }
+      },
+      {
+       "minM": 26,
+       "maxM": null,
+       "regions": {
+        "head": 23,
+        "neck": 19,
+        "chest": 19,
+        "stomach": 19,
+        "upperarm": 19,
+        "lowerarm": 19,
+        "upperleg": 19,
+        "lowerleg": 19
+       }
+      }
+     ]
+    },
+    {
+     "id": "patriot-xmr",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "31.24 m",
+         "33.53 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Handling",
+       "rows": [
+        [
+         "ADS movement speed",
+         "2.22 m/s",
+         "2.26 m/s",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "base": {
+      "ads_movement": 2.26
+     },
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 31,
+       "regions": {
+        "head": 39,
+        "neck": 30,
+        "chest": 30,
+        "stomach": 30,
+        "upperarm": 30,
+        "lowerarm": 30,
+        "upperleg": 30,
+        "lowerleg": 30
+       }
+      },
+      {
+       "minM": 31,
+       "maxM": 50,
+       "regions": {
+        "head": 31,
+        "neck": 24,
+        "chest": 24,
+        "stomach": 24,
+        "upperarm": 24,
+        "lowerarm": 24,
+        "upperleg": 24,
+        "lowerleg": 24
+       }
+      },
+      {
+       "minM": 50,
+       "maxM": null,
+       "regions": {
+        "head": 28,
+        "neck": 22,
+        "chest": 22,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 22,
+        "lowerleg": 22
+       }
+      }
+     ]
+    },
+    {
+     "id": "iso-nightshade",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "10.54 m",
+         "11.68 m",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "13",
+         "14",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 11,
+       "regions": {
+        "head": 27,
+        "neck": 21,
+        "chest": 21,
+        "stomach": 21,
+        "upperarm": 21,
+        "lowerarm": 21,
+        "upperleg": 19,
+        "lowerleg": 19
+       }
+      },
+      {
+       "minM": 11,
+       "maxM": 20,
+       "regions": {
+        "head": 22,
+        "neck": 17,
+        "chest": 17,
+        "stomach": 17,
+        "upperarm": 17,
+        "lowerarm": 17,
+        "upperleg": 16,
+        "lowerleg": 16
+       }
+      },
+      {
+       "minM": 20,
+       "maxM": 28,
+       "regions": {
+        "head": 19,
+        "neck": 15,
+        "chest": 15,
+        "stomach": 15,
+        "upperarm": 15,
+        "lowerarm": 15,
+        "upperleg": 14,
+        "lowerleg": 14
+       }
+      },
+      {
+       "minM": 28,
+       "maxM": null,
+       "regions": {
+        "head": 16,
+        "neck": 13,
+        "chest": 13,
+        "stomach": 13,
+        "upperarm": 13,
+        "lowerarm": 13,
+        "upperleg": 12,
+        "lowerleg": 12
+       }
+      }
+     ]
+    },
+    {
+     "id": "ppsh-41",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage 2",
+         "13",
+         "14",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "12",
+         "13",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "flag": "The notes list Medium damage 1 as 15 → 15 but mark it 8% up. CODMunity's post-patch record shows 16, and the site uses that.",
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 11,
+       "regions": {
+        "head": 23,
+        "neck": 18,
+        "chest": 18,
+        "stomach": 18,
+        "upperarm": 18,
+        "lowerarm": 18,
+        "upperleg": 17,
+        "lowerleg": 17
+       }
+      },
+      {
+       "minM": 11,
+       "maxM": 20,
+       "regions": {
+        "head": 19,
+        "neck": 15,
+        "chest": 15,
+        "stomach": 15,
+        "upperarm": 15,
+        "lowerarm": 15,
+        "upperleg": 14,
+        "lowerleg": 14
+       }
+      },
+      {
+       "minM": 20,
+       "maxM": 29,
+       "regions": {
+        "head": 16,
+        "neck": 13,
+        "chest": 13,
+        "stomach": 13,
+        "upperarm": 13,
+        "lowerarm": 13,
+        "upperleg": 12,
+        "lowerleg": 12
+       }
+      },
+      {
+       "minM": 29,
+       "maxM": null,
+       "regions": {
+        "head": 15,
+        "neck": 12,
+        "chest": 12,
+        "stomach": 12,
+        "upperarm": 12,
+        "lowerarm": 12,
+        "upperleg": 11,
+        "lowerleg": 11
+       }
+      }
+     ]
+    },
+    {
+     "id": "vel-46",
+     "verdict": "nerf",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "10.13 m",
+         "9.65 m",
+         "down"
+        ],
+        [
+         "Medium damage range 1",
+         "17.27 m",
+         "16.51 m",
+         "down"
+        ],
+        [
+         "Medium damage range 2",
+         "25.15 m",
+         "24.13 m",
+         "down"
+        ],
+        [
+         "Minimum damage",
+         "13",
+         "14",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 10,
+       "regions": {
+        "head": 26,
+        "neck": 20,
+        "chest": 20,
+        "stomach": 20,
+        "upperarm": 20,
+        "lowerarm": 20,
+        "upperleg": 19,
+        "lowerleg": 19
+       }
+      },
+      {
+       "minM": 10,
+       "maxM": 17,
+       "regions": {
+        "head": 22,
+        "neck": 17,
+        "chest": 17,
+        "stomach": 17,
+        "upperarm": 17,
+        "lowerarm": 17,
+        "upperleg": 16,
+        "lowerleg": 16
+       }
+      },
+      {
+       "minM": 17,
+       "maxM": 25,
+       "regions": {
+        "head": 19,
+        "neck": 15,
+        "chest": 15,
+        "stomach": 15,
+        "upperarm": 15,
+        "lowerarm": 15,
+        "upperleg": 14,
+        "lowerleg": 14
+       }
+      },
+      {
+       "minM": 25,
+       "maxM": null,
+       "regions": {
+        "head": 16,
+        "neck": 13,
+        "chest": 13,
+        "stomach": 13,
+        "upperarm": 13,
+        "lowerarm": 13,
+        "upperleg": 12,
+        "lowerleg": 12
+       }
+      }
+     ]
+    },
+    {
+     "id": "wz-55-striga",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage",
+         "26",
+         "27",
+         "up"
+        ],
+        [
+         "Medium damage 2",
+         "18",
+         "Removed",
+         ""
+        ],
+        [
+         "Medium damage range 2",
+         "30.23 m",
+         "Removed",
+         ""
+        ],
+        [
+         "Minimum damage",
+         "17",
+         "19",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.3x",
+         "1.4x",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 12,
+       "regions": {
+        "head": 36,
+        "neck": 26,
+        "chest": 26,
+        "stomach": 26,
+        "upperarm": 26,
+        "lowerarm": 26,
+        "upperleg": 24,
+        "lowerleg": 24
+       }
+      },
+      {
+       "minM": 12,
+       "maxM": 21,
+       "regions": {
+        "head": 32,
+        "neck": 23,
+        "chest": 23,
+        "stomach": 23,
+        "upperarm": 23,
+        "lowerarm": 23,
+        "upperleg": 21,
+        "lowerleg": 21
+       }
+      },
+      {
+       "minM": 21,
+       "maxM": 30,
+       "regions": {
+        "head": 25,
+        "neck": 18,
+        "chest": 18,
+        "stomach": 18,
+        "upperarm": 18,
+        "lowerarm": 18,
+        "upperleg": 17,
+        "lowerleg": 17
+       }
+      },
+      {
+       "minM": 30,
+       "maxM": null,
+       "regions": {
+        "head": 24,
+        "neck": 17,
+        "chest": 17,
+        "stomach": 17,
+        "upperarm": 17,
+        "lowerarm": 17,
+        "upperleg": 16,
+        "lowerleg": 16
+       }
+      }
+     ]
+    },
+    {
+     "id": "x-58-nyx",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage 2",
+         "15",
+         "16",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "13",
+         "14",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 11,
+       "regions": {
+        "head": 28,
+        "neck": 22,
+        "chest": 22,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 20,
+        "lowerleg": 20
+       }
+      },
+      {
+       "minM": 11,
+       "maxM": 20,
+       "regions": {
+        "head": 23,
+        "neck": 18,
+        "chest": 18,
+        "stomach": 18,
+        "upperarm": 18,
+        "lowerarm": 18,
+        "upperleg": 17,
+        "lowerleg": 17
+       }
+      },
+      {
+       "minM": 20,
+       "maxM": 30,
+       "regions": {
+        "head": 19,
+        "neck": 15,
+        "chest": 15,
+        "stomach": 15,
+        "upperarm": 15,
+        "lowerarm": 15,
+        "upperleg": 14,
+        "lowerleg": 14
+       }
+      },
+      {
+       "minM": 30,
+       "maxM": null,
+       "regions": {
+        "head": 16,
+        "neck": 13,
+        "chest": 13,
+        "stomach": 13,
+        "upperarm": 13,
+        "lowerarm": 13,
+        "upperleg": 12,
+        "lowerleg": 12
+       }
+      }
+     ]
+    },
+    {
+     "id": "apoc-338",
+     "verdict": "nerf",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Minimum damage",
+         "33",
+         "32",
+         "down"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.35x",
+         "1.3x",
+         "down"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 23,
+       "regions": {
+        "head": 55,
+        "neck": 45,
+        "chest": 45,
+        "stomach": 41,
+        "upperarm": 41,
+        "lowerarm": 41,
+        "upperleg": 41,
+        "lowerleg": 41
+       }
+      },
+      {
+       "minM": 23,
+       "maxM": 48,
+       "regions": {
+        "head": 49,
+        "neck": 40,
+        "chest": 40,
+        "stomach": 37,
+        "upperarm": 37,
+        "lowerarm": 37,
+        "upperleg": 37,
+        "lowerleg": 37
+       }
+      },
+      {
+       "minM": 48,
+       "maxM": null,
+       "regions": {
+        "head": 44,
+        "neck": 36,
+        "chest": 36,
+        "stomach": 33,
+        "upperarm": 33,
+        "lowerarm": 33,
+        "upperleg": 33,
+        "lowerleg": 33
+       }
+      }
+     ]
+    },
+    {
+     "id": "type-73",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "24.89 m",
+         "25.53 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Head",
+         "1.25x",
+         "1.3x",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Apex: Type 73 Assault",
+       "rows": [
+        [
+         "Maximum damage range",
+         "22.23 m",
+         "24.13 m",
+         "up"
+        ],
+        [
+         "Medium damage 1",
+         "22",
+         "23",
+         "up"
+        ],
+        [
+         "Medium damage range 1",
+         "41.91 m",
+         "43.13 m",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 25,
+       "regions": {
+        "head": 27,
+        "neck": 24,
+        "chest": 24,
+        "stomach": 22,
+        "upperarm": 22,
+        "lowerarm": 22,
+        "upperleg": 22,
+        "lowerleg": 22
+       }
+      },
+      {
+       "minM": 25,
+       "maxM": 47,
+       "regions": {
+        "head": 26,
+        "neck": 23,
+        "chest": 23,
+        "stomach": 21,
+        "upperarm": 21,
+        "lowerarm": 21,
+        "upperleg": 21,
+        "lowerleg": 21
+       }
+      },
+      {
+       "minM": 47,
+       "maxM": null,
+       "regions": {
+        "head": 23,
+        "neck": 20,
+        "chest": 20,
+        "stomach": 19,
+        "upperarm": 19,
+        "lowerarm": 19,
+        "upperleg": 19,
+        "lowerleg": 19
+       }
+      }
+     ]
+    },
+    {
+     "id": "rezi-12",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Medium damage range 1",
+         "4.57 m",
+         "4.95 m",
+         "up"
+        ],
+        [
+         "Medium damage range 2",
+         "6.35 m",
+         "6.86 m",
+         "up"
+        ],
+        [
+         "Medium damage range 3",
+         "8.76 m",
+         "10.29 m",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "14",
+         "16",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Apex: Rezi 12 Enforcer",
+       "rows": [
+        [
+         "Medium damage range 1",
+         "5.08 m",
+         "5.33 m",
+         "up"
+        ],
+        [
+         "Medium damage range 2",
+         "7.37 m",
+         "7.87 m",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "19",
+         "20",
+         "up"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "id": "mosin-nagant",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "36.83 m",
+         "40.13 m",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 37,
+       "regions": {
+        "head": 158,
+        "neck": 111,
+        "chest": 102,
+        "stomach": 102,
+        "upperarm": 93,
+        "lowerarm": 93,
+        "upperleg": 93,
+        "lowerleg": 93
+       }
+      },
+      {
+       "minM": 37,
+       "maxM": 56,
+       "regions": {
+        "head": 146,
+        "neck": 103,
+        "chest": 94,
+        "stomach": 94,
+        "upperarm": 86,
+        "lowerarm": 86,
+        "upperleg": 86,
+        "lowerleg": 86
+       }
+      },
+      {
+       "minM": 56,
+       "maxM": null,
+       "regions": {
+        "head": 102,
+        "neck": 72,
+        "chest": 66,
+        "stomach": 66,
+        "upperarm": 60,
+        "lowerarm": 60,
+        "upperleg": 60,
+        "lowerleg": 60
+       }
+      }
+     ]
+    },
+    {
+     "id": "oris-8-6",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "19.05 m",
+         "22.61 m",
+         "up"
+        ],
+        [
+         "Minimum damage",
+         "58",
+         "63",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 19,
+       "regions": {
+        "head": 152,
+        "neck": 114,
+        "chest": 104,
+        "stomach": 95,
+        "upperarm": 95,
+        "lowerarm": 95,
+        "upperleg": 95,
+        "lowerleg": 95
+       }
+      },
+      {
+       "minM": 19,
+       "maxM": 30,
+       "regions": {
+        "head": 134,
+        "neck": 100,
+        "chest": 92,
+        "stomach": 84,
+        "upperarm": 84,
+        "lowerarm": 84,
+        "upperleg": 84,
+        "lowerleg": 84
+       }
+      },
+      {
+       "minM": 30,
+       "maxM": 46,
+       "regions": {
+        "head": 112,
+        "neck": 84,
+        "chest": 77,
+        "stomach": 70,
+        "upperarm": 70,
+        "lowerarm": 70,
+        "upperleg": 70,
+        "lowerleg": 70
+       }
+      },
+      {
+       "minM": 46,
+       "maxM": null,
+       "regions": {
+        "head": 92,
+        "neck": 70,
+        "chest": 63,
+        "stomach": 58,
+        "upperarm": 58,
+        "lowerarm": 58,
+        "upperleg": 58,
+        "lowerleg": 58
+       }
+      }
+     ]
+    },
+    {
+     "id": "krait-p68",
+     "verdict": "buff",
+     "groups": [
+      {
+       "label": "Damage profile",
+       "rows": [
+        [
+         "Maximum damage range",
+         "8.89 m",
+         "9.4 m",
+         "up"
+        ],
+        [
+         "Medium damage range 1",
+         "20.32 m",
+         "21.08 m",
+         "up"
+        ]
+       ]
+      },
+      {
+       "label": "Hit location multipliers",
+       "rows": [
+        [
+         "Lower torso",
+         "1x",
+         "1.1x",
+         "up"
+        ]
+       ]
+      }
+     ],
+     "damageBefore": [
+      {
+       "minM": 0,
+       "maxM": 9,
+       "regions": {
+        "head": 59,
+        "neck": 50,
+        "chest": 50,
+        "stomach": 46,
+        "upperarm": 46,
+        "lowerarm": 46,
+        "upperleg": 46,
+        "lowerleg": 46
+       }
+      },
+      {
+       "minM": 9,
+       "maxM": 20,
+       "regions": {
+        "head": 50,
+        "neck": 42,
+        "chest": 42,
+        "stomach": 39,
+        "upperarm": 39,
+        "lowerarm": 39,
+        "upperleg": 39,
+        "lowerleg": 39
+       }
+      },
+      {
+       "minM": 20,
+       "maxM": 37,
+       "regions": {
+        "head": 44,
+        "neck": 37,
+        "chest": 37,
+        "stomach": 34,
+        "upperarm": 34,
+        "lowerarm": 34,
+        "upperleg": 34,
+        "lowerleg": 34
+       }
+      },
+      {
+       "minM": 37,
+       "maxM": null,
+       "regions": {
+        "head": 39,
+        "neck": 33,
+        "chest": 33,
+        "stomach": 30,
+        "upperarm": 30,
+        "lowerarm": 30,
+        "upperleg": 30,
+        "lowerleg": 30
+       }
+      }
+     ]
+    }
+   ],
+   "other": [
+    {
+     "name": "Argonaut",
+     "rows": [
+      [
+       "Health",
+       "800",
+       "1,200",
+       "up"
+      ]
+     ]
+    },
+    {
+     "name": "Crossfire",
+     "rows": [
+      [
+       "Bullet radius",
+       "",
+       "25% smaller",
+       "down"
+      ],
+      [
+       "Bullet damage",
+       "",
+       "50% lower",
+       "down"
+      ]
+     ],
+     "notes": [
+      "Added spawn protection.",
+      "Less camera shake while flying."
+     ]
+    },
+    {
+     "name": "Proximity Mine",
+     "rows": [
+      [
+       "Arming time",
+       "1.5 s",
+       "0.75 s",
+       "up"
+      ]
+     ]
+    },
+    {
+     "name": "Claymore",
+     "rows": [
+      [
+       "Arming time",
+       "1 s",
+       "0.75 s",
+       "up"
+      ],
+      [
+       "Forward trigger range",
+       "2.29 m",
+       "3.18 m",
+       "up"
+      ],
+      [
+       "Trigger cone",
+       "60°",
+       "80°",
+       "up"
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "The notes change damage, hit location multipliers, one bullet velocity and one ADS movement speed. They list no attachment changes.",
+    "Apex and shotgun damage changes are listed for reference. The optimizer has no model for Apex damage or shotgun pellets, so those rows do not move any score."
+   ]
+  }
+ ]
+}

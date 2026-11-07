@@ -41,7 +41,7 @@ test('every loadout entry points at a known attachment and every Apex can unlock
     }
     if (item.apex) assert.ok((item.apex.level ?? 0) <= item.maxLevel!, `${item.id} Apex above max level`);
   }
-  assert.equal(supported, 28);
+  assert.equal(supported, 30);
 });
 
 test('stacked changes multiply', () => {

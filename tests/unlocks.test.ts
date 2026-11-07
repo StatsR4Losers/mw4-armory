@@ -82,7 +82,7 @@ test('slug playstyles can use slugs unlocked on the other shotgun', () => {
 
 test('routes list the fewest levels to go first', () => {
   const routes = unlockRoutes(data, 'han-86', '5-56-nato-overpressured', settings('han-86', { level: 40, armory: armory({ levels: { m4: 1, 'finn-lmg': 50 } }) }));
-  assert.deepEqual(routes.map(route => [route.weaponId, route.left]), [['m4', 2], ['finn-lmg', 6], ['han-86', 19]]);
+  assert.deepEqual(routes.map(route => [route.weaponId, route.left]), [['m4', 2], ['finn-lmg', 6], ['han-86', 19], ['cronen-osprey', 63]]);
   // Gun-specific parts only unlock on their own gun.
   assert.deepEqual(unlockRoutes(data, 'm4', '60-round-drum', settings('m4', { level: 5 })).map(route => route.weaponId), ['m4']);
 });

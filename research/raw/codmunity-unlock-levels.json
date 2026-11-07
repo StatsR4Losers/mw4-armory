@@ -1,6 +1,6 @@
 {
  "source": "https://codmunity.gg/weapon/mw4/<id>",
- "retrieved": "2026-10-30",
+ "retrieved": "2026-11-07",
  "note": "Attachment name, slot, unlock weapon level and type label from the attachment table on each CODMunity MW4 weapon page. The MAR-9 page has no table. Launchers and the knife have no Gunsmith data.",
  "weapons": {
   "han-86": [
@@ -269,7 +269,7 @@
     "Long Barrel"
    ],
    [
-    "SA K556 16",
+    "SA K556 16\"",
     "Barrel",
     21,
     "Light Barrel"
@@ -583,7 +583,7 @@
     "Angled Short Grip"
    ],
    [
-    "FT Cannonade 7",
+    "FT Cannonade 7\"",
     "Barrel",
     7,
     "Heavy Short Barrel"
@@ -799,7 +799,7 @@
     "Light Stock"
    ],
    [
-    "ZLR Drift 16.5",
+    "ZLR Drift 16.5\"",
     "Barrel",
     68,
     "Light Barrel"
@@ -1289,13 +1289,13 @@
     "4X Scope"
    ],
    [
-    "EXP Haste 80L 14",
+    "EXP Haste 80L 14\"",
     "Barrel",
     37,
     "Light Barrel"
    ],
    [
-    "EXP Raid Tac 18.5",
+    "EXP Raid Tac 18.5\"",
     "Barrel",
     15,
     "Long Barrel"
@@ -1475,13 +1475,13 @@
     "Mini Reflex"
    ],
    [
-    "SO 898F 19",
+    "SO 898F 19\"",
     "Barrel",
     60,
     "Heavy Long Barrel"
    ],
    [
-    "SO Pilot-RX 11",
+    "SO Pilot-RX 11\"",
     "Barrel",
     5,
     "Short Barrel"
@@ -1711,7 +1711,7 @@
     "Flashlight"
    ],
    [
-    "FJX Ghostfire 16.3",
+    "FJX Ghostfire 16.3\"",
     "Barrel",
     61,
     "Silenced Barrel"
@@ -2579,7 +2579,7 @@
     "Rifle Scope"
    ],
    [
-    "SA DMN-L 30",
+    "SA DMN-L 30\"",
     "Barrel",
     6,
     "Long Barrel"
@@ -2785,7 +2785,7 @@
     "Holo"
    ],
    [
-    "Bryson Longhorn 20",
+    "Bryson Longhorn 20\"",
     "Barrel",
     35,
     "Heavy Barrel"
@@ -2815,7 +2815,7 @@
     "Canted Laser"
    ],
    [
-    "Cronen Eaglehawk 19",
+    "Cronen Eaglehawk 19\"",
     "Barrel",
     19,
     "Light Barrel"
@@ -2845,7 +2845,7 @@
     "Custom Silencer"
    ],
    [
-    "Dawnstrike OP 16.5",
+    "Dawnstrike OP 16.5\"",
     "Barrel",
     3,
     "Short Barrel"
@@ -2881,7 +2881,7 @@
     "Tactical Comb"
    ],
    [
-    "FJX Sypher 27",
+    "FJX Sypher 27\"",
     "Barrel",
     55,
     "Heavy Long Barrel"
@@ -3327,7 +3327,7 @@
     "Bright Hip Laser"
    ],
    [
-    "RT Outride-X 8",
+    "RT Outride-X 8\"",
     "Barrel",
     22,
     "Light Barrel"
@@ -3429,7 +3429,7 @@
     "Long Barrel"
    ],
    [
-    "ZLR Mag-Z 9",
+    "ZLR Mag-Z 9\"",
     "Barrel",
     2,
     "Short Barrel"
@@ -3776,6 +3776,314 @@
     "ZLR Type C",
     "Optic",
     36,
+    "Mini Reflex"
+   ]
+  ],
+  "wz-55-striga": [
+   [
+    "1/2x28 Dual Port",
+    "Muzzle",
+    17,
+    "Horizontal Comp"
+   ],
+   [
+    "9mm Makarov Armor Piercing",
+    "Ammunition",
+    57,
+    ""
+   ],
+   [
+    "9mm Makarov Frangible",
+    "Ammunition",
+    39,
+    ""
+   ],
+   [
+    "9mm Makarov Hollow Point",
+    "Ammunition",
+    31,
+    ""
+   ],
+   [
+    "9mm Makarov Overpressured",
+    "Ammunition",
+    9,
+    ""
+   ],
+   [
+    "35 Round Mag",
+    "Magazine",
+    10,
+    ""
+   ],
+   [
+    "50 Round Drum Mag",
+    "Magazine",
+    49,
+    ""
+   ],
+   [
+    "330TC2 Gridlock",
+    "Muzzle",
+    28,
+    "Tactical Silencer"
+   ],
+   [
+    "Ballistarc Dreadline 80",
+    "Barrel",
+    26,
+    "Heavy Barrel"
+   ],
+   [
+    "Bruen THRM-60 Optic",
+    "Optic",
+    50,
+    "Holo"
+   ],
+   [
+    "Cronen R808",
+    "Optic",
+    19,
+    "4X Scope"
+   ],
+   [
+    "DS 9x18 Pro",
+    "Barrel",
+    44,
+    "Light Barrel"
+   ],
+   [
+    "EXP Calvary II Stock",
+    "Stock",
+    20,
+    "Heavy Stock"
+   ],
+   [
+    "EXP Narrow-Lite",
+    "Stock",
+    2,
+    "Tactical Stock"
+   ],
+   [
+    "Expedite 21 CFR",
+    "Laser",
+    42,
+    "Canted Laser"
+   ],
+   [
+    "Expedite Squad-304",
+    "Laser",
+    56,
+    "Canted Laser"
+   ],
+   [
+    "FJX 708 PRO",
+    "Optic",
+    53,
+    "Reflex"
+   ],
+   [
+    "FJX EVR7",
+    "Laser",
+    35,
+    "Flashlight"
+   ],
+   [
+    "FSS Fireline Grip",
+    "Underbarrel",
+    38,
+    "Angled Grip"
+   ],
+   [
+    "FSS Tac90 Grip",
+    "Underbarrel",
+    7,
+    "Angled Short Grip"
+   ],
+   [
+    "FTAC Guard5",
+    "Rear Grip",
+    34,
+    "Assault Grip"
+   ],
+   [
+    "FTAC Silent Recon",
+    "Muzzle",
+    13,
+    "Heavy Silencer"
+   ],
+   [
+    "Full Port Comp",
+    "Muzzle",
+    3,
+    "Balanced Comp"
+   ],
+   [
+    "GL K230",
+    "Optic",
+    33,
+    "4X Scope"
+   ],
+   [
+    "GW Domi-9",
+    "Underbarrel",
+    51,
+    "Vertical Short Grip"
+   ],
+   [
+    "GW Sender 500",
+    "Barrel",
+    5,
+    "Long Barrel"
+   ],
+   [
+    "Haebang BAM70",
+    "Muzzle",
+    58,
+    "Light Silencer"
+   ],
+   [
+    "IOTA-D",
+    "Optic",
+    30,
+    "Mini Reflex"
+   ],
+   [
+    "KV Corsac Holo",
+    "Optic",
+    55,
+    "Holo"
+   ],
+   [
+    "L980-S Comp",
+    "Muzzle",
+    46,
+    "Vertical Comp"
+   ],
+   [
+    "Matuzek 532-L Grip",
+    "Rear Grip",
+    15,
+    "Tactical Grip"
+   ],
+   [
+    "Mire-50 Tac Grip",
+    "Underbarrel",
+    25,
+    "Vertical Grip"
+   ],
+   [
+    "Pulse-MW Laser",
+    "Laser",
+    24,
+    "Dim Hip Laser"
+   ],
+   [
+    "QFL-S4.5",
+    "Laser",
+    45,
+    "Bright Hip Laser"
+   ],
+   [
+    "RX-5 Overstrike",
+    "Muzzle",
+    40,
+    "Flash Hider"
+   ],
+   [
+    "Schlager Night View Pro",
+    "Optic",
+    22,
+    "4X Scope"
+   ],
+   [
+    "Schlager Visiv-5",
+    "Laser",
+    32,
+    "Bright ADS Laser"
+   ],
+   [
+    "Slimline Elite",
+    "Optic",
+    11,
+    "Mini Reflex"
+   ],
+   [
+    "Striga Wood Grip",
+    "Rear Grip",
+    4,
+    "Aim Grip"
+   ],
+   [
+    "SZ Echelon Holo",
+    "Optic",
+    27,
+    "Holo"
+   ],
+   [
+    "SZ Helios Holo",
+    "Optic",
+    43,
+    "Holo"
+   ],
+   [
+    "SZ Lonewolf Holo",
+    "Optic",
+    16,
+    "Holo"
+   ],
+   [
+    "SZ Micro D-3",
+    "Optic",
+    6,
+    "Reflex"
+   ],
+   [
+    "SZ Prima-4 Dot",
+    "Optic",
+    59,
+    "Mini Reflex"
+   ],
+   [
+    "SZ SRE-7",
+    "Optic",
+    37,
+    "Reflex"
+   ],
+   [
+    "VLK Trimmer",
+    "Optic",
+    21,
+    "Reflex"
+   ],
+   [
+    "Wire Stock",
+    "Stock",
+    52,
+    "Light Stock"
+   ],
+   [
+    "Wz.55 Striga Rampage",
+    "Apex",
+    60,
+    ""
+   ],
+   [
+    "XRK Clutch-LS",
+    "Laser",
+    8,
+    "Dim ADS Laser"
+   ],
+   [
+    "XRK Rampage",
+    "Muzzle",
+    14,
+    "Breacher"
+   ],
+   [
+    "ZLR Type C",
+    "Optic",
+    48,
     "Mini Reflex"
    ]
   ],
@@ -4709,7 +5017,7 @@
     "Heavy Guard"
    ],
    [
-    "ZLR 12GA Ported 21",
+    "ZLR 12GA Ported 21\"",
     "Barrel",
     15,
     "Heavy Barrel"
@@ -4721,13 +5029,13 @@
     "Light Bolt"
    ],
    [
-    "ZLR L48 Siege 13",
+    "ZLR L48 Siege 13\"",
     "Barrel",
     42,
     "Short Barrel"
    ],
    [
-    "ZLR Rogue 90 25",
+    "ZLR Rogue 90 25\"",
     "Barrel",
     6,
     "Heavy Long Barrel"
@@ -5205,7 +5513,7 @@
     "Balanced Comp"
    ],
    [
-    "FTAC MOD3-LK 15",
+    "FTAC MOD3-LK 15\"",
     "Barrel",
     2,
     "Light Barrel"
@@ -5325,13 +5633,13 @@
     "Flash Hider"
    ],
    [
-    "TA N-VCX 18",
+    "TA N-VCX 18\"",
     "Barrel",
     49,
     "Heavy Barrel"
    ],
    [
-    "TA Sustain-99 20",
+    "TA Sustain-99 20\"",
     "Barrel",
     33,
     "Heavy Long Barrel"
@@ -5567,7 +5875,7 @@
     "Bright Hip Laser"
    ],
    [
-    "RSS-40F 12",
+    "RSS-40F 12\"",
     "Barrel",
     4,
     "Short Barrel"
@@ -5579,13 +5887,13 @@
     "Rifle Scope"
    ],
    [
-    "SA Firerush 23.8",
+    "SA Firerush 23.8\"",
     "Barrel",
     15,
     "Light Barrel"
    ],
    [
-    "SA Sentinel 30.4",
+    "SA Sentinel 30.4\"",
     "Barrel",
     30,
     "Heavy Barrel"
@@ -5809,7 +6117,7 @@
     "Light Stock"
    ],
    [
-    "EXP .388 XL 24.5",
+    "EXP .388 XL 24.5\"",
     "Barrel",
     12,
     "Long Barrel"
@@ -5911,19 +6219,19 @@
     "Dim ADS Laser"
    ],
    [
-    "SA Slipstream 14.3",
+    "SA Slipstream 14.3\"",
     "Barrel",
     36,
     "Light Barrel"
    ],
    [
-    "SA Trailpoint 16.3",
+    "SA Trailpoint 16.3\"",
     "Barrel",
     22,
     "Short Barrel"
    ],
    [
-    "SA Trident 24.5",
+    "SA Trident 24.5\"",
     "Barrel",
     4,
     "Heavy Barrel"
@@ -6044,6 +6352,410 @@
    ]
   ],
   "mar-9": [],
+  "oris-8-6": [
+   [
+    "6 Round Mag",
+    "Magazine",
+    11,
+    ""
+   ],
+   [
+    "8.6mm Blackout Armor Piercing",
+    "Ammunition",
+    20,
+    ""
+   ],
+   [
+    "8.6mm Blackout Frangible",
+    "Ammunition",
+    52,
+    ""
+   ],
+   [
+    "8.6mm Blackout Hollow Point",
+    "Ammunition",
+    9,
+    ""
+   ],
+   [
+    "20 Round Mag",
+    "Magazine",
+    61,
+    ""
+   ],
+   [
+    "AA54 V.3 Bipod",
+    "Underbarrel",
+    43,
+    "Bipod"
+   ],
+   [
+    "BR7 Invader",
+    "Stock",
+    23,
+    "Tactical Stock"
+   ],
+   [
+    "Bruen C-Wrap 60",
+    "Rear Grip",
+    49,
+    "Assault Grip"
+   ],
+   [
+    "Bruen R7-TC Grip",
+    "Rear Grip",
+    30,
+    "Aim Grip"
+   ],
+   [
+    "Bruen R12 Gen. 4",
+    "Muzzle",
+    35,
+    "Horizontal Comp"
+   ],
+   [
+    "Bruen THRM-60 Optic",
+    "Optic",
+    62,
+    "Holo"
+   ],
+   [
+    "Corio Bisect",
+    "Optic",
+    64,
+    "4X Scope"
+   ],
+   [
+    "Corio D51 Scope",
+    "Optic",
+    63,
+    "Marksman Scope"
+   ],
+   [
+    "Corvus Avis-0",
+    "Optic",
+    58,
+    "Marksman Scope"
+   ],
+   [
+    "Cronen R808",
+    "Optic",
+    12,
+    "4X Scope"
+   ],
+   [
+    "EXP Crosstac 22\"",
+    "Barrel",
+    37,
+    "Long Barrel"
+   ],
+   [
+    "EXP Fold-50 20\"",
+    "Barrel",
+    5,
+    "Bipod Barrel"
+   ],
+   [
+    "EXP Ripper 7.75\"",
+    "Barrel",
+    15,
+    "Short Barrel"
+   ],
+   [
+    "EXP Shadow-70 14\"",
+    "Barrel",
+    55,
+    "Silenced Barrel"
+   ],
+   [
+    "EXP Undertow Gen. 2",
+    "Muzzle",
+    56,
+    "Heavy Silencer"
+   ],
+   [
+    "Expedite 21 CFR",
+    "Laser",
+    48,
+    "Canted Laser"
+   ],
+   [
+    "Expedite 308 DR2",
+    "Optic",
+    54,
+    "Marksman Scope"
+   ],
+   [
+    "FJX 708 PRO",
+    "Optic",
+    51,
+    "Reflex"
+   ],
+   [
+    "FJX EVR7",
+    "Laser",
+    13,
+    "Flashlight"
+   ],
+   [
+    "FSS Beargrip",
+    "Underbarrel",
+    29,
+    "Bipod Grip"
+   ],
+   [
+    "FSS Fireline Grip",
+    "Underbarrel",
+    25,
+    "Angled Grip"
+   ],
+   [
+    "FSS Tac90 Grip",
+    "Underbarrel",
+    41,
+    "Angled Short Grip"
+   ],
+   [
+    "GL K230",
+    "Optic",
+    28,
+    "4X Scope"
+   ],
+   [
+    "GW Domi-9",
+    "Underbarrel",
+    21,
+    "Vertical Short Grip"
+   ],
+   [
+    "GW Löwe-55",
+    "Optic",
+    69,
+    "Marksman Scope"
+   ],
+   [
+    "HET-S6 Comp",
+    "Muzzle",
+    19,
+    "Balanced Comp"
+   ],
+   [
+    "IOTA-D",
+    "Optic",
+    22,
+    "Mini Reflex"
+   ],
+   [
+    "KV Corsac Holo",
+    "Optic",
+    68,
+    "Holo"
+   ],
+   [
+    "Lightfire-5 Quick Bolt",
+    "Bolt",
+    45,
+    "Light Bolt"
+   ],
+   [
+    "Locus PX3 Canted",
+    "Optic",
+    17,
+    "Rifle Scope"
+   ],
+   [
+    "Luca Stormwatch",
+    "Optic",
+    59,
+    "Marksman Scope"
+   ],
+   [
+    "Matuzek Blackveil",
+    "Muzzle",
+    14,
+    "Flash Hider"
+   ],
+   [
+    "Meiko 30CAL-SP",
+    "Muzzle",
+    39,
+    "Light Silencer"
+   ],
+   [
+    "Mire-50 Tac Grip",
+    "Underbarrel",
+    4,
+    "Vertical Grip"
+   ],
+   [
+    "No Stock",
+    "Stock",
+    3,
+    ""
+   ],
+   [
+    "Octa-63 Comp",
+    "Muzzle",
+    32,
+    "Vertical Comp"
+   ],
+   [
+    "OPS-45 XP Grip",
+    "Rear Grip",
+    7,
+    "Skeleton Grip"
+   ],
+   [
+    "Oris 8.6 Razor",
+    "Apex",
+    70,
+    ""
+   ],
+   [
+    "RVX9 Thermo",
+    "Optic",
+    34,
+    "Rifle Scope"
+   ],
+   [
+    "SA Dynamo-90 Stock",
+    "Stock",
+    66,
+    "Heavy Stock"
+   ],
+   [
+    "Schlager 7x",
+    "Optic",
+    65,
+    "Rifle Scope"
+   ],
+   [
+    "Schlager Dogfight GI",
+    "Optic",
+    50,
+    "Rifle Scope"
+   ],
+   [
+    "Schlager Indigo-RF",
+    "Optic",
+    67,
+    "Marksman Scope"
+   ],
+   [
+    "Schlager Night View Pro",
+    "Optic",
+    47,
+    "4X Scope"
+   ],
+   [
+    "Schlager Visiv-5",
+    "Laser",
+    8,
+    "Bright ADS Laser"
+   ],
+   [
+    "Slimline Elite",
+    "Optic",
+    6,
+    "Mini Reflex"
+   ],
+   [
+    "SZ CNT-R6 Optic",
+    "Optic",
+    27,
+    "Marksman Scope"
+   ],
+   [
+    "SZ Echelon Holo",
+    "Optic",
+    24,
+    "Holo"
+   ],
+   [
+    "SZ Helios Holo",
+    "Optic",
+    46,
+    "Holo"
+   ],
+   [
+    "SZ Lonewolf Flip",
+    "Optic",
+    36,
+    "4X Scope"
+   ],
+   [
+    "SZ Lonewolf Holo",
+    "Optic",
+    16,
+    "Holo"
+   ],
+   [
+    "SZ Micro D-3",
+    "Optic",
+    31,
+    "Reflex"
+   ],
+   [
+    "SZ Prima-4 Dot",
+    "Optic",
+    60,
+    "Mini Reflex"
+   ],
+   [
+    "SZ SRE-7",
+    "Optic",
+    38,
+    "Reflex"
+   ],
+   [
+    "TV Bitelock",
+    "Muzzle",
+    2,
+    "Breacher"
+   ],
+   [
+    "Vectorlite-80S",
+    "Stock",
+    42,
+    "Light Stock"
+   ],
+   [
+    "VLK Rize-40",
+    "Optic",
+    53,
+    "Rifle Scope"
+   ],
+   [
+    "VLK Trimmer",
+    "Optic",
+    26,
+    "Reflex"
+   ],
+   [
+    "VX86 Heavy Bolt",
+    "Bolt",
+    10,
+    "Heavy Bolt"
+   ],
+   [
+    "XRK Clutch-LS",
+    "Laser",
+    57,
+    "Dim ADS Laser"
+   ],
+   [
+    "ZLR Cold Echo",
+    "Muzzle",
+    44,
+    "Tactical Silencer"
+   ],
+   [
+    "ZLR Type C",
+    "Optic",
+    40,
+    "Mini Reflex"
+   ]
+  ],
   "mosin-nagant": [
    [
     "7 Round Mag",
@@ -6208,7 +6920,7 @@
     "Vertical Short Grip"
    ],
    [
-    "GW L\u00f6we-55",
+    "GW Löwe-55",
     "Optic",
     55,
     "Marksman Scope"
@@ -6594,19 +7306,19 @@
     "4X Scope"
    ],
    [
-    "GW L\u00f6we-55",
+    "GW Löwe-55",
     "Optic",
     12,
     "Marksman Scope"
    ],
    [
-    "Haebang Naseon v.5 26",
+    "Haebang Naseon v.5 26\"",
     "Barrel",
     22,
     "Light Barrel"
    ],
    [
-    "Haebang RMT762 29",
+    "Haebang RMT762 29\"",
     "Barrel",
     43,
     "Long Barrel"
@@ -6786,7 +7498,7 @@
     "Reflex"
    ],
    [
-    "TT Baem 12",
+    "TT Baem 12\"",
     "Barrel",
     5,
     "Short Barrel"
@@ -6810,7 +7522,7 @@
     "Ergonomic Comb"
    ],
    [
-    "TT X541-2 26",
+    "TT X541-2 26\"",
     "Barrel",
     58,
     "Reinforced Barrel"
@@ -6974,13 +7686,13 @@
     "Light Silencer"
    ],
    [
-    "FTAC Crosswind 30",
+    "FTAC Crosswind 30\"",
     "Barrel",
     4,
     "Short Barrel"
    ],
    [
-    "FTAC Harbinger 45",
+    "FTAC Harbinger 45\"",
     "Barrel",
     22,
     "Long Barrel"
@@ -6992,7 +7704,7 @@
     "4X Scope"
    ],
    [
-    "GW L\u00f6we-55",
+    "GW Löwe-55",
     "Optic",
     10,
     "Marksman Scope"
@@ -7028,7 +7740,7 @@
     "Marksman Scope"
    ],
    [
-    "Matuzek Monument 32",
+    "Matuzek Monument 32\"",
     "Barrel",
     39,
     "Heavy Barrel"
@@ -7324,7 +8036,7 @@
     "Vertical Short Grip"
    ],
    [
-    "GW L\u00f6we-55",
+    "GW Löwe-55",
     "Optic",
     15,
     "Marksman Scope"
@@ -7384,7 +8096,7 @@
     "Vertical Grip"
    ],
    [
-    "MR50 Tyrant 29",
+    "MR50 Tyrant 29\"",
     "Barrel",
     14,
     "Long Barrel"
@@ -7396,7 +8108,7 @@
     "Rifle Scope"
    ],
    [
-    "S50-SB Gen.2 22",
+    "S50-SB Gen.2 22\"",
     "Barrel",
     38,
     "Short Barrel"
@@ -7504,13 +8216,13 @@
     "Vertical Comp"
    ],
    [
-    "TV Guarddog 50CAL 27",
+    "TV Guarddog 50CAL 27\"",
     "Barrel",
     4,
     "Heavy Barrel"
    ],
    [
-    "TV Icarus 50 24.5",
+    "TV Icarus 50 24.5\"",
     "Barrel",
     57,
     "Light Barrel"
@@ -7784,7 +8496,7 @@
     ""
    ],
    [
-    "Ballistarc GMA6 6",
+    "Ballistarc GMA6 6\"",
     "Barrel",
     4,
     "Long Barrel"
@@ -7886,7 +8598,7 @@
     "Light Trigger"
    ],
    [
-    "SA Omni 5.5",
+    "SA Omni 5.5\"",
     "Barrel",
     14,
     "Light Barrel"
@@ -7904,7 +8616,7 @@
     "Tactical Grip"
    ],
    [
-    "XRK Doc-40 6",
+    "XRK Doc-40 6\"",
     "Barrel",
     23,
     "Heavy Barrel"
@@ -8286,7 +8998,7 @@
     "Holo"
    ],
    [
-    "Bryson Snub 2",
+    "Bryson Snub 2\"",
     "Barrel",
     15,
     "Short Barrel"
@@ -8358,7 +9070,7 @@
     "Hair Trigger"
    ],
    [
-    "Matuzek Deputy 3.5",
+    "Matuzek Deputy 3.5\"",
     "Barrel",
     30,
     "Light Barrel"
@@ -8442,7 +9154,7 @@
     "Horizontal Comp"
    ],
    [
-    "XRK Greywolf 7.5",
+    "XRK Greywolf 7.5\"",
     "Barrel",
     7,
     "Heavy Barrel"
@@ -8466,716 +9178,626 @@
     "Mini Reflex"
    ]
   ],
-  "wz-55-striga": [
+  "cronen-osprey": [
    [
-    "1/2x28 Dual Port",
-    "Muzzle",
-    17,
-    ""
-   ],
-   [
-    "9mm Makarov Armor Piercing",
-    "Ammunition",
-    57,
-    ""
-   ],
-   [
-    "9mm Makarov Frangible",
-    "Ammunition",
-    39,
-    ""
-   ],
-   [
-    "9mm Makarov Hollow Point",
-    "Ammunition",
-    31,
-    ""
-   ],
-   [
-    "9mm Makarov Overpressured",
+    "5.56 NATO Armor Piercing",
     "Ammunition",
     9,
     ""
    ],
    [
-    "35 Round Mag",
-    "Magazine",
-    10,
-    ""
-   ],
-   [
-    "50 Round Drum Mag",
-    "Magazine",
-    49,
-    ""
-   ],
-   [
-    "330TC2 Gridlock",
-    "Muzzle",
-    28,
-    ""
-   ],
-   [
-    "Ballistarc Dreadline 80",
-    "Barrel",
-    26,
-    ""
-   ],
-   [
-    "Bruen THRM-60 Optic",
-    "Optic",
-    50,
-    ""
-   ],
-   [
-    "Cronen R808",
-    "Optic",
+    "5.56 NATO Frangible",
+    "Ammunition",
     19,
     ""
    ],
    [
-    "DS 9x18 Pro",
-    "Barrel",
-    44,
-    ""
-   ],
-   [
-    "EXP Calvary II Stock",
-    "Stock",
-    20,
-    ""
-   ],
-   [
-    "EXP Narrow-Lite",
-    "Stock",
-    2,
-    ""
-   ],
-   [
-    "Expedite 21 CFR",
-    "Laser",
-    42,
-    ""
-   ],
-   [
-    "Expedite Squad-304",
-    "Laser",
-    56,
-    ""
-   ],
-   [
-    "FJX 708 PRO",
-    "Optic",
-    53,
-    ""
-   ],
-   [
-    "FJX EVR7",
-    "Laser",
-    35,
-    ""
-   ],
-   [
-    "FSS Fireline Grip",
-    "Underbarrel",
-    38,
-    ""
-   ],
-   [
-    "FSS Tac90 Grip",
-    "Underbarrel",
-    7,
-    ""
-   ],
-   [
-    "FTAC Guard5",
-    "Rear Grip",
-    34,
-    ""
-   ],
-   [
-    "FTAC Silent Recon",
-    "Muzzle",
-    13,
-    ""
-   ],
-   [
-    "Full Port Comp",
-    "Muzzle",
-    3,
-    ""
-   ],
-   [
-    "GL K230",
-    "Optic",
-    33,
-    ""
-   ],
-   [
-    "GW Domi-9",
-    "Underbarrel",
-    51,
-    ""
-   ],
-   [
-    "GW Sender 500",
-    "Barrel",
-    5,
-    ""
-   ],
-   [
-    "Haebang BAM70",
-    "Muzzle",
-    58,
-    ""
-   ],
-   [
-    "IOTA-D",
-    "Optic",
-    30,
-    ""
-   ],
-   [
-    "KV Corsac Holo",
-    "Optic",
-    55,
-    ""
-   ],
-   [
-    "L980-S Comp",
-    "Muzzle",
-    46,
-    ""
-   ],
-   [
-    "Matuzek 532-L Grip",
-    "Rear Grip",
-    15,
-    ""
-   ],
-   [
-    "Mire-50 Tac Grip",
-    "Underbarrel",
-    25,
-    ""
-   ],
-   [
-    "Pulse-MW Laser",
-    "Laser",
-    24,
-    ""
-   ],
-   [
-    "QFL-S4.5",
-    "Laser",
-    45,
-    ""
-   ],
-   [
-    "RX-5 Overstrike",
-    "Muzzle",
-    40,
-    ""
-   ],
-   [
-    "Schlager Night View Pro",
-    "Optic",
-    22,
-    ""
-   ],
-   [
-    "Schlager Visiv-5",
-    "Laser",
-    32,
-    ""
-   ],
-   [
-    "Slimline Elite",
-    "Optic",
-    11,
-    ""
-   ],
-   [
-    "Striga Wood Grip",
-    "Rear Grip",
-    4,
-    ""
-   ],
-   [
-    "SZ Echelon Holo",
-    "Optic",
-    27,
-    ""
-   ],
-   [
-    "SZ Helios Holo",
-    "Optic",
-    43,
-    ""
-   ],
-   [
-    "SZ Lonewolf Holo",
-    "Optic",
-    16,
-    ""
-   ],
-   [
-    "SZ Micro D-3",
-    "Optic",
-    6,
-    ""
-   ],
-   [
-    "SZ Prima-4 Dot",
-    "Optic",
-    59,
-    ""
-   ],
-   [
-    "SZ SRE-7",
-    "Optic",
-    37,
-    ""
-   ],
-   [
-    "VLK Trimmer",
-    "Optic",
-    21,
-    ""
-   ],
-   [
-    "Wire Stock",
-    "Stock",
-    52,
-    ""
-   ],
-   [
-    "Wz.55 Striga Rampage",
-    "Apex",
-    60,
-    ""
-   ],
-   [
-    "XRK Clutch-LS",
-    "Laser",
-    8,
-    ""
-   ],
-   [
-    "XRK Rampage",
-    "Muzzle",
-    14,
-    ""
-   ],
-   [
-    "ZLR Type C",
-    "Optic",
-    48,
-    ""
-   ]
-  ],
-  "oris-8-6": [
-   [
-    "6 Round Mag",
-    "Magazine",
-    11,
-    ""
-   ],
-   [
-    "8.6mm Blackout Armor Piercing",
+    "5.56 NATO High Velocity",
     "Ammunition",
-    20,
-    ""
-   ],
-   [
-    "8.6mm Blackout Frangible",
-    "Ammunition",
-    52,
-    ""
-   ],
-   [
-    "8.6mm Blackout Hollow Point",
-    "Ammunition",
-    9,
-    ""
-   ],
-   [
-    "20 Round Mag",
-    "Magazine",
-    61,
-    ""
-   ],
-   [
-    "AA54 V.3 Bipod",
-    "Underbarrel",
-    43,
-    ""
-   ],
-   [
-    "BR7 Invader",
-    "Stock",
-    23,
-    ""
-   ],
-   [
-    "Bruen C-Wrap 60",
-    "Rear Grip",
-    49,
-    ""
-   ],
-   [
-    "Bruen R7-TC Grip",
-    "Rear Grip",
-    30,
-    ""
-   ],
-   [
-    "Bruen R12 Gen. 4",
-    "Muzzle",
-    35,
-    ""
-   ],
-   [
-    "Bruen THRM-60 Optic",
-    "Optic",
-    62,
-    ""
-   ],
-   [
-    "Corio Bisect",
-    "Optic",
-    64,
-    ""
-   ],
-   [
-    "Corio D51 Scope",
-    "Optic",
-    63,
-    ""
-   ],
-   [
-    "Corvus Avis-0",
-    "Optic",
-    58,
-    ""
-   ],
-   [
-    "Cronen R808",
-    "Optic",
-    12,
-    ""
-   ],
-   [
-    "EXP Crosstac 22",
-    "Barrel",
-    37,
-    ""
-   ],
-   [
-    "EXP Fold-50 20",
-    "Barrel",
-    5,
-    ""
-   ],
-   [
-    "EXP Ripper 7.75",
-    "Barrel",
-    15,
-    ""
-   ],
-   [
-    "EXP Shadow-70 14",
-    "Barrel",
-    55,
-    ""
-   ],
-   [
-    "EXP Undertow Gen. 2",
-    "Muzzle",
-    56,
-    ""
-   ],
-   [
-    "Expedite 21 CFR",
-    "Laser",
-    48,
-    ""
-   ],
-   [
-    "Expedite 308 DR2",
-    "Optic",
-    54,
-    ""
-   ],
-   [
-    "FJX 708 PRO",
-    "Optic",
-    51,
-    ""
-   ],
-   [
-    "FJX EVR7",
-    "Laser",
-    13,
-    ""
-   ],
-   [
-    "FSS Beargrip",
-    "Underbarrel",
-    29,
-    ""
-   ],
-   [
-    "FSS Fireline Grip",
-    "Underbarrel",
-    25,
-    ""
-   ],
-   [
-    "FSS Tac90 Grip",
-    "Underbarrel",
-    41,
-    ""
-   ],
-   [
-    "GL K230",
-    "Optic",
-    28,
-    ""
-   ],
-   [
-    "GW Domi-9",
-    "Underbarrel",
-    21,
-    ""
-   ],
-   [
-    "GW L\u00f6we-55",
-    "Optic",
-    69,
-    ""
-   ],
-   [
-    "HET-S6 Comp",
-    "Muzzle",
-    19,
-    ""
-   ],
-   [
-    "IOTA-D",
-    "Optic",
-    22,
-    ""
-   ],
-   [
-    "KV Corsac Holo",
-    "Optic",
     68,
     ""
    ],
    [
-    "Lightfire-5 Quick Bolt",
-    "Bolt",
-    45,
+    "5.56 NATO Hollow Point",
+    "Ammunition",
+    40,
     ""
    ],
    [
-    "Locus PX3 Canted",
-    "Optic",
-    17,
+    "5.56 NATO Overpressured",
+    "Ammunition",
+    63,
     ""
    ],
    [
-    "Luca Stormwatch",
-    "Optic",
+    "60 Round Mag",
+    "Magazine",
+    42,
+    ""
+   ],
+   [
+    "100 Round Drum",
+    "Magazine",
     59,
     ""
    ],
    [
-    "Matuzek Blackveil",
-    "Muzzle",
-    14,
+    "120 Round Drum",
+    "Magazine",
+    69,
     ""
    ],
    [
-    "Meiko 30CAL-SP",
-    "Muzzle",
-    39,
-    ""
-   ],
-   [
-    "Mire-50 Tac Grip",
-    "Underbarrel",
-    4,
-    ""
-   ],
-   [
-    "No Stock",
-    "Stock",
-    3,
-    ""
-   ],
-   [
-    "Octa-63 Comp",
-    "Muzzle",
-    32,
-    ""
-   ],
-   [
-    "OPS-45 XP Grip",
+    "A56 Stout",
     "Rear Grip",
-    7,
-    ""
+    46,
+    "Assault Grip"
    ],
    [
-    "Oris 8.6 Razor",
+    "AA54 V.3 Bipod",
+    "Underbarrel",
+    2,
+    "Bipod"
+   ],
+   [
+    "B16 Helical",
+    "Muzzle",
+    38,
+    "Breacher"
+   ],
+   [
+    "Bruen 22-LPW",
+    "Laser",
+    65,
+    "Bright Hip Laser"
+   ],
+   [
+    "Bruen THRM-60 Optic",
+    "Optic",
+    11,
+    "Holo"
+   ],
+   [
+    "Corio 4DV-3",
+    "Laser",
+    36,
+    "Flashlight"
+   ],
+   [
+    "Corio ODSPR+",
+    "Laser",
+    45,
+    "Canted Laser"
+   ],
+   [
+    "Corvus LVL-40",
+    "Muzzle",
+    43,
+    "Horizontal Comp"
+   ],
+   [
+    "Cronen 56",
+    "Rear Grip",
+    67,
+    "Aim Grip"
+   ],
+   [
+    "Cronen Helix Mk.II",
     "Apex",
     70,
     ""
    ],
    [
-    "RVX9 Thermo",
+    "Cronen R808",
     "Optic",
-    34,
-    ""
+    23,
+    "4X Scope"
    ],
    [
-    "SA Dynamo-90 Stock",
+    "Cronen Shear-56",
+    "Rear Grip",
+    37,
+    "Skeleton Grip"
+   ],
+   [
+    "Expedite Intra-5b",
+    "Laser",
+    56,
+    "Canted Laser"
+   ],
+   [
+    "Fade Tac 9L",
     "Stock",
-    66,
-    ""
+    57,
+    "Light Stock"
+   ],
+   [
+    "FJX 708 PRO",
+    "Optic",
+    35,
+    "Reflex"
+   ],
+   [
+    "FSS Beargrip",
+    "Underbarrel",
+    30,
+    "Bipod Grip"
+   ],
+   [
+    "FSS Fireline Grip",
+    "Underbarrel",
+    16,
+    "Angled Grip"
+   ],
+   [
+    "FSS IS40",
+    "Muzzle",
+    49,
+    "Light Silencer"
+   ],
+   [
+    "FSS IS300",
+    "Muzzle",
+    21,
+    "Heavy Silencer"
+   ],
+   [
+    "FSS Tac90 Grip",
+    "Underbarrel",
+    6,
+    "Angled Short Grip"
+   ],
+   [
+    "FT Stalwart MK2",
+    "Stock",
+    50,
+    "Heavy Stock"
+   ],
+   [
+    "FTAC Dominion",
+    "Muzzle",
+    26,
+    "Balanced Comp"
+   ],
+   [
+    "GKL-700 14\"",
+    "Barrel",
+    39,
+    "Light Barrel"
+   ],
+   [
+    "GL K230",
+    "Optic",
+    29,
+    "4X Scope"
+   ],
+   [
+    "GW Domi-9",
+    "Underbarrel",
+    25,
+    "Vertical Short Grip"
+   ],
+   [
+    "IO-556 Tac 18\"",
+    "Barrel",
+    54,
+    "Long Barrel"
+   ],
+   [
+    "IOTA-D",
+    "Optic",
+    7,
+    "Mini Reflex"
+   ],
+   [
+    "KV Corsac Holo",
+    "Optic",
+    8,
+    "Holo"
+   ],
+   [
+    "Locus PX3 Canted",
+    "Optic",
+    32,
+    "Rifle Scope"
+   ],
+   [
+    "Mire-50 Tac Grip",
+    "Underbarrel",
+    12,
+    "Vertical Grip"
+   ],
+   [
+    "Miri 40mm",
+    "Underbarrel",
+    53,
+    "Underbarrel Launcher"
+   ],
+   [
+    "RG5 Hark 10\"",
+    "Barrel",
+    62,
+    "Short Barrel"
+   ],
+   [
+    "RVX9 Thermo",
+    "Optic",
+    27,
+    "Rifle Scope"
+   ],
+   [
+    "SA Laz-500",
+    "Laser",
+    52,
+    "Dim ADS Laser"
    ],
    [
     "Schlager 7x",
     "Optic",
-    65,
-    ""
+    5,
+    "Rifle Scope"
    ],
    [
     "Schlager Dogfight GI",
     "Optic",
-    50,
-    ""
-   ],
-   [
-    "Schlager Indigo-RF",
-    "Optic",
-    67,
-    ""
+    66,
+    "Rifle Scope"
    ],
    [
     "Schlager Night View Pro",
     "Optic",
-    47,
-    ""
-   ],
-   [
-    "Schlager Visiv-5",
-    "Laser",
-    8,
-    ""
+    4,
+    "4X Scope"
    ],
    [
     "Slimline Elite",
     "Optic",
-    6,
-    ""
+    13,
+    "Mini Reflex"
    ],
    [
-    "SZ CNT-R6 Optic",
-    "Optic",
-    27,
-    ""
+    "SPAN-10 Stock",
+    "Stock",
+    41,
+    "Tactical Stock"
+   ],
+   [
+    "STOVL IRX-6",
+    "Laser",
+    47,
+    "Dim Hip Laser"
    ],
    [
     "SZ Echelon Holo",
     "Optic",
-    24,
-    ""
+    15,
+    "Holo"
+   ],
+   [
+    "SZ Gen.6 PEQ",
+    "Laser",
+    22,
+    "Bright ADS Laser"
    ],
    [
     "SZ Helios Holo",
     "Optic",
-    46,
-    ""
-   ],
-   [
-    "SZ Lonewolf Flip",
-    "Optic",
-    36,
-    ""
+    24,
+    "Holo"
    ],
    [
     "SZ Lonewolf Holo",
     "Optic",
-    16,
-    ""
+    33,
+    "Holo"
    ],
    [
     "SZ Micro D-3",
     "Optic",
-    31,
-    ""
+    28,
+    "Reflex"
    ],
    [
     "SZ Prima-4 Dot",
     "Optic",
-    60,
-    ""
+    31,
+    "Mini Reflex"
    ],
    [
     "SZ SRE-7",
     "Optic",
-    38,
-    ""
+    3,
+    "Reflex"
    ],
    [
-    "TV Bitelock",
+    "TV Judicator",
+    "Underbarrel",
+    60,
+    "Underbarrel Shotgun"
+   ],
+   [
+    "TZL-110 V1",
     "Muzzle",
-    2,
-    ""
-   ],
-   [
-    "Vectorlite-80S",
-    "Stock",
-    42,
-    ""
+    18,
+    "Flash Hider"
    ],
    [
     "VLK Rize-40",
     "Optic",
-    53,
-    ""
+    10,
+    "Rifle Scope"
    ],
    [
     "VLK Trimmer",
     "Optic",
-    26,
-    ""
+    17,
+    "Reflex"
    ],
    [
-    "VX86 Heavy Bolt",
-    "Bolt",
-    10,
-    ""
+    "XR-9 Tac V2",
+    "Stock",
+    69,
+    "Assault Stock"
    ],
    [
-    "XRK Clutch-LS",
-    "Laser",
-    57,
-    ""
-   ],
-   [
-    "ZLR Cold Echo",
+    "XRK Mil-Tac Suppressor",
     "Muzzle",
-    44,
-    ""
+    34,
+    "Tactical Silencer"
+   ],
+   [
+    "ZLR Reverb90",
+    "Muzzle",
+    14,
+    "Vertical Comp"
    ],
    [
     "ZLR Type C",
     "Optic",
-    40,
+    20,
+    "Mini Reflex"
+   ]
+  ],
+  "csg-35": [
+   [
+    "9mm Parabellum Armor Piercing",
+    "Ammunition",
+    9,
     ""
+   ],
+   [
+    "9mm Parabellum Frangible",
+    "Ammunition",
+    2,
+    ""
+   ],
+   [
+    "9mm Parabellum High Velocity",
+    "Ammunition",
+    11,
+    ""
+   ],
+   [
+    "9mm Parabellum Hollow Point",
+    "Ammunition",
+    4,
+    ""
+   ],
+   [
+    "9mm Parabellum Overpressured",
+    "Ammunition",
+    6,
+    ""
+   ],
+   [
+    "40 Round Mag",
+    "Magazine",
+    17,
+    ""
+   ],
+   [
+    "Bruen 22-LPW",
+    "Laser",
+    33,
+    "Bright Hip Laser"
+   ],
+   [
+    "Bruen Clash-40",
+    "Optic",
+    10,
+    "Mini Reflex"
+   ],
+   [
+    "Corio 4DV-3",
+    "Laser",
+    23,
+    "Flashlight"
+   ],
+   [
+    "Corio ODSPR+",
+    "Laser",
+    25,
+    "Canted Laser"
+   ],
+   [
+    "CQC Stop",
+    "Underbarrel",
+    28,
+    "Ergonomic Foregrip"
+   ],
+   [
+    "Cronen Zero-K",
+    "Optic",
+    27,
+    "Mini Reflex"
+   ],
+   [
+    "CSG Crossfire",
+    "Apex",
+    42,
+    ""
+   ],
+   [
+    "EXP Forage-Hvy",
+    "Muzzle",
+    35,
+    "Heavy Silencer"
+   ],
+   [
+    "EXP Forage-LGT",
+    "Muzzle",
+    29,
+    "Light Silencer"
+   ],
+   [
+    "EXP Forage-Tac",
+    "Muzzle",
+    41,
+    "Tactical Silencer"
+   ],
+   [
+    "Expedite Intra-5b",
+    "Laser",
+    36,
+    "Canted Laser"
+   ],
+   [
+    "FJX 708 PRO",
+    "Optic",
+    8,
+    "Reflex"
+   ],
+   [
+    "Grip Strap",
+    "Underbarrel",
+    37,
+    "Tactical Foregrip"
+   ],
+   [
+    "IV-M Hand Stop",
+    "Underbarrel",
+    15,
+    "Assault Foregrip"
+   ],
+   [
+    "Matuzek Fire-Pro",
+    "Rear Grip",
+    39,
+    "Assault Grip"
+   ],
+   [
+    "Matuzek Recourse 7",
+    "Muzzle",
+    32,
+    "Breacher"
+   ],
+   [
+    "NIL-RISE 90 Comp",
+    "Muzzle",
+    16,
+    "Vertical Comp"
+   ],
+   [
+    "OCR-9F",
+    "Muzzle",
+    22,
+    "Flash Hider"
+   ],
+   [
+    "RASH-90 Heavy Stock",
+    "Stock",
+    14,
+    "Heavy Stock"
+   ],
+   [
+    "RTR-8 Pro",
+    "Muzzle",
+    24,
+    "Balanced Comp"
+   ],
+   [
+    "SA Laz-500",
+    "Laser",
+    40,
+    "Dim ADS Laser"
+   ],
+   [
+    "Sakin Contour-7",
+    "Rear Grip",
+    20,
+    "Ergonomic Grip"
+   ],
+   [
+    "STOVL IRX-6",
+    "Laser",
+    18,
+    "Dim Hip Laser"
+   ],
+   [
+    "SZ Gen.6 PEQ",
+    "Laser",
+    7,
+    "Bright ADS Laser"
+   ],
+   [
+    "SZ Micro D-3",
+    "Optic",
+    13,
+    "Reflex"
+   ],
+   [
+    "SZ SRE-7",
+    "Optic",
+    12,
+    "Reflex"
+   ],
+   [
+    "TA Operator-6",
+    "Guard",
+    31,
+    "Tactical Guard"
+   ],
+   [
+    "TA Ration-424",
+    "Guard",
+    19,
+    "Light Guard"
+   ],
+   [
+    "VLK Trimmer",
+    "Optic",
+    5,
+    "Reflex"
+   ],
+   [
+    "XRK Fury-8",
+    "Stock",
+    34,
+    "Assault Stock"
+   ],
+   [
+    "XRK Slight Stock",
+    "Stock",
+    26,
+    "Skeleton Stock"
+   ],
+   [
+    "XRK TAC Grip",
+    "Rear Grip",
+    30,
+    "Tactical Grip"
+   ],
+   [
+    "Z-Dot 9",
+    "Optic",
+    3,
+    "Mini Reflex"
+   ],
+   [
+    "ZLR TKO-35",
+    "Muzzle",
+    38,
+    "Horizontal Comp"
    ]
   ]
  }

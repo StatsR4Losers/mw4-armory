@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { attachmentImage, data, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
+import { attachmentImage, data, hideMissing, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
 import { evaluateBuild, playstyleFor } from '../engine';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
@@ -50,7 +50,7 @@ export function CompareView({ items, setItems, settings, onCopy, onBuild }: { it
         const text = [`${weapon.name} · ${item.label}${item.apex && weapon.apex ? ` · ${weapon.apex.name}` : ''}`, ...sortSlots(item.attachments).map(id => `${slotName(data.attachments[id].slot)}: ${data.attachments[id].name}`)].join('\n');
         return <article key={item.id} className={`compare-col ${index === 0 ? 'baseline' : ''}`}>
           <header>
-            <img src={weaponImage(weapon.id)} alt=""/>
+            <img src={weaponImage(weapon.id)} onError={hideMissing} alt=""/>
             <div className="compare-title">
               <input aria-label="Build name" value={item.label} maxLength={60} onChange={event => update(item.id, { label: event.target.value })}/>
               <select aria-label="Weapon" value={weapon.id} onChange={event => update(item.id, { weaponId: event.target.value, attachments: [], apex: false })}>

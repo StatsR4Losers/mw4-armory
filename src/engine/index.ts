@@ -5,7 +5,7 @@ import { playstyleFor } from './playstyles.ts';
 import type { Aim, Playstyle } from './playstyles.ts';
 import { unlockHint, unlockState } from './unlocks.ts';
 
-export { AIMS, PLAYSTYLES, ROLES, playstyleById, playstyleFor, playstylesFor, roleOf } from './playstyles.ts';
+export { AIMS, PLAYSTYLES, ROLES, playstyleById, playstyleFor, playstyleMode, playstylesFor, roleOf, setPlaystyleMode } from './playstyles.ts';
 export type { Aim, Playstyle, Role } from './playstyles.ts';
 export { markKey, reachedLevel, sharedPart, unlockHint, unlockRoutes, unlockSites, unlockState } from './unlocks.ts';
 export type { Route, Unlock } from './unlocks.ts';
@@ -116,6 +116,9 @@ function bandKill(weapon: WeaponData, index: number, aim: Aim) {
 
 // Builds share a handful of range multipliers and velocities, so window averages are cached like averageTtk.
 const windowCache = new Map<string, { hits: number; oneShot: number } | number | null>();
+
+/** Caches are keyed by gun, so a switch between multiplayer and Warzone numbers must empty them. */
+export function resetCaches() { ttkCache.clear(); killCache.clear(); windowCache.clear(); }
 function cached<T extends { hits: number; oneShot: number } | number | null>(key: string, compute: () => T): T {
   if (windowCache.has(key)) return windowCache.get(key) as T;
   if (windowCache.size > 50_000) windowCache.clear();

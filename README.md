@@ -42,6 +42,14 @@ Each slot is picked from what Game8 runs on that gun, what Game8 and WZStats run
 
 ![Perks, equipment and killstreaks with the reasons for each pick](docs/screenshots/perks.png)
 
+### Optimizes for Warzone too
+
+A switch at the top of the Build screen moves between Multiplayer and Warzone. Warzone uses each gun's Warzone tuning from CODMunity: base stats, damage, every part's changes and the Apex. Kills take 300 damage, 150 health plus three 50-point plates, so magazine size and bullet velocity count for more. Each class gets Warzone playstyles after CODMunity's own: long range, close range, sniper support and sniper. CODMunity's Warzone builds sit under the optimizer's pick with their codes. Perks and killstreaks are multiplayer picks, so Warzone leaves them out.
+
+### Shows what each patch changed
+
+The Patch notes tab lists every change from Infinity Ward's latest notes, gun by gun, with the before and after values. For each changed gun it shows where its stock time to kill moved: the M4 kills in 296 ms instead of 370 ms between 26 and 28 m after Season 1. New guns get their key stats and a button that finds their best build. A chip on the Build screen marks any gun the patch touched.
+
 ### Compares builds side by side
 
 The Compare tab holds up to three builds from any gun. Change any part and every number updates. Pick which column is the baseline, and the others show their differences from it.
@@ -81,11 +89,14 @@ Shotguns and the Hyeon Burst are scored on handling, recoil and fire rate only, 
 
 | Data | Source | Read |
 | --- | --- | --- |
-| Base stats and each attachment's stat changes, 28 guns | [CODMunity](https://codmunity.gg/weapon-stats/mw4), via [COD Loadout](https://codloadout.gitlab.io/mw4/data-and-assumptions/) | Oct 28, 2026 |
+| Base stats and each attachment's stat changes, 28 launch guns | [CODMunity](https://codmunity.gg/weapon-stats/mw4), via [COD Loadout](https://codloadout.gitlab.io/mw4/data-and-assumptions/) | Oct 28, 2026 |
 | Which attachments fit each gun, and their unlock levels | CODMunity weapon pages | Oct 30, 2026 |
 | Shared attachment unlocks, Bonus Level Ups, what weapon prestige relocks | Activision's [create-a-class](https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-launch-multiplayer-operators-weapons-equipment-create-a-class) and [progression](https://www.callofduty.com/blog/2026/10/call-of-duty-modern-warfare-4-ready-for-launch-progression-prestige) posts | Oct 30, 2026 |
 | Rechamber time, sway while rechambering, pre-fire delay, hitscan range | CODMunity weapon pages | Oct 30, 2026 |
 | Apex attachments and the slots they block | Activision's launch guide | Oct 19, 2026 |
+| Season 1 guns (Cronen Osprey, CSG-35) and damage profiles after the Nov 6 patch | CODMunity weapon pages | Nov 7, 2026 |
+| Season 1 patch changes | Infinity Ward's [Season 1 patch notes](https://www.callofduty.com/patchnotes/2026/11/call-of-duty-modern-warfare-4-season-1-patch-notes), transcribed in `research/raw/patch-notes.json` | Nov 7, 2026 |
+| Warzone stats, part changes and site builds | CODMunity's Warzone records on each MW4 weapon page | Nov 7, 2026 |
 | Site builds, codes and gear picks | CODMunity, [Game8](https://game8.co/games/Call-of-Duty-Modern-Warfare-4/archives/630961), [WZStats](https://wzstats.gg/) | Oct 30, 2026 |
 | Killstreak costs | Activision's launch post, via COD Loadout and LFCarry | Oct 19, 2026 |
 | Perk tier lists | [GameRant](https://gamerant.com/call-of-duty-modern-warfare-4-cod-mw4-best-perks-tier-list/), [games.gg](https://games.gg/call-of-duty-modern-warfare-4/guides/best-mw4-perks-tier-list/) | Oct 26 and 29, 2026 |
@@ -114,12 +125,12 @@ npm run dev
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Starts the site at http://127.0.0.1:5173 |
-| `npm test` | Runs 31 engine, data, unlock and gear checks |
+| `npm test` | Runs 37 engine, data, unlock, gear and Warzone checks |
 | `npm run build` | Typechecks and writes the static site to `dist/` |
 | `npm run data` | Rebuilds `src/data/game.json` from `research/raw/` and rereads the site builds for intent, in about 45 seconds. Add `-- --verbose` to list every near match and unmatched site part |
 | `npm run fetch` | Downloads fresh stat files, unlock tables and rechamber and hitscan stats, rebuilds the data, prints what changed per gun and runs the tests |
 
-`npm run fetch` reads one CODMunity page every 5 seconds, so it takes about 3 minutes. Its requests identify themselves as this tool. If a page fails, that gun keeps its previous data. `npm run fetch -- --skip-levels` keeps the unlock table, and `--skip-pages` skips the CODMunity pages and refreshes only the stat files. Site builds were collected in a browser, so `fetch` does not refresh them.
+`npm run fetch` reads one CODMunity page every 5 seconds, so it takes about 3 minutes. Its requests identify themselves as this tool. If a page fails, that gun keeps its previous data. `npm run fetch -- --skip-levels` keeps the unlock table, `--skip-pages` skips the CODMunity pages and refreshes only the stat files, and `--skip-stats` keeps the current COD Loadout files. The same page reads refresh the Warzone numbers and CODMunity's Warzone builds, and give new guns their stats until COD Loadout lists them. Site builds were collected in a browser, so `fetch` does not refresh them.
 
 ## Project layout
 

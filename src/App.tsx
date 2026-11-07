@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { data, supported, weaponById } from './data/game';
-import { ROLES, playstyleById, playstyleFor, playstylesFor, roleOf } from './engine';
+import { currentMode, data, hasWarzone, setMode, supported, weaponById } from './data/game';
+import { ROLES, playstyleById, playstyleFor, playstylesFor } from './engine';
 import { metricIds } from './types';
-import type { Armory, BuildResult, GearSlot, OptimizeResult, Settings, StreakStyle, Weights } from './types';
+import type { Armory, BuildResult, GearSlot, Mode, OptimizeResult, Settings, StreakStyle, Weights } from './types';
 import { BuildView } from './views/BuildView';
 import { GuideView } from './views/GuideView';
 import { SavedView } from './views/SavedView';
 import type { SavedClass } from './views/SavedView';
 import { DataView } from './views/DataView';
+import { PatchView } from './views/PatchView';
 import { CompareView } from './views/CompareView';
 import type { CompareItem } from './views/CompareView';
 import { Icon } from './components/Icon';
 
 const STORAGE_KEY = 'mw4-armory-v2';
 const GEAR_SLOT_IDS: GearSlot[] = ['tactical', 'lethal', 'field', 'perk1', 'perk2', 'perk3'];
-type View = 'build' | 'compare' | 'guide' | 'saved' | 'data';
+type View = 'build' | 'compare' | 'patch' | 'guide' | 'saved' | 'data';
 const views: { id: View; label: string; icon: string }[] = [
   { id: 'build', label: 'Build', icon: 'target' },
   { id: 'compare', label: 'Compare', icon: 'grid' },
+  { id: 'patch', label: 'Patch notes', icon: 'patch' },
   { id: 'guide', label: 'Guide', icon: 'book' },
   { id: 'saved', label: 'Saved', icon: 'save' },
   { id: 'data', label: 'Data', icon: 'data' },
@@ -33,21 +35,25 @@ function openingStyle(weaponId: string) {
 }
 
 export function defaultSettings(weaponId = 'vel-46'): Settings {
-  const weapon = weaponById(weaponId)!;
+  // A gun with no data in the current mode falls back to the VEL 46.
+  const weapon = [weaponById(weaponId), weaponById('vel-46')!].find(item => item && supported(item))!;
+  weaponId = weapon.id;
   const style = openingStyle(weaponId);
-  return { weaponId, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutralEmphasis(), distanceM: style.distanceM, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
+  return { mode: currentMode(), weaponId, level: weapon.maxLevel ?? 1, preset: style.id, emphasis: neutralEmphasis(), distanceM: style.distanceM, apex: false, optic: false, locked: [], excluded: [], playerLevel: 55, killBand: 8, streakStyle: 'mixed', gearLocks: {}, streakLocks: [] };
 }
 
 // Stored and shared settings are untrusted. Read known fields only and fall back to defaults.
 function normalize(input: unknown): Settings {
   const raw = (input && typeof input === 'object' ? input : {}) as Partial<Settings>;
+  // The mode comes first: it decides which guns have data and which playstyles exist.
+  setMode(raw.mode === 'wz' ? 'wz' : 'mp');
   const weapon = typeof raw.weaponId === 'string' ? weaponById(raw.weaponId) : undefined;
   const next = defaultSettings(weapon && supported(weapon) ? weapon.id : undefined);
   const chosen = weaponById(next.weaponId)!, max = chosen.maxLevel ?? 1;
   if (typeof raw.level === 'number' && Number.isFinite(raw.level)) next.level = Math.max(1, Math.min(max, Math.round(raw.level)));
   // Playstyles belong to a weapon class. One saved for another class, or from before classes had their own, falls back to the default.
   const style = typeof raw.preset === 'string' ? playstyleById(raw.preset) : undefined;
-  if (style && style.role === roleOf(chosen)) {
+  if (style && playstylesFor(chosen).includes(style)) {
     next.preset = style.id;
     const [min, top] = ROLES[style.role].distance;
     if (typeof raw.distanceM === 'number' && Number.isFinite(raw.distanceM)) next.distanceM = Math.max(min, Math.min(top, Math.round(raw.distanceM)));
@@ -121,6 +127,8 @@ export default function App() {
   const initial = useRef<ReturnType<typeof readInitial>>(null);
   if (!initial.current) initial.current = readInitial();
   const [settings, setSettings] = useState(initial.current.settings);
+  // Every screen reads the shared data object, so it must show this mode before anything renders.
+  setMode(settings.mode);
   const [saved, setSaved] = useState<SavedClass[]>(initial.current.saved);
   const [toast, setToast] = useState<string | null>(initial.current.toast);
   const [compare, setCompare] = useState<CompareItem[]>(initial.current.compare);
@@ -128,6 +136,9 @@ export default function App() {
   // Searches run with your armory, so parts unlocked on other guns count.
   const run = useMemo(() => ({ ...settings, armory }), [settings, armory]);
   const [view, setView] = useState<View>('build');
+  // The gun the Patch screen scrolls to when opened from the Build screen. The counter makes a repeat click scroll again.
+  const [patchFocus, setPatchFocus] = useState<string | null>(null);
+  const openPatch = (weaponId: string) => { setPatchFocus(`${weaponId}#${Date.now()}`); setView('patch'); };
   const [result, setResult] = useState<OptimizeResult | null>(null);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState('');
@@ -188,11 +199,19 @@ export default function App() {
     try { await navigator.clipboard.writeText(text); setToast(message); }
     catch { setToast('Copy failed. Your browser blocked clipboard access.'); }
   };
+  // Switching mode keeps the gun and level. The playstyle moves to the new mode's opening one for this gun.
+  const switchMode = (next: Mode) => {
+    if (next === (settings.mode ?? 'mp')) return;
+    setMode(next);
+    const fresh = defaultSettings(settings.weaponId);
+    setSettings(current => ({ ...current, mode: next, weaponId: fresh.weaponId, preset: fresh.preset, distanceM: fresh.distanceM, locked: [], excluded: [], apex: false }));
+    setResult(null);
+  };
   const saveClass = (variant: 'standard' | 'apex', build: BuildResult) => {
     const weapon = weaponById(settings.weaponId)!;
     const label = variant === 'apex' ? weapon.apex?.name ?? 'Apex' : 'No Apex';
     const gear = result?.gear ? [...GEAR_SLOT_IDS.map(slot => result.gear!.picks[slot]?.id), ...result.gear.streaks.map(pick => pick.id)].filter((id): id is string => !!id) : [];
-    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${label} · ${playstyleFor(weapon, settings.preset).name}`, weaponId: weapon.id, variant, attachments: build.attachments, gear, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
+    setSaved(current => [{ id: crypto.randomUUID(), name: `${weapon.name} · ${settings.mode === 'wz' ? 'Warzone · ' : ''}${label} · ${playstyleFor(weapon, settings.preset).name}`, weaponId: weapon.id, variant, attachments: build.attachments, gear, score: Math.round(build.score), createdAt: new Date().toISOString(), dataVersion: data.version, settings }, ...current]);
     setToast('Class saved on this device.');
   };
   const addCompare = (item: Omit<CompareItem, 'id'>) => {
@@ -207,7 +226,7 @@ export default function App() {
         <span className="brand-name">MW4 <b>Armory</b></span>
       </button>
       <nav className="nav" aria-label="Sections">
-        {views.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} aria-current={view === item.id ? 'page' : undefined} onClick={() => setView(item.id)}>
+        {views.map(item => <button key={item.id} className={view === item.id ? 'active' : ''} aria-current={view === item.id ? 'page' : undefined} onClick={() => { if (item.id === 'patch') setPatchFocus(null); setView(item.id); }}>
           <Icon name={item.icon} size={16}/><span>{item.label}</span>{item.id === 'saved' && saved.length > 0 && <i>{saved.length}</i>}{item.id === 'compare' && compare.length > 0 && <i>{compare.length}</i>}
         </button>)}
       </nav>
@@ -215,8 +234,9 @@ export default function App() {
     </header>
     <main className="main">
       {/* The Build screen stays mounted so its before/after history survives a trip to another tab. */}
-      <div hidden={view !== 'build'}><BuildView settings={run} change={change} armory={armory} setArmory={setArmory} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), level: settings.level, playerLevel: settings.playerLevel })}/></div>
+      <div hidden={view !== 'build'}><BuildView settings={run} change={change} armory={armory} setArmory={setArmory} selectWeapon={selectWeapon} result={result} busy={busy} error={error} saved={saved} onSave={saveClass} onShare={share} onCopy={copyText} onCompare={addCompare} onPatch={openPatch} onMode={hasWarzone ? switchMode : null} onReset={() => setSettings({ ...defaultSettings(settings.weaponId), level: settings.level, playerLevel: settings.playerLevel })}/></div>
       {view === 'compare' && <CompareView items={compare} setItems={setCompare} settings={settings} onCopy={copyText} onBuild={() => setView('build')}/>}
+      {view === 'patch' && <PatchView focus={patchFocus?.split('#')[0] ?? null} key={patchFocus ?? 'patch'} onBuild={weaponId => { selectWeapon(weaponId); setView('build'); window.scrollTo(0, 0); }}/>}
       {view === 'guide' && <GuideView/>}
       {view === 'saved' && <SavedView saved={saved} onLoad={item => { setSettings(withLevel(normalize(item.settings), armory)); setView('build'); }} onDelete={id => setSaved(current => current.filter(item => item.id !== id))} onCopy={copyText} onBuild={() => setView('build')} onCompare={item => addCompare({ label: item.name, weaponId: item.weaponId, attachments: item.attachments, apex: item.variant === 'apex' })}/>}
       {view === 'data' && <DataView/>}

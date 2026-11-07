@@ -53,7 +53,12 @@ export const statSources: Source[] = observations.map(({ id, name, updatedAt, ur
 
 // Only source values enter this overlay. Editorial role scores stay in the base catalog.
 // Damage intervals include minM and exclude maxM. The last interval continues with maxM=null.
+// These damage profiles are the October 30 reading. build-data.ts prefers the profile npm run fetch last read from each
+// gun's CODMunity page, so these only apply to a gun whose page has never been read.
 export const weaponStatOverrides: Record<string, Partial<Weapon>> = {
+  // Season 1 guns: fire mode and fire rate here, every other stat from their CODMunity page.
+  'cronen-osprey': { fireMode: 'auto', rpm: 882, sourceIds: ['season-1-patch'] },
+  'csg-35': { fireMode: 'auto', rpm: 1200, sourceIds: ['season-1-patch'] },
   'han-86': { fireMode: 'auto', rpm: 741, sourceIds: ['launch-guide', sourceId('han-86')], stats: { movementMps: 4.67, adsMovementMps: 2.47, sprintMps: 6.13, tacticalSprintMps: 7.21, health: 100, adsMs: 250, sprintToFireMs: 210, velocityMps: 615, reloadMs: 3133 },
     damageProfile: [
       { minM: 0, maxM: 30, regions: { head: 28, neck: 23, chest: 23, stomach: 23, upperarm: 23, lowerarm: 23, upperleg: 23, lowerleg: 23 } },

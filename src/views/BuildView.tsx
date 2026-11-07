@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { attachmentEntry, attachmentImage, categories, data, shortCategory, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
+import { attachmentEntry, attachmentImage, categories, data, hideMissing, shortCategory, slotName, sortSlots, supported, weaponById, weaponImage } from '../data/game';
 import { ATTACHMENT_LIMIT, METRICS, ROLES, STABILITY, TIE_MS, apexState, evaluateBuild, fullModel, markKey, playstyleById, shotInterval, playstyleFor, playstylesFor, roleOf, slugAmmo, weightsFor } from '../engine';
 import type { Playstyle } from '../engine';
 import { effects } from '../effects';
 import { statRows, tone } from '../statRows';
 import { Icon } from '../components/Icon';
-import type { Armory, BuildResult, ClassResult, MetricId, OptimizeResult, Settings, Stability, StreakStyle, WeaponData } from '../types';
+import type { Armory, BuildResult, ClassResult, MetricId, Mode, OptimizeResult, Settings, Stability, StreakStyle, WeaponData } from '../types';
 import type { CompareItem } from './CompareView';
 import type { SavedClass } from './SavedView';
 import { ClassSetup, SitePicks } from './BuildExtras';
 import { OtherGuns, UnlockGap, unlockTag } from './Unlocks';
+import { patchFor } from './PatchView';
 
 type Props = {
   settings: Settings; change: (patch: Partial<Settings>) => void; selectWeapon: (id: string) => void;
@@ -17,6 +18,10 @@ type Props = {
   result: OptimizeResult | null; busy: boolean; error: string; saved: SavedClass[];
   onSave: (variant: 'standard' | 'apex', build: BuildResult) => void; onShare: () => void; onCopy: (text: string, message?: string) => void; onReset: () => void;
   onCompare: (item: Omit<CompareItem, 'id'>) => void;
+  // Opens the Patch screen at this gun's changes.
+  onPatch: (weaponId: string) => void;
+  // Switches between multiplayer and Warzone. Null when the data has no Warzone numbers.
+  onMode: ((mode: Mode) => void) | null;
 };
 type Baseline = { label: string; attachments: string[]; apex: boolean; stock?: boolean };
 
@@ -57,7 +62,7 @@ function usePreviousBuild(weapon: WeaponData, settings: Settings, best: BuildRes
   return previous;
 }
 
-export function BuildView({ settings, change, armory, setArmory, selectWeapon, result, busy, error, saved, onSave, onShare, onCopy, onReset, onCompare }: Props) {
+export function BuildView({ settings, change, armory, setArmory, selectWeapon, result, busy, error, saved, onSave, onShare, onCopy, onReset, onCompare, onPatch, onMode }: Props) {
   const weapon = weaponById(settings.weaponId)!;
   const style = playstyleFor(weapon, settings.preset);
   const [minDistance, maxDistance] = ROLES[roleOf(weapon)].distance;
@@ -107,6 +112,9 @@ export function BuildView({ settings, change, armory, setArmory, selectWeapon, r
 
   return <div className="build-layout">
     <aside className="controls" aria-label="Build settings">
+      {onMode && <div className="mode-switch seg full" role="group" aria-label="Game mode">
+        {([['mp', 'Multiplayer'], ['wz', 'Warzone']] as [Mode, string][]).map(([id, name]) => <button key={id} className={(settings.mode ?? 'mp') === id ? 'active' : ''} aria-pressed={(settings.mode ?? 'mp') === id} onClick={() => onMode(id)}>{name}</button>)}
+      </div>}
       <WeaponPicker weapon={weapon} open={pickerOpen} setOpen={setPickerOpen} onSelect={id => { selectWeapon(id); setPickerOpen(false); }}/>
       <section className="control">
         <div className="control-head"><label htmlFor="level">Weapon level</label><output>{settings.level}<small> / {weapon.maxLevel}</small></output></div>
@@ -128,13 +136,13 @@ export function BuildView({ settings, change, armory, setArmory, selectWeapon, r
         <input id="distance" type="range" min={minDistance} max={maxDistance} value={Math.max(minDistance, Math.min(maxDistance, settings.distanceM))} onChange={event => change({ distanceM: Number(event.target.value) })}/>
         <p className="hint">{distanceHint(weapon, style, settings.distanceM)}</p>
       </section>
-      <section className="control">
+      {settings.mode !== 'wz' && <section className="control">
         <div className="control-head"><span>Perks and streaks</span></div>
         <div className="setup-row"><label htmlFor="player-level">Player level</label><input id="player-level" type="number" min={1} max={55} value={settings.playerLevel} onChange={event => change({ playerLevel: Math.max(1, Math.min(55, Number(event.target.value) || 1)) })}/></div>
         <div className="control-head small"><label htmlFor="kill-band">Kills per life</label><output>{settings.killBand}</output></div>
         <input id="kill-band" type="range" min={3} max={13} value={settings.killBand} onChange={event => change({ killBand: Number(event.target.value) })}/>
         <div className="seg full" role="group" aria-label="Streak style">{(['mixed', 'support', 'lethal'] as StreakStyle[]).map(style => <button key={style} aria-pressed={settings.streakStyle === style} className={settings.streakStyle === style ? 'active' : ''} onClick={() => change({ streakStyle: style })}>{style[0].toUpperCase() + style.slice(1)}</button>)}</div>
-      </section>
+      </section>}
       <details className="control tune">
         <summary><Icon name="sliders" size={15}/>Fine-tune what matters<Icon name="chevron" size={14}/></summary>
         {/* Sliders scale the playstyle's own weights, so a stat the playstyle ignores has no slider. */}
@@ -148,7 +156,7 @@ export function BuildView({ settings, change, armory, setArmory, selectWeapon, r
     </aside>
 
     <section className="workspace" aria-busy={busy}>
-      <Hero weapon={weapon} result={result} settings={settings} busy={busy}/>
+      <Hero weapon={weapon} result={result} settings={settings} busy={busy} onPatch={settings.mode === 'wz' ? null : onPatch}/>
       {!fullModel(weapon) && <div className="callout"><Icon name="info" size={16}/><p>{weapon.fireMode === 'burst'
         ? <><b>No burst time-to-kill model.</b> The data has no burst delay, so damage range counts one millisecond per percent and the rest is handling and recoil.</>
         : <><b>Handling-only scoring.</b> The data has no pellet damage, spread or one-shot range for shotguns, and no slug damage. The pick covers aim speed, recoil, movement and pump speed. Treat it as a starting point.</>}</p></div>}
@@ -218,7 +226,7 @@ export function BuildView({ settings, change, armory, setArmory, selectWeapon, r
       </section>
 
       {result && <SitePicks weapon={weapon} result={result} settings={settings} activeKey={chosen.key} style={style} onStyle={id => change({ preset: id, distanceM: playstyleById(id)!.distanceM })} onCompare={compareWith} onCopy={onCopy}/>}
-      {result?.gear && <ClassSetup gear={result.gear} settings={settings} change={change} weapon={weapon}/>}
+      {result?.gear && settings.mode !== 'wz' && <ClassSetup gear={result.gear} settings={settings} change={change} weapon={weapon}/>}
 
       <details className="method">
         <summary>How builds are scored<Icon name="chevron" size={14}/></summary>
@@ -259,7 +267,7 @@ function WeaponPicker({ weapon, open, setOpen, onSelect }: { weapon: WeaponData;
   const list = data.weapons.filter(item => item.category === category);
   return <section className="picker">
     <button className="picker-current" onClick={() => setOpen(!open)} aria-expanded={open}>
-      <img src={weaponImage(weapon.id)} alt=""/>
+      <img src={weaponImage(weapon.id)} onError={hideMissing} alt=""/>
       <span><small>{weapon.category}</small><strong>{weapon.name}</strong></span>
       <Icon name="chevron" size={16}/>
     </button>
@@ -268,7 +276,7 @@ function WeaponPicker({ weapon, open, setOpen, onSelect }: { weapon: WeaponData;
       <div className="picker-list">{list.map(item => {
         const ok = supported(item);
         return <button key={item.id} disabled={!ok} className={item.id === weapon.id ? 'active' : ''} onClick={() => onSelect(item.id)}>
-          <img src={weaponImage(item.id)} alt="" loading="lazy"/>
+          <img src={weaponImage(item.id)} onError={hideMissing} alt="" loading="lazy"/>
           <span><strong>{item.name}</strong><small>{ok ? `${item.rpm ?? '?'} rpm · ${item.magazine ?? '?'} rds${item.apex ? ' · Apex' : ''}` : 'No Gunsmith data'}</small></span>
         </button>;
       })}</div>
@@ -276,7 +284,9 @@ function WeaponPicker({ weapon, open, setOpen, onSelect }: { weapon: WeaponData;
   </section>;
 }
 
-function Hero({ weapon, result, settings, busy }: { weapon: WeaponData; result: OptimizeResult | null; settings: Settings; busy: boolean }) {
+function Hero({ weapon, result, settings, busy, onPatch }: { weapon: WeaponData; result: OptimizeResult | null; settings: Settings; busy: boolean; onPatch: ((weaponId: string) => void) | null }) {
+  // Patch notes cover multiplayer tuning, so the chip only shows there.
+  const patched = onPatch ? patchFor(weapon.id) : null;
   const base = weapon.base!;
   const facts = [
     { label: 'Fire rate', value: weapon.rpm ? `${weapon.rpm}` : 'n/a', unit: 'rpm' },
@@ -290,11 +300,14 @@ function Hero({ weapon, result, settings, busy }: { weapon: WeaponData; result: 
   ];
   return <section className="hero">
     <div className="hero-copy">
-      <span className="eyebrow">{weapon.category}{busy && <i className="spinner" aria-label="Calculating"/>}</span>
+      <span className="eyebrow">{settings.mode === 'wz' ? `Warzone · ${weapon.category}` : weapon.category}{busy && <i className="spinner" aria-label="Calculating"/>}</span>
       <h1>{weapon.name}</h1>
       <dl className="facts">{facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}<small>{fact.unit}</small></dd></div>)}</dl>
+      {patched && <button className={`patch-chip ${patched.isNew ? 'new' : patched.change?.verdict}`} onClick={() => onPatch?.(weapon.id)} title="See what the patch changed">
+        <Icon name="patch" size={14}/>{patched.isNew ? `New in ${patched.patch.title}` : `${patched.change!.verdict === 'buff' ? 'Buffed' : 'Nerfed'} in ${patched.patch.title}`}<Icon name="arrow" size={13}/>
+      </button>}
     </div>
-    <div className="hero-art"><img src={weaponImage(weapon.id)} alt={`${weapon.name} render`}/></div>
+    <div className="hero-art"><img src={weaponImage(weapon.id)} onError={hideMissing} alt={`${weapon.name} render`}/></div>
   </section>;
 }
 

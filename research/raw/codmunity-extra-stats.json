@@ -1,6 +1,6 @@
 {
  "source": "https://codmunity.gg/weapon/mw4/",
- "retrieved": "2026-10-30",
+ "retrieved": "2026-11-07",
  "weapons": {
   "han-86": {
    "base": {
@@ -10,7 +10,69 @@
     "hitscan_range": 30.75,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.67,
+    "ads_movement": 2.47,
+    "sprint": 6.13,
+    "tac_sprint": 7.21,
+    "crouch_movement": 2.18,
+    "strafe_movement": 3.58,
+    "firing_movement": 4.09,
+    "ads": 250,
+    "ads_out": 320,
+    "stf": 210,
+    "reload": 3133,
+    "raise_speed": 800,
+    "drop_speed": 700,
+    "vert_recoil": 41.9,
+    "horiz_recoil": 11.2,
+    "vert_gun_kick": 19.3,
+    "horiz_gun_kick": 2.8,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 615,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.29,
+    "rpm": 741,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.2
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 30,
+     "regions": {
+      "head": 29,
+      "neck": 23,
+      "chest": 23,
+      "stomach": 23,
+      "upperarm": 23,
+      "lowerarm": 23,
+      "upperleg": 23,
+      "lowerleg": 23
+     }
+    },
+    {
+     "minM": 30,
+     "maxM": null,
+     "regions": {
+      "head": 24,
+      "neck": 19,
+      "chest": 19,
+      "stomach": 19,
+      "upperarm": 19,
+      "lowerarm": 19,
+      "upperleg": 19,
+      "lowerleg": 19
+     }
+    }
+   ]
   },
   "m4": {
    "base": {
@@ -20,7 +82,69 @@
     "hitscan_range": 29.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.7,
+    "ads_movement": 2.51,
+    "sprint": 6.18,
+    "tac_sprint": 7.26,
+    "crouch_movement": 2.2,
+    "strafe_movement": 3.6,
+    "firing_movement": 4.15,
+    "ads": 240,
+    "ads_out": 370,
+    "stf": 210,
+    "reload": 2600,
+    "raise_speed": 933,
+    "drop_speed": 667,
+    "vert_recoil": 40.6,
+    "horiz_recoil": 17.1,
+    "vert_gun_kick": 16.9,
+    "horiz_gun_kick": 3.3,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 590,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.15,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.29,
+    "rpm": 811,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.2
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 28,
+     "regions": {
+      "head": 29,
+      "neck": 23,
+      "chest": 23,
+      "stomach": 23,
+      "upperarm": 23,
+      "lowerarm": 23,
+      "upperleg": 23,
+      "lowerleg": 23
+     }
+    },
+    {
+     "minM": 28,
+     "maxM": null,
+     "regions": {
+      "head": 24,
+      "neck": 19,
+      "chest": 19,
+      "stomach": 19,
+      "upperarm": 19,
+      "lowerarm": 19,
+      "upperleg": 19,
+      "lowerleg": 19
+     }
+    }
+   ]
   },
   "hyeon-burst": {
    "base": {
@@ -30,7 +154,83 @@
     "hitscan_range": 38.75,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.58,
+    "ads_movement": 2.36,
+    "sprint": 6.07,
+    "tac_sprint": 7.11,
+    "crouch_movement": 2.11,
+    "strafe_movement": 3.5,
+    "firing_movement": 4.01,
+    "ads": 275,
+    "ads_out": 360,
+    "stf": 210,
+    "reload": 3400,
+    "raise_speed": 967,
+    "drop_speed": 533,
+    "vert_recoil": 38.3,
+    "horiz_recoil": 16.4,
+    "vert_gun_kick": 32.7,
+    "horiz_gun_kick": 1.5,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 775,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.18,
+    "rpm": 375,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 21,
+     "regions": {
+      "head": 40,
+      "neck": 34,
+      "chest": 34,
+      "stomach": 31,
+      "upperarm": 31,
+      "lowerarm": 31,
+      "upperleg": 31,
+      "lowerleg": 31
+     }
+    },
+    {
+     "minM": 21,
+     "maxM": 43,
+     "regions": {
+      "head": 32,
+      "neck": 27,
+      "chest": 27,
+      "stomach": 25,
+      "upperarm": 25,
+      "lowerarm": 25,
+      "upperleg": 25,
+      "lowerleg": 25
+     }
+    },
+    {
+     "minM": 43,
+     "maxM": null,
+     "regions": {
+      "head": 28,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    }
+   ]
   },
   "patriot-xmr": {
    "base": {
@@ -40,7 +240,83 @@
     "hitscan_range": 31,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.54,
+    "ads_movement": 2.26,
+    "sprint": 6.05,
+    "tac_sprint": 7.09,
+    "crouch_movement": 2.13,
+    "strafe_movement": 3.47,
+    "firing_movement": 3.96,
+    "ads": 280,
+    "ads_out": 400,
+    "stf": 210,
+    "reload": 3333,
+    "raise_speed": 1100,
+    "drop_speed": 800,
+    "vert_recoil": 52.6,
+    "horiz_recoil": 14.4,
+    "vert_gun_kick": 35.1,
+    "horiz_gun_kick": 2.7,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 620,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.29,
+    "rpm": 645,
+    "mag_size": 25,
+    "reserve_ammo": 100,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 34,
+     "regions": {
+      "head": 39,
+      "neck": 30,
+      "chest": 30,
+      "stomach": 30,
+      "upperarm": 30,
+      "lowerarm": 30,
+      "upperleg": 30,
+      "lowerleg": 30
+     }
+    },
+    {
+     "minM": 34,
+     "maxM": 50,
+     "regions": {
+      "head": 31,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 24,
+      "upperarm": 24,
+      "lowerarm": 24,
+      "upperleg": 24,
+      "lowerleg": 24
+     }
+    },
+    {
+     "minM": 50,
+     "maxM": null,
+     "regions": {
+      "head": 28,
+      "neck": 22,
+      "chest": 22,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    }
+   ]
   },
   "kastov-762": {
    "base": {
@@ -50,7 +326,83 @@
     "hitscan_range": 28,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.52,
+    "ads_movement": 2.34,
+    "sprint": 6.05,
+    "tac_sprint": 7.1,
+    "crouch_movement": 2.12,
+    "strafe_movement": 3.46,
+    "firing_movement": 3.96,
+    "ads": 280,
+    "ads_out": 370,
+    "stf": 210,
+    "reload": 3467,
+    "raise_speed": 967,
+    "drop_speed": 700,
+    "vert_recoil": 51.9,
+    "horiz_recoil": 28.7,
+    "vert_gun_kick": 17.2,
+    "horiz_gun_kick": 6,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 560,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.29,
+    "rpm": 600,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 27,
+     "regions": {
+      "head": 40,
+      "neck": 33,
+      "chest": 33,
+      "stomach": 30,
+      "upperarm": 30,
+      "lowerarm": 30,
+      "upperleg": 30,
+      "lowerleg": 30
+     }
+    },
+    {
+     "minM": 27,
+     "maxM": 42,
+     "regions": {
+      "head": 33,
+      "neck": 27,
+      "chest": 27,
+      "stomach": 25,
+      "upperarm": 25,
+      "lowerarm": 25,
+      "upperleg": 25,
+      "lowerleg": 25
+     }
+    },
+    {
+     "minM": 42,
+     "maxM": null,
+     "regions": {
+      "head": 29,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    }
+   ]
   },
   "oden": {
    "base": {
@@ -60,17 +412,169 @@
     "hitscan_range": 34.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.46,
+    "ads_movement": 2.18,
+    "sprint": 6.03,
+    "tac_sprint": 6.97,
+    "crouch_movement": 2.09,
+    "strafe_movement": 3.41,
+    "firing_movement": 3.89,
+    "ads": 320,
+    "ads_out": 380,
+    "stf": 210,
+    "reload": 3300,
+    "raise_speed": 1200,
+    "drop_speed": 700,
+    "vert_recoil": 49.4,
+    "horiz_recoil": 15.2,
+    "vert_gun_kick": 59.4,
+    "horiz_gun_kick": 8.5,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 690,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.29,
+    "rpm": 414,
+    "mag_size": 20,
+    "reserve_ammo": 80,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 33,
+     "regions": {
+      "head": 57,
+      "neck": 45,
+      "chest": 45,
+      "stomach": 41,
+      "upperarm": 41,
+      "lowerarm": 41,
+      "upperleg": 41,
+      "lowerleg": 41
+     }
+    },
+    {
+     "minM": 33,
+     "maxM": 50,
+     "regions": {
+      "head": 50,
+      "neck": 40,
+      "chest": 40,
+      "stomach": 36,
+      "upperarm": 36,
+      "lowerarm": 36,
+      "upperleg": 36,
+      "lowerleg": 36
+     }
+    },
+    {
+     "minM": 50,
+     "maxM": null,
+     "regions": {
+      "head": 44,
+      "neck": 35,
+      "chest": 35,
+      "stomach": 32,
+      "upperarm": 32,
+      "lowerarm": 32,
+      "upperleg": 32,
+      "lowerleg": 32
+     }
+    }
+   ]
   },
   "axion": {
    "base": {
     "rechamber_speed": 0,
     "ads_rechamber_accuracy": 0,
     "hip_rechamber_accuracy": 0,
-    "hitscan_range": 20,
+    "hitscan_range": 23.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.62,
+    "ads_movement": 2.41,
+    "sprint": 6.11,
+    "tac_sprint": 7.16,
+    "crouch_movement": 2.16,
+    "strafe_movement": 3.54,
+    "firing_movement": 4.05,
+    "ads": 260,
+    "ads_out": 325,
+    "stf": 210,
+    "reload": 3333,
+    "raise_speed": 1033,
+    "drop_speed": 700,
+    "vert_recoil": 48.9,
+    "horiz_recoil": 13.7,
+    "vert_gun_kick": 17.6,
+    "horiz_gun_kick": 2.8,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 470,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.29,
+    "rpm": 706,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 25,
+     "regions": {
+      "head": 32,
+      "neck": 26,
+      "chest": 26,
+      "stomach": 24,
+      "upperarm": 24,
+      "lowerarm": 24,
+      "upperleg": 24,
+      "lowerleg": 24
+     }
+    },
+    {
+     "minM": 25,
+     "maxM": 39,
+     "regions": {
+      "head": 29,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    },
+    {
+     "minM": 39,
+     "maxM": null,
+     "regions": {
+      "head": 27,
+      "neck": 22,
+      "chest": 22,
+      "stomach": 20,
+      "upperarm": 20,
+      "lowerarm": 20,
+      "upperleg": 20,
+      "lowerleg": 20
+     }
+    }
+   ]
   },
   "cronen-squall": {
    "base": {
@@ -80,7 +584,83 @@
     "hitscan_range": 33,
     "pre_fire_delay": 45
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.55,
+    "ads_movement": 2.24,
+    "sprint": 6.07,
+    "tac_sprint": 7.11,
+    "crouch_movement": 2.16,
+    "strafe_movement": 3.48,
+    "firing_movement": 3.96,
+    "ads": 305,
+    "ads_out": 340,
+    "stf": 210,
+    "reload": 3533,
+    "raise_speed": 967,
+    "drop_speed": 600,
+    "vert_recoil": 50.4,
+    "horiz_recoil": 6.3,
+    "vert_gun_kick": 17.1,
+    "horiz_gun_kick": 3.5,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 660,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.29,
+    "rpm": 674,
+    "mag_size": 20,
+    "reserve_ammo": 100,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 26,
+     "regions": {
+      "head": 37,
+      "neck": 30,
+      "chest": 30,
+      "stomach": 28,
+      "upperarm": 28,
+      "lowerarm": 28,
+      "upperleg": 28,
+      "lowerleg": 28
+     }
+    },
+    {
+     "minM": 26,
+     "maxM": 37,
+     "regions": {
+      "head": 35,
+      "neck": 28,
+      "chest": 28,
+      "stomach": 26,
+      "upperarm": 26,
+      "lowerarm": 26,
+      "upperleg": 26,
+      "lowerleg": 26
+     }
+    },
+    {
+     "minM": 37,
+     "maxM": null,
+     "regions": {
+      "head": 29,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    }
+   ]
   },
   "iso-nightshade": {
    "base": {
@@ -90,7 +670,97 @@
     "hitscan_range": 26.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.8,
+    "ads_movement": 3.2,
+    "sprint": 6.33,
+    "tac_sprint": 7.43,
+    "crouch_movement": 2.23,
+    "strafe_movement": 3.67,
+    "firing_movement": 4.26,
+    "ads": 240,
+    "ads_out": 300,
+    "stf": 110,
+    "reload": 3267,
+    "raise_speed": 967,
+    "drop_speed": 500,
+    "vert_recoil": 40.9,
+    "horiz_recoil": 13.3,
+    "vert_gun_kick": 36.5,
+    "horiz_gun_kick": 5.6,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 530,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 923,
+    "mag_size": 30,
+    "reserve_ammo": 90,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 12,
+     "regions": {
+      "head": 27,
+      "neck": 21,
+      "chest": 21,
+      "stomach": 21,
+      "upperarm": 21,
+      "lowerarm": 21,
+      "upperleg": 19,
+      "lowerleg": 19
+     }
+    },
+    {
+     "minM": 12,
+     "maxM": 20,
+     "regions": {
+      "head": 22,
+      "neck": 17,
+      "chest": 17,
+      "stomach": 17,
+      "upperarm": 17,
+      "lowerarm": 17,
+      "upperleg": 16,
+      "lowerleg": 16
+     }
+    },
+    {
+     "minM": 20,
+     "maxM": 28,
+     "regions": {
+      "head": 19,
+      "neck": 15,
+      "chest": 15,
+      "stomach": 15,
+      "upperarm": 15,
+      "lowerarm": 15,
+      "upperleg": 14,
+      "lowerleg": 14
+     }
+    },
+    {
+     "minM": 28,
+     "maxM": null,
+     "regions": {
+      "head": 18,
+      "neck": 14,
+      "chest": 14,
+      "stomach": 14,
+      "upperarm": 14,
+      "lowerarm": 14,
+      "upperleg": 13,
+      "lowerleg": 13
+     }
+    }
+   ]
   },
   "vel-46": {
    "base": {
@@ -100,7 +770,97 @@
     "hitscan_range": 28.25,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.77,
+    "ads_movement": 3.22,
+    "sprint": 6.26,
+    "tac_sprint": 7.33,
+    "crouch_movement": 2.25,
+    "strafe_movement": 3.65,
+    "firing_movement": 4.28,
+    "ads": 230,
+    "ads_out": 250,
+    "stf": 110,
+    "reload": 2633,
+    "raise_speed": 800,
+    "drop_speed": 550,
+    "vert_recoil": 39.6,
+    "horiz_recoil": 12.5,
+    "vert_gun_kick": 52.2,
+    "horiz_gun_kick": 4.2,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 565,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 952,
+    "mag_size": 40,
+    "reserve_ammo": 120,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 10,
+     "regions": {
+      "head": 26,
+      "neck": 20,
+      "chest": 20,
+      "stomach": 20,
+      "upperarm": 20,
+      "lowerarm": 20,
+      "upperleg": 19,
+      "lowerleg": 19
+     }
+    },
+    {
+     "minM": 10,
+     "maxM": 17,
+     "regions": {
+      "head": 22,
+      "neck": 17,
+      "chest": 17,
+      "stomach": 17,
+      "upperarm": 17,
+      "lowerarm": 17,
+      "upperleg": 16,
+      "lowerleg": 16
+     }
+    },
+    {
+     "minM": 17,
+     "maxM": 24,
+     "regions": {
+      "head": 19,
+      "neck": 15,
+      "chest": 15,
+      "stomach": 15,
+      "upperarm": 15,
+      "lowerarm": 15,
+      "upperleg": 14,
+      "lowerleg": 14
+     }
+    },
+    {
+     "minM": 24,
+     "maxM": null,
+     "regions": {
+      "head": 18,
+      "neck": 14,
+      "chest": 14,
+      "stomach": 14,
+      "upperarm": 14,
+      "lowerarm": 14,
+      "upperleg": 13,
+      "lowerleg": 13
+     }
+    }
+   ]
   },
   "wz-55-striga": {
    "base": {
@@ -110,7 +870,83 @@
     "hitscan_range": 19,
     "pre_fire_delay": 64
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 5.06,
+    "ads_movement": 3.54,
+    "sprint": 6.46,
+    "tac_sprint": 7.68,
+    "crouch_movement": 2.64,
+    "strafe_movement": 3.89,
+    "firing_movement": 4.42,
+    "ads": 196,
+    "ads_out": 223,
+    "stf": 96,
+    "reload": 3167,
+    "raise_speed": 1233,
+    "drop_speed": 433,
+    "vert_recoil": 56.1,
+    "horiz_recoil": 19.1,
+    "vert_gun_kick": 298.3,
+    "horiz_gun_kick": 31.5,
+    "ads_idle_sway": 0.59,
+    "ads_gun_bob": 0.1,
+    "bv": 380,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 0.87,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 651,
+    "mag_size": 25,
+    "reserve_ammo": 75,
+    "head_multiplier": 1.4
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 12,
+     "regions": {
+      "head": 37,
+      "neck": 27,
+      "chest": 27,
+      "stomach": 27,
+      "upperarm": 27,
+      "lowerarm": 27,
+      "upperleg": 25,
+      "lowerleg": 25
+     }
+    },
+    {
+     "minM": 12,
+     "maxM": 21,
+     "regions": {
+      "head": 32,
+      "neck": 23,
+      "chest": 23,
+      "stomach": 23,
+      "upperarm": 23,
+      "lowerarm": 23,
+      "upperleg": 21,
+      "lowerleg": 21
+     }
+    },
+    {
+     "minM": 21,
+     "maxM": null,
+     "regions": {
+      "head": 26,
+      "neck": 19,
+      "chest": 19,
+      "stomach": 19,
+      "upperarm": 19,
+      "lowerarm": 19,
+      "upperleg": 18,
+      "lowerleg": 18
+     }
+    }
+   ]
   },
   "ppsh-41": {
    "base": {
@@ -120,7 +956,97 @@
     "hitscan_range": 27.5,
     "pre_fire_delay": 37
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.7,
+    "ads_movement": 3.15,
+    "sprint": 6.21,
+    "tac_sprint": 7.29,
+    "crouch_movement": 2.19,
+    "strafe_movement": 3.59,
+    "firing_movement": 4.2,
+    "ads": 280,
+    "ads_out": 290,
+    "stf": 110,
+    "reload": 3900,
+    "raise_speed": 933,
+    "drop_speed": 433,
+    "vert_recoil": 38.6,
+    "horiz_recoil": 16.9,
+    "vert_gun_kick": 45.2,
+    "horiz_gun_kick": 9.9,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 550,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 1110,
+    "mag_size": 71,
+    "reserve_ammo": 71,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 11,
+     "regions": {
+      "head": 23,
+      "neck": 18,
+      "chest": 18,
+      "stomach": 18,
+      "upperarm": 18,
+      "lowerarm": 18,
+      "upperleg": 17,
+      "lowerleg": 17
+     }
+    },
+    {
+     "minM": 11,
+     "maxM": 20,
+     "regions": {
+      "head": 20,
+      "neck": 16,
+      "chest": 16,
+      "stomach": 16,
+      "upperarm": 16,
+      "lowerarm": 16,
+      "upperleg": 15,
+      "lowerleg": 15
+     }
+    },
+    {
+     "minM": 20,
+     "maxM": 29,
+     "regions": {
+      "head": 18,
+      "neck": 14,
+      "chest": 14,
+      "stomach": 14,
+      "upperarm": 14,
+      "lowerarm": 14,
+      "upperleg": 13,
+      "lowerleg": 13
+     }
+    },
+    {
+     "minM": 29,
+     "maxM": null,
+     "regions": {
+      "head": 16,
+      "neck": 13,
+      "chest": 13,
+      "stomach": 13,
+      "upperarm": 13,
+      "lowerarm": 13,
+      "upperleg": 12,
+      "lowerleg": 12
+     }
+    }
+   ]
   },
   "x-58-nyx": {
    "base": {
@@ -130,7 +1056,97 @@
     "hitscan_range": 22.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.74,
+    "ads_movement": 3.26,
+    "sprint": 6.27,
+    "tac_sprint": 7.31,
+    "crouch_movement": 2.28,
+    "strafe_movement": 3.63,
+    "firing_movement": 4.25,
+    "ads": 255,
+    "ads_out": 260,
+    "stf": 110,
+    "reload": 2767,
+    "raise_speed": 1367,
+    "drop_speed": 600,
+    "vert_recoil": 36,
+    "horiz_recoil": 10.5,
+    "vert_gun_kick": 34.6,
+    "horiz_gun_kick": 3.4,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 450,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 800,
+    "mag_size": 40,
+    "reserve_ammo": 120,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 11,
+     "regions": {
+      "head": 28,
+      "neck": 22,
+      "chest": 22,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 20,
+      "lowerleg": 20
+     }
+    },
+    {
+     "minM": 11,
+     "maxM": 20,
+     "regions": {
+      "head": 23,
+      "neck": 18,
+      "chest": 18,
+      "stomach": 18,
+      "upperarm": 18,
+      "lowerarm": 18,
+      "upperleg": 17,
+      "lowerleg": 17
+     }
+    },
+    {
+     "minM": 20,
+     "maxM": 30,
+     "regions": {
+      "head": 20,
+      "neck": 16,
+      "chest": 16,
+      "stomach": 16,
+      "upperarm": 16,
+      "lowerarm": 16,
+      "upperleg": 15,
+      "lowerleg": 15
+     }
+    },
+    {
+     "minM": 30,
+     "maxM": null,
+     "regions": {
+      "head": 18,
+      "neck": 14,
+      "chest": 14,
+      "stomach": 14,
+      "upperarm": 14,
+      "lowerarm": 14,
+      "upperleg": 13,
+      "lowerleg": 13
+     }
+    }
+   ]
   },
   "rezi-12": {
    "base": {
@@ -138,7 +1154,38 @@
     "hitscan_range": 17,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.72,
+    "ads_movement": 3.09,
+    "sprint": 6.26,
+    "tac_sprint": 7.34,
+    "crouch_movement": 2.25,
+    "strafe_movement": 3.61,
+    "firing_movement": 4.25,
+    "ads": 340,
+    "ads_out": 400,
+    "stf": 160,
+    "reload": 6131,
+    "raise_speed": 1233,
+    "drop_speed": 800,
+    "vert_recoil": 98.5,
+    "horiz_recoil": 17.4,
+    "vert_gun_kick": 21.3,
+    "horiz_gun_kick": 6.1,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 340,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.31,
+    "rpm": 150,
+    "mag_size": 6,
+    "reserve_ammo": 30
+   }
   },
   "warlord": {
    "base": {
@@ -155,6 +1202,38 @@
     "Warlord Lumen": {
      "rechamber_speed": 1.05
     }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.55,
+    "ads_movement": 2.93,
+    "sprint": 6.11,
+    "tac_sprint": 7.09,
+    "crouch_movement": 2.2,
+    "strafe_movement": 3.48,
+    "firing_movement": 4.03,
+    "ads": 340,
+    "ads_out": 350,
+    "stf": 210,
+    "reload": 20796,
+    "raise_speed": 1300,
+    "drop_speed": 733,
+    "vert_recoil": 79.9,
+    "horiz_recoil": 29.1,
+    "vert_gun_kick": 35.1,
+    "horiz_gun_kick": 10.9,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 325,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.31,
+    "rpm": 106,
+    "mag_size": 14,
+    "reserve_ammo": 56,
+    "head_multiplier": 1
    }
   },
   "finn-lmg": {
@@ -165,7 +1244,83 @@
     "hitscan_range": 35.5,
     "pre_fire_delay": 50
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.38,
+    "ads_movement": 2.03,
+    "sprint": 5.82,
+    "tac_sprint": 6.75,
+    "crouch_movement": 1.91,
+    "strafe_movement": 3.36,
+    "firing_movement": 3.62,
+    "ads": 400,
+    "ads_out": 390,
+    "stf": 237,
+    "reload": 6270,
+    "raise_speed": 1167,
+    "drop_speed": 767,
+    "vert_recoil": 49,
+    "horiz_recoil": 17.3,
+    "vert_gun_kick": 13.2,
+    "horiz_gun_kick": 2.8,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 710,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.22,
+    "hip_turn_sway": 30.1,
+    "flinch_received": 0.23,
+    "rpm": 588,
+    "mag_size": 100,
+    "reserve_ammo": 200,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 22,
+     "regions": {
+      "head": 39,
+      "neck": 33,
+      "chest": 33,
+      "stomach": 30,
+      "upperarm": 30,
+      "lowerarm": 30,
+      "upperleg": 30,
+      "lowerleg": 30
+     }
+    },
+    {
+     "minM": 22,
+     "maxM": 41,
+     "regions": {
+      "head": 36,
+      "neck": 30,
+      "chest": 30,
+      "stomach": 28,
+      "upperarm": 28,
+      "lowerarm": 28,
+      "upperleg": 28,
+      "lowerleg": 28
+     }
+    },
+    {
+     "minM": 41,
+     "maxM": null,
+     "regions": {
+      "head": 33,
+      "neck": 28,
+      "chest": 28,
+      "stomach": 26,
+      "upperarm": 26,
+      "lowerarm": 26,
+      "upperleg": 26,
+      "lowerleg": 26
+     }
+    }
+   ]
   },
   "type-73": {
    "base": {
@@ -175,7 +1330,83 @@
     "hitscan_range": 34.5,
     "pre_fire_delay": 57
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.33,
+    "ads_movement": 1.81,
+    "sprint": 5.71,
+    "tac_sprint": 6.55,
+    "crouch_movement": 1.8,
+    "strafe_movement": 3.32,
+    "firing_movement": 3.45,
+    "ads": 460,
+    "ads_out": 460,
+    "stf": 245,
+    "reload": 6767,
+    "raise_speed": 1033,
+    "drop_speed": 733,
+    "vert_recoil": 42.1,
+    "horiz_recoil": 10.5,
+    "vert_gun_kick": 18,
+    "horiz_gun_kick": 1.6,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 690,
+    "bullet_penetration": 27,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 30.1,
+    "flinch_received": 0.23,
+    "rpm": 821,
+    "mag_size": 60,
+    "reserve_ammo": 60,
+    "head_multiplier": 1.2
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 26,
+     "regions": {
+      "head": 28,
+      "neck": 24,
+      "chest": 24,
+      "stomach": 22,
+      "upperarm": 22,
+      "lowerarm": 22,
+      "upperleg": 22,
+      "lowerleg": 22
+     }
+    },
+    {
+     "minM": 26,
+     "maxM": 47,
+     "regions": {
+      "head": 27,
+      "neck": 23,
+      "chest": 23,
+      "stomach": 21,
+      "upperarm": 21,
+      "lowerarm": 21,
+      "upperleg": 21,
+      "lowerleg": 21
+     }
+    },
+    {
+     "minM": 47,
+     "maxM": null,
+     "regions": {
+      "head": 24,
+      "neck": 20,
+      "chest": 20,
+      "stomach": 19,
+      "upperarm": 19,
+      "lowerarm": 19,
+      "upperleg": 19,
+      "lowerleg": 19
+     }
+    }
+   ]
   },
   "apoc-338": {
    "base": {
@@ -185,7 +1416,83 @@
     "hitscan_range": 36.5,
     "pre_fire_delay": 75
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.05,
+    "ads_movement": 1.51,
+    "sprint": 5.57,
+    "tac_sprint": 6.35,
+    "crouch_movement": 1.78,
+    "strafe_movement": 3.1,
+    "firing_movement": 3.28,
+    "ads": 510,
+    "ads_out": 640,
+    "stf": 250,
+    "reload": 7100,
+    "raise_speed": 1033,
+    "drop_speed": 733,
+    "vert_recoil": 57.6,
+    "horiz_recoil": 31.3,
+    "vert_gun_kick": 13.3,
+    "horiz_gun_kick": 2.1,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 730,
+    "bullet_penetration": 27,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 30.1,
+    "flinch_received": 0.23,
+    "rpm": 555,
+    "mag_size": 50,
+    "reserve_ammo": 100,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 23,
+     "regions": {
+      "head": 53,
+      "neck": 45,
+      "chest": 45,
+      "stomach": 41,
+      "upperarm": 41,
+      "lowerarm": 41,
+      "upperleg": 41,
+      "lowerleg": 41
+     }
+    },
+    {
+     "minM": 23,
+     "maxM": 48,
+     "regions": {
+      "head": 48,
+      "neck": 40,
+      "chest": 40,
+      "stomach": 37,
+      "upperarm": 37,
+      "lowerarm": 37,
+      "upperleg": 37,
+      "lowerleg": 37
+     }
+    },
+    {
+     "minM": 48,
+     "maxM": null,
+     "regions": {
+      "head": 41,
+      "neck": 35,
+      "chest": 35,
+      "stomach": 32,
+      "upperarm": 32,
+      "lowerarm": 32,
+      "upperleg": 32,
+      "lowerleg": 32
+     }
+    }
+   ]
   },
   "mar-9": {
    "base": {
@@ -195,7 +1502,83 @@
     "hitscan_range": 33.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.41,
+    "ads_movement": 2.1,
+    "sprint": 5.93,
+    "tac_sprint": 6.95,
+    "crouch_movement": 2.04,
+    "strafe_movement": 3.38,
+    "firing_movement": 3.74,
+    "ads": 330,
+    "ads_out": 380,
+    "stf": 249,
+    "reload": 2933,
+    "raise_speed": 1033,
+    "drop_speed": 767,
+    "vert_recoil": 62,
+    "horiz_recoil": 14.9,
+    "vert_gun_kick": 17.3,
+    "horiz_gun_kick": 4.9,
+    "ads_idle_sway": 0.79,
+    "ads_gun_bob": 0.09,
+    "bv": 670,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 4.89,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.42,
+    "rpm": 316,
+    "mag_size": 20,
+    "reserve_ammo": 80,
+    "head_multiplier": 2
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 20,
+     "regions": {
+      "head": 100,
+      "neck": 55,
+      "chest": 55,
+      "stomach": 50,
+      "upperarm": 50,
+      "lowerarm": 50,
+      "upperleg": 50,
+      "lowerleg": 50
+     }
+    },
+    {
+     "minM": 20,
+     "maxM": 29,
+     "regions": {
+      "head": 84,
+      "neck": 46,
+      "chest": 46,
+      "stomach": 42,
+      "upperarm": 42,
+      "lowerarm": 42,
+      "upperleg": 42,
+      "lowerleg": 42
+     }
+    },
+    {
+     "minM": 29,
+     "maxM": null,
+     "regions": {
+      "head": 74,
+      "neck": 40,
+      "chest": 40,
+      "stomach": 37,
+      "upperarm": 37,
+      "lowerarm": 37,
+      "upperleg": 37,
+      "lowerleg": 37
+     }
+    }
+   ]
   },
   "oris-8-6": {
    "base": {
@@ -209,17 +1592,107 @@
     "Schlager Visiv-5": {
      "ads_rechamber_accuracy": 0.75
     },
-    "Lightfire-5 Quick Bolt": {
-     "rechamber_speed": 0.93,
-     "ads_rechamber_accuracy": 1.19,
-     "hip_rechamber_accuracy": 0.81
-    },
     "VX86 Heavy Bolt": {
      "rechamber_speed": 1.07,
      "ads_rechamber_accuracy": 0.5,
      "hip_rechamber_accuracy": 0.5
+    },
+    "Lightfire-5 Quick Bolt": {
+     "rechamber_speed": 0.93,
+     "ads_rechamber_accuracy": 1.19,
+     "hip_rechamber_accuracy": 0.81
     }
-   }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.77,
+    "ads_movement": 2.78,
+    "sprint": 6.18,
+    "tac_sprint": 7.34,
+    "crouch_movement": 2.23,
+    "strafe_movement": 3.65,
+    "firing_movement": 4.15,
+    "ads": 260,
+    "ads_out": 340,
+    "stf": 150,
+    "reload": 3000,
+    "raise_speed": 1067,
+    "drop_speed": 600,
+    "vert_recoil": 52,
+    "horiz_recoil": 30,
+    "vert_gun_kick": 27.9,
+    "horiz_gun_kick": 6.2,
+    "ads_idle_sway": 0.79,
+    "ads_gun_bob": 0.09,
+    "bv": 570,
+    "bullet_penetration": 20,
+    "hip_idle_sway": 4.89,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.52,
+    "rpm": 90,
+    "mag_size": 10,
+    "reserve_ammo": 40,
+    "head_multiplier": 1.6
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 23,
+     "regions": {
+      "head": 152,
+      "neck": 114,
+      "chest": 104,
+      "stomach": 95,
+      "upperarm": 95,
+      "lowerarm": 95,
+      "upperleg": 95,
+      "lowerleg": 95
+     }
+    },
+    {
+     "minM": 23,
+     "maxM": 30,
+     "regions": {
+      "head": 134,
+      "neck": 100,
+      "chest": 92,
+      "stomach": 84,
+      "upperarm": 84,
+      "lowerarm": 84,
+      "upperleg": 84,
+      "lowerleg": 84
+     }
+    },
+    {
+     "minM": 30,
+     "maxM": 46,
+     "regions": {
+      "head": 112,
+      "neck": 84,
+      "chest": 77,
+      "stomach": 70,
+      "upperarm": 70,
+      "lowerarm": 70,
+      "upperleg": 70,
+      "lowerleg": 70
+     }
+    },
+    {
+     "minM": 46,
+     "maxM": null,
+     "regions": {
+      "head": 100,
+      "neck": 75,
+      "chest": 69,
+      "stomach": 63,
+      "upperarm": 63,
+      "lowerarm": 63,
+      "upperleg": 63,
+      "lowerleg": 63
+     }
+    }
+   ]
   },
   "mosin-nagant": {
    "base": {
@@ -247,7 +1720,83 @@
      "ads_rechamber_accuracy": 0.5,
      "hip_rechamber_accuracy": 0.5
     }
-   }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.57,
+    "ads_movement": 2.1,
+    "sprint": 6.04,
+    "tac_sprint": 7.09,
+    "crouch_movement": 2.11,
+    "strafe_movement": 3.5,
+    "firing_movement": 3.66,
+    "ads": 350,
+    "ads_out": 380,
+    "stf": 240,
+    "reload": 3333,
+    "raise_speed": 1167,
+    "drop_speed": 833,
+    "vert_recoil": 78.8,
+    "horiz_recoil": 45.5,
+    "vert_gun_kick": 17.3,
+    "horiz_gun_kick": 4.9,
+    "ads_idle_sway": 0.79,
+    "ads_gun_bob": 0.09,
+    "bv": 700,
+    "bullet_penetration": 30,
+    "hip_idle_sway": 4.89,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 10.8,
+    "flinch_received": 0.52,
+    "rpm": 44,
+    "mag_size": 5,
+    "reserve_ammo": 20,
+    "head_multiplier": 1.7
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 40,
+     "regions": {
+      "head": 158,
+      "neck": 111,
+      "chest": 102,
+      "stomach": 102,
+      "upperarm": 93,
+      "lowerarm": 93,
+      "upperleg": 93,
+      "lowerleg": 93
+     }
+    },
+    {
+     "minM": 40,
+     "maxM": 56,
+     "regions": {
+      "head": 146,
+      "neck": 103,
+      "chest": 94,
+      "stomach": 94,
+      "upperarm": 86,
+      "lowerarm": 86,
+      "upperleg": 86,
+      "lowerleg": 86
+     }
+    },
+    {
+     "minM": 56,
+     "maxM": null,
+     "regions": {
+      "head": 102,
+      "neck": 72,
+      "chest": 66,
+      "stomach": 66,
+      "upperarm": 60,
+      "lowerarm": 60,
+      "upperleg": 60,
+      "lowerleg": 60
+     }
+    }
+   ]
   },
   "kg-7-vulcan": {
    "base": {
@@ -258,6 +1807,10 @@
     "pre_fire_delay": 0
    },
    "attachments": {
+    "TT X541-2 26\\": {
+     "ads_rechamber_accuracy": 0.67,
+     "hip_rechamber_accuracy": 0.8
+    },
     "Schlager Visiv-5": {
      "ads_rechamber_accuracy": 0.58
     },
@@ -271,7 +1824,83 @@
      "ads_rechamber_accuracy": 1.32,
      "hip_rechamber_accuracy": 1.19
     }
-   }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.33,
+    "ads_movement": 1.13,
+    "sprint": 5.8,
+    "tac_sprint": 6.67,
+    "crouch_movement": 1.86,
+    "strafe_movement": 3.31,
+    "firing_movement": 2.8,
+    "ads": 550,
+    "ads_out": 504,
+    "stf": 270,
+    "reload": 4367,
+    "raise_speed": 1367,
+    "drop_speed": 700,
+    "vert_recoil": 49.2,
+    "horiz_recoil": 8.7,
+    "vert_gun_kick": 14.5,
+    "horiz_gun_kick": 6.8,
+    "ads_idle_sway": 0.63,
+    "ads_gun_bob": 0.1,
+    "bv": 740,
+    "bullet_penetration": 27,
+    "hip_idle_sway": 5.4,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 30.6,
+    "flinch_received": 0.62,
+    "rpm": 41,
+    "mag_size": 10,
+    "reserve_ammo": 30,
+    "head_multiplier": 2.6
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 68,
+     "regions": {
+      "head": 269,
+      "neck": 168,
+      "chest": 168,
+      "stomach": 102,
+      "upperarm": 99,
+      "lowerarm": 99,
+      "upperleg": 102,
+      "lowerleg": 99
+     }
+    },
+    {
+     "minM": 68,
+     "maxM": 86,
+     "regions": {
+      "head": 261,
+      "neck": 163,
+      "chest": 163,
+      "stomach": 99,
+      "upperarm": 96,
+      "lowerarm": 96,
+      "upperleg": 99,
+      "lowerleg": 96
+     }
+    },
+    {
+     "minM": 86,
+     "maxM": null,
+     "regions": {
+      "head": 251,
+      "neck": 156,
+      "chest": 156,
+      "stomach": 95,
+      "upperarm": 92,
+      "lowerarm": 92,
+      "upperleg": 95,
+      "lowerleg": 92
+     }
+    }
+   ]
   },
   "astaroth-57": {
    "base": {
@@ -289,7 +1918,83 @@
      "rechamber_speed": 1.02,
      "ads_rechamber_accuracy": 1.28
     }
-   }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.04,
+    "ads_movement": 1.04,
+    "sprint": 5.47,
+    "tac_sprint": 6.22,
+    "crouch_movement": 1.69,
+    "strafe_movement": 3.09,
+    "firing_movement": 2.55,
+    "ads": 603,
+    "ads_out": 477,
+    "stf": 500,
+    "reload": 6533,
+    "raise_speed": 1500,
+    "drop_speed": 833,
+    "vert_recoil": 14.4,
+    "horiz_recoil": 4.1,
+    "vert_gun_kick": 18.1,
+    "horiz_gun_kick": 8.5,
+    "ads_idle_sway": 0.93,
+    "ads_gun_bob": 0.1,
+    "bv": 620,
+    "bullet_penetration": 55,
+    "hip_idle_sway": 6.02,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 30.6,
+    "flinch_received": 0.64,
+    "rpm": 35,
+    "mag_size": 3,
+    "reserve_ammo": 12,
+    "head_multiplier": 3.2
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 50,
+     "regions": {
+      "head": 322,
+      "neck": 214,
+      "chest": 199,
+      "stomach": 102,
+      "upperarm": 107,
+      "lowerarm": 100,
+      "upperleg": 100,
+      "lowerleg": 99
+     }
+    },
+    {
+     "minM": 50,
+     "maxM": 86,
+     "regions": {
+      "head": 316,
+      "neck": 210,
+      "chest": 195,
+      "stomach": 100,
+      "upperarm": 105,
+      "lowerarm": 98,
+      "upperleg": 98,
+      "lowerleg": 97
+     }
+    },
+    {
+     "minM": 86,
+     "maxM": null,
+     "regions": {
+      "head": 313,
+      "neck": 208,
+      "chest": 193,
+      "stomach": 99,
+      "upperarm": 104,
+      "lowerarm": 97,
+      "upperleg": 97,
+      "lowerleg": 96
+     }
+    }
+   ]
   },
   "signal-50": {
    "base": {
@@ -299,7 +2004,97 @@
     "hitscan_range": 30,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.22,
+    "ads_movement": 1.07,
+    "sprint": 5.67,
+    "tac_sprint": 6.52,
+    "crouch_movement": 1.8,
+    "strafe_movement": 3.23,
+    "firing_movement": 2.71,
+    "ads": 590,
+    "ads_out": 494,
+    "stf": 283,
+    "reload": 4967,
+    "raise_speed": 1300,
+    "drop_speed": 1000,
+    "vert_recoil": 19.8,
+    "horiz_recoil": 8.4,
+    "vert_gun_kick": 15.6,
+    "horiz_gun_kick": 3.6,
+    "ads_idle_sway": 0.63,
+    "ads_gun_bob": 0.1,
+    "bv": 600,
+    "bullet_penetration": 48,
+    "hip_idle_sway": 5.4,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 30.6,
+    "flinch_received": 0.62,
+    "rpm": 111,
+    "mag_size": 7,
+    "reserve_ammo": 28,
+    "head_multiplier": 2.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 34,
+     "regions": {
+      "head": 284,
+      "neck": 178,
+      "chest": 132,
+      "stomach": 102,
+      "upperarm": 104,
+      "lowerarm": 96,
+      "upperleg": 96,
+      "lowerleg": 96
+     }
+    },
+    {
+     "minM": 34,
+     "maxM": 49,
+     "regions": {
+      "head": 276,
+      "neck": 173,
+      "chest": 128,
+      "stomach": 99,
+      "upperarm": 101,
+      "lowerarm": 93,
+      "upperleg": 93,
+      "lowerleg": 93
+     }
+    },
+    {
+     "minM": 49,
+     "maxM": 66,
+     "regions": {
+      "head": 223,
+      "neck": 140,
+      "chest": 104,
+      "stomach": 80,
+      "upperarm": 82,
+      "lowerarm": 75,
+      "upperleg": 75,
+      "lowerleg": 75
+     }
+    },
+    {
+     "minM": 66,
+     "maxM": null,
+     "regions": {
+      "head": 209,
+      "neck": 131,
+      "chest": 97,
+      "stomach": 75,
+      "upperarm": 76,
+      "lowerarm": 71,
+      "upperleg": 71,
+      "lowerleg": 71
+     }
+    }
+   ]
   },
   "sang-9mm": {
    "base": {
@@ -309,7 +2104,97 @@
     "hitscan_range": 18.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 5.05,
+    "ads_movement": 3.73,
+    "sprint": 6.62,
+    "tac_sprint": 7.64,
+    "crouch_movement": 2.47,
+    "strafe_movement": 3.86,
+    "firing_movement": 4.49,
+    "ads": 170,
+    "ads_out": 270,
+    "stf": 80,
+    "reload": 2500,
+    "raise_speed": 833,
+    "drop_speed": 466,
+    "vert_recoil": 41.6,
+    "horiz_recoil": 10.3,
+    "vert_gun_kick": 15.9,
+    "horiz_gun_kick": 1.6,
+    "ads_idle_sway": 0.12,
+    "ads_gun_bob": 0.12,
+    "bv": 370,
+    "bullet_penetration": 9,
+    "hip_idle_sway": 2.22,
+    "hip_gun_bob": 1.49,
+    "hip_turn_sway": 15.8,
+    "flinch_received": 0.21,
+    "rpm": 370,
+    "mag_size": 13,
+    "reserve_ammo": 52,
+    "head_multiplier": 1.5
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 9,
+     "regions": {
+      "head": 60,
+      "neck": 48,
+      "chest": 48,
+      "stomach": 44,
+      "upperarm": 40,
+      "lowerarm": 40,
+      "upperleg": 40,
+      "lowerleg": 40
+     }
+    },
+    {
+     "minM": 9,
+     "maxM": 19,
+     "regions": {
+      "head": 49,
+      "neck": 39,
+      "chest": 39,
+      "stomach": 36,
+      "upperarm": 33,
+      "lowerarm": 33,
+      "upperleg": 33,
+      "lowerleg": 33
+     }
+    },
+    {
+     "minM": 19,
+     "maxM": 26,
+     "regions": {
+      "head": 42,
+      "neck": 39,
+      "chest": 39,
+      "stomach": 30,
+      "upperarm": 28,
+      "lowerarm": 28,
+      "upperleg": 28,
+      "lowerleg": 28
+     }
+    },
+    {
+     "minM": 26,
+     "maxM": null,
+     "regions": {
+      "head": 36,
+      "neck": 28,
+      "chest": 28,
+      "stomach": 26,
+      "upperarm": 24,
+      "lowerarm": 24,
+      "upperleg": 24,
+      "lowerleg": 24
+     }
+    }
+   ]
   },
   "krait-p68": {
    "base": {
@@ -319,7 +2204,97 @@
     "hitscan_range": 12.5,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.99,
+    "ads_movement": 3.68,
+    "sprint": 6.58,
+    "tac_sprint": 7.6,
+    "crouch_movement": 2.46,
+    "strafe_movement": 3.82,
+    "firing_movement": 4.44,
+    "ads": 180,
+    "ads_out": 200,
+    "stf": 80,
+    "reload": 2967,
+    "raise_speed": 867,
+    "drop_speed": 467,
+    "vert_recoil": 77.8,
+    "horiz_recoil": 54.5,
+    "vert_gun_kick": 31,
+    "horiz_gun_kick": 3.7,
+    "ads_idle_sway": 0.12,
+    "ads_gun_bob": 0.12,
+    "bv": 250,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 2.22,
+    "hip_gun_bob": 1.49,
+    "hip_turn_sway": 15.8,
+    "flinch_received": 0.21,
+    "rpm": 261,
+    "mag_size": 10,
+    "reserve_ammo": 40,
+    "head_multiplier": 1.3
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 9,
+     "regions": {
+      "head": 59,
+      "neck": 50,
+      "chest": 50,
+      "stomach": 50,
+      "upperarm": 46,
+      "lowerarm": 46,
+      "upperleg": 46,
+      "lowerleg": 46
+     }
+    },
+    {
+     "minM": 9,
+     "maxM": 21,
+     "regions": {
+      "head": 50,
+      "neck": 42,
+      "chest": 42,
+      "stomach": 42,
+      "upperarm": 39,
+      "lowerarm": 39,
+      "upperleg": 39,
+      "lowerleg": 39
+     }
+    },
+    {
+     "minM": 21,
+     "maxM": 37,
+     "regions": {
+      "head": 44,
+      "neck": 37,
+      "chest": 37,
+      "stomach": 37,
+      "upperarm": 34,
+      "lowerarm": 34,
+      "upperleg": 34,
+      "lowerleg": 34
+     }
+    },
+    {
+     "minM": 37,
+     "maxM": null,
+     "regions": {
+      "head": 39,
+      "neck": 33,
+      "chest": 33,
+      "stomach": 33,
+      "upperarm": 30,
+      "lowerarm": 30,
+      "upperleg": 30,
+      "lowerleg": 30
+     }
+    }
+   ]
   },
   "50-gs": {
    "base": {
@@ -329,7 +2304,83 @@
     "hitscan_range": 23,
     "pre_fire_delay": 0
    },
-   "attachments": {}
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.92,
+    "ads_movement": 3.51,
+    "sprint": 6.55,
+    "tac_sprint": 7.51,
+    "crouch_movement": 2.39,
+    "strafe_movement": 3.77,
+    "firing_movement": 4.36,
+    "ads": 200,
+    "ads_out": 240,
+    "stf": 80,
+    "reload": 2333,
+    "raise_speed": 833,
+    "drop_speed": 400,
+    "vert_recoil": 45.8,
+    "horiz_recoil": 14.4,
+    "vert_gun_kick": 104.5,
+    "horiz_gun_kick": 30.1,
+    "ads_idle_sway": 0.12,
+    "ads_gun_bob": 0.12,
+    "bv": 460,
+    "bullet_penetration": 27,
+    "hip_idle_sway": 2.22,
+    "hip_gun_bob": 1.49,
+    "hip_turn_sway": 15.8,
+    "flinch_received": 0.21,
+    "rpm": 167,
+    "mag_size": 7,
+    "reserve_ammo": 28,
+    "head_multiplier": 1.5
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 22,
+     "regions": {
+      "head": 105,
+      "neck": 77,
+      "chest": 77,
+      "stomach": 77,
+      "upperarm": 70,
+      "lowerarm": 70,
+      "upperleg": 70,
+      "lowerleg": 70
+     }
+    },
+    {
+     "minM": 22,
+     "maxM": 42,
+     "regions": {
+      "head": 87,
+      "neck": 63,
+      "chest": 63,
+      "stomach": 63,
+      "upperarm": 58,
+      "lowerarm": 58,
+      "upperleg": 58,
+      "lowerleg": 58
+     }
+    },
+    {
+     "minM": 42,
+     "maxM": null,
+     "regions": {
+      "head": 67,
+      "neck": 49,
+      "chest": 49,
+      "stomach": 49,
+      "upperarm": 45,
+      "lowerarm": 45,
+      "upperleg": 45,
+      "lowerleg": 45
+     }
+    }
+   ]
   },
   "mojave-357": {
    "base": {
@@ -351,6 +2402,804 @@
     },
     "Mojave .357 Lawless": {
      "pre_fire_delay": 0
+    }
+   },
+   "stats": {
+    "range": 100,
+    "movement": 4.96,
+    "ads_movement": 3.58,
+    "sprint": 6.56,
+    "tac_sprint": 7.55,
+    "crouch_movement": 2.42,
+    "strafe_movement": 3.79,
+    "firing_movement": 4.39,
+    "ads": 190,
+    "ads_out": 270,
+    "stf": 80,
+    "reload": 3700,
+    "raise_speed": 700,
+    "drop_speed": 400,
+    "vert_recoil": 31,
+    "horiz_recoil": 9.8,
+    "vert_gun_kick": 128.6,
+    "horiz_gun_kick": 32.4,
+    "ads_idle_sway": 0.12,
+    "ads_gun_bob": 0.12,
+    "bv": 400,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 2.22,
+    "hip_gun_bob": 1.49,
+    "hip_turn_sway": 15.8,
+    "flinch_received": 0.21,
+    "rpm": 142,
+    "mag_size": 8,
+    "reserve_ammo": 40,
+    "head_multiplier": 1.8
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 25,
+     "regions": {
+      "head": 115,
+      "neck": 76,
+      "chest": 76,
+      "stomach": 70,
+      "upperarm": 64,
+      "lowerarm": 64,
+      "upperleg": 64,
+      "lowerleg": 64
+     }
+    },
+    {
+     "minM": 25,
+     "maxM": 31,
+     "regions": {
+      "head": 93,
+      "neck": 62,
+      "chest": 62,
+      "stomach": 57,
+      "upperarm": 52,
+      "lowerarm": 52,
+      "upperleg": 52,
+      "lowerleg": 52
+     }
+    },
+    {
+     "minM": 31,
+     "maxM": 40,
+     "regions": {
+      "head": 86,
+      "neck": 57,
+      "chest": 57,
+      "stomach": 52,
+      "upperarm": 48,
+      "lowerarm": 48,
+      "upperleg": 48,
+      "lowerleg": 48
+     }
+    },
+    {
+     "minM": 40,
+     "maxM": null,
+     "regions": {
+      "head": 75,
+      "neck": 50,
+      "chest": 50,
+      "stomach": 46,
+      "upperarm": 42,
+      "lowerarm": 42,
+      "upperleg": 42,
+      "lowerleg": 42
+     }
+    }
+   ]
+  },
+  "cronen-osprey": {
+   "base": {
+    "hitscan_range": 29.5,
+    "pre_fire_delay": 0
+   },
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.66,
+    "ads_movement": 2.51,
+    "sprint": 6.18,
+    "tac_sprint": 7.26,
+    "crouch_movement": 2.12,
+    "strafe_movement": 3.57,
+    "firing_movement": 4.15,
+    "ads": 240,
+    "ads_out": 370,
+    "stf": 210,
+    "reload": 2933,
+    "raise_speed": 1267,
+    "drop_speed": 700,
+    "vert_recoil": 42.6,
+    "horiz_recoil": 12.5,
+    "vert_gun_kick": 16.9,
+    "horiz_gun_kick": 3.1,
+    "ads_idle_sway": 0.4,
+    "ads_gun_bob": 0.09,
+    "bv": 590,
+    "bullet_penetration": 21,
+    "hip_idle_sway": 1.31,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.29,
+    "rpm": 882,
+    "mag_size": 30,
+    "reserve_ammo": 90
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 25,
+     "regions": {
+      "head": 27,
+      "neck": 23,
+      "chest": 23,
+      "stomach": 21,
+      "upperarm": 21,
+      "lowerarm": 21,
+      "upperleg": 21,
+      "lowerleg": 21
+     }
+    },
+    {
+     "minM": 25,
+     "maxM": 41,
+     "regions": {
+      "head": 23,
+      "neck": 19,
+      "chest": 19,
+      "stomach": 18,
+      "upperarm": 18,
+      "lowerarm": 18,
+      "upperleg": 18,
+      "lowerleg": 18
+     }
+    },
+    {
+     "minM": 41,
+     "maxM": null,
+     "regions": {
+      "head": 21,
+      "neck": 17,
+      "chest": 17,
+      "stomach": 16,
+      "upperarm": 16,
+      "lowerarm": 16,
+      "upperleg": 16,
+      "lowerleg": 16
+     }
+    }
+   ],
+   "mods": {
+    "TZL-110 V1": {
+     "vert_recoil": 0.97,
+     "horiz_recoil": 0.97,
+     "vert_gun_kick": 0.97,
+     "horiz_gun_kick": 0.97
+    },
+    "XRK Mil-Tac Suppressor": {
+     "ads": 1.07,
+     "ads_out": 1.05
+    },
+    "ZLR Reverb90": {
+     "ads": 1.05,
+     "ads_out": 1.03,
+     "vert_recoil": 0.87,
+     "vert_gun_kick": 0.87
+    },
+    "FSS IS300": {
+     "movement": 0.98,
+     "ads_movement": 0.98,
+     "crouch_movement": 0.98,
+     "strafe_movement": 0.98,
+     "firing_movement": 0.98,
+     "ads": 1.13,
+     "ads_out": 1.08,
+     "vert_recoil": 0.94,
+     "horiz_recoil": 0.94,
+     "vert_gun_kick": 0.94,
+     "horiz_gun_kick": 0.94,
+     "ads_idle_sway": 1.15,
+     "ads_gun_bob": 1.15,
+     "bv": 1.16,
+     "range": 1.17
+    },
+    "Corvus LVL-40": {
+     "ads": 1.05,
+     "ads_out": 1.03,
+     "horiz_recoil": 0.75,
+     "horiz_gun_kick": 0.7
+    },
+    "FSS IS40": {
+     "range": 0.91
+    },
+    "FTAC Dominion": {
+     "ads": 1.05,
+     "ads_out": 1.03,
+     "vert_recoil": 0.92,
+     "horiz_recoil": 0.92,
+     "vert_gun_kick": 0.92,
+     "horiz_gun_kick": 0.92
+    },
+    "Cronen Helix Mk.II": {
+     "reload": 1.07,
+     "vert_recoil": 1.01,
+     "horiz_recoil": 1.62,
+     "vert_gun_kick": 0.97,
+     "horiz_gun_kick": 0.77,
+     "range": 0.97,
+     "mag_size": 2,
+     "reserve_ammo": 1.33
+    },
+    "B16 Helical": {},
+    "Corio 4DV-3": {
+     "movement": 1.02,
+     "ads_movement": 1.02,
+     "crouch_movement": 1.02,
+     "strafe_movement": 1.02,
+     "firing_movement": 1.02,
+     "ads_idle_sway": 0.6,
+     "ads_gun_bob": 0.75,
+     "hip_gun_bob": 0.9
+    },
+    "GKL-700 14\\": {
+     "movement": 1.03,
+     "ads_movement": 1.07,
+     "sprint": 1.03,
+     "tac_sprint": 1.02,
+     "crouch_movement": 1.08,
+     "strafe_movement": 1.04,
+     "firing_movement": 1.03,
+     "ads": 0.94,
+     "ads_out": 0.94,
+     "stf": 0.97,
+     "vert_recoil": 1.09,
+     "horiz_recoil": 1.09,
+     "vert_gun_kick": 1.09,
+     "horiz_gun_kick": 1.09
+    },
+    "SZ Gen.6 PEQ": {
+     "ads": 0.92,
+     "ads_out": 0.92,
+     "stf": 0.83,
+     "ads_gun_bob": 0.85
+    },
+    "SA Laz-500": {
+     "ads": 0.96,
+     "ads_out": 0.96
+    },
+    "Expedite Intra-5b": {
+     "ads_gun_bob": 1.3,
+     "hip_gun_bob": 0.85
+    },
+    "Bruen 22-LPW": {
+     "stf": 0.83
+    },
+    "IO-556 Tac 18\\": {
+     "movement": 0.97,
+     "ads_movement": 0.97,
+     "sprint": 0.99,
+     "tac_sprint": 0.99,
+     "crouch_movement": 0.96,
+     "strafe_movement": 0.97,
+     "firing_movement": 0.98,
+     "ads": 1.1,
+     "ads_out": 1.07,
+     "stf": 1.07,
+     "vert_recoil": 0.96,
+     "horiz_recoil": 0.96,
+     "vert_gun_kick": 0.96,
+     "horiz_gun_kick": 0.96,
+     "ads_idle_sway": 1.08,
+     "bv": 1.2,
+     "range": 1.26,
+     "hip_idle_sway": 1.08
+    },
+    "RG5 Hark 10\\": {
+     "movement": 1.06,
+     "ads_movement": 1.03,
+     "sprint": 1.01,
+     "tac_sprint": 1.01,
+     "crouch_movement": 1.06,
+     "strafe_movement": 1.06,
+     "firing_movement": 1.06,
+     "ads": 0.92,
+     "ads_out": 0.92,
+     "stf": 0.94,
+     "vert_recoil": 1.1,
+     "horiz_recoil": 1.1,
+     "vert_gun_kick": 1.1,
+     "horiz_gun_kick": 1.1,
+     "ads_idle_sway": 0.9,
+     "ads_gun_bob": 0.93,
+     "bv": 0.86,
+     "range": 0.88,
+     "hip_idle_sway": 0.9
+    },
+    "Corio ODSPR+": {
+     "ads_gun_bob": 1.3
+    },
+    "FT Stalwart MK2": {
+     "ads_movement": 0.97,
+     "ads_idle_sway": 0.49,
+     "ads_gun_bob": 0.65,
+     "flinch_received": 0.9
+    },
+    "SPAN-10 Stock": {
+     "ads": 0.92,
+     "ads_out": 0.92,
+     "vert_recoil": 1.05,
+     "horiz_recoil": 1.05,
+     "vert_gun_kick": 1.05,
+     "horiz_gun_kick": 1.05
+    },
+    "Fade Tac 9L": {
+     "movement": 1.04,
+     "ads_movement": 1.12,
+     "sprint": 1.02,
+     "tac_sprint": 1.01,
+     "crouch_movement": 1.06,
+     "strafe_movement": 1.04,
+     "firing_movement": 1.04,
+     "ads_idle_sway": 1.18,
+     "ads_gun_bob": 1.2,
+     "flinch_received": 1.03
+    },
+    "Cronen 56": {
+     "ads_idle_sway": 0.9,
+     "hip_idle_sway": 0.95,
+     "flinch_received": 0.5
+    },
+    "Cronen Shear-56": {
+     "ads": 0.91,
+     "ads_out": 0.91,
+     "stf": 0.91,
+     "vert_recoil": 1.06,
+     "horiz_recoil": 1.06,
+     "vert_gun_kick": 1.06,
+     "horiz_gun_kick": 1.06,
+     "flinch_received": 1.04
+    },
+    "A56 Stout": {
+     "ads": 1.05,
+     "ads_out": 1.03,
+     "stf": 1.04,
+     "vert_recoil": 0.94,
+     "horiz_recoil": 0.94,
+     "vert_gun_kick": 0.94,
+     "horiz_gun_kick": 0.94
+    },
+    "100 Round Drum": {
+     "movement": 0.97,
+     "ads_movement": 0.93,
+     "sprint": 0.96,
+     "tac_sprint": 0.96,
+     "crouch_movement": 0.92,
+     "strafe_movement": 0.97,
+     "firing_movement": 0.93,
+     "ads": 1.42,
+     "ads_out": 1.15,
+     "reload": 1.19,
+     "ads_gun_bob": 1.06,
+     "mag_size": 3.33,
+     "reserve_ammo": 1.11
+    },
+    "5.56 NATO Armor Piercing": {
+     "bullet_penetration": 0.93
+    },
+    "XR-9 Tac V2": {
+     "ads": 1.07,
+     "ads_out": 1.05,
+     "vert_recoil": 0.93,
+     "horiz_recoil": 0.93,
+     "vert_gun_kick": 0.93,
+     "horiz_gun_kick": 0.93
+    },
+    "60 Round Mag": {
+     "movement": 0.98,
+     "ads_movement": 0.97,
+     "sprint": 0.98,
+     "tac_sprint": 0.98,
+     "crouch_movement": 0.96,
+     "strafe_movement": 0.98,
+     "firing_movement": 0.97,
+     "ads": 1.06,
+     "ads_out": 1.04,
+     "reload": 1.16,
+     "ads_gun_bob": 1.03,
+     "mag_size": 2,
+     "reserve_ammo": 1.33
+    },
+    "5.56 NATO Overpressured": {
+     "bullet_penetration": 0.43
+    },
+    "5.56 NATO High Velocity": {
+     "bv": 1.2
+    },
+    "FSS Tac90 Grip": {
+     "ads_idle_sway": 0.5,
+     "ads_gun_bob": 0.5
+    },
+    "Mire-50 Tac Grip": {
+     "movement": 1.04,
+     "strafe_movement": 1.05,
+     "firing_movement": 1.04,
+     "ads": 1.07,
+     "ads_out": 1.05
+    },
+    "FSS Fireline Grip": {
+     "ads": 1.08,
+     "ads_out": 1.05,
+     "stf": 1.07,
+     "vert_recoil": 0.91,
+     "horiz_recoil": 0.91,
+     "vert_gun_kick": 0.91,
+     "horiz_gun_kick": 0.91
+    },
+    "FSS Beargrip": {
+     "movement": 1.03,
+     "strafe_movement": 1.03,
+     "firing_movement": 1.02,
+     "ads": 1.08,
+     "ads_out": 1.05,
+     "hip_idle_sway": 0.85,
+     "hip_gun_bob": 0.85
+    },
+    "120 Round Drum": {
+     "movement": 0.96,
+     "ads_movement": 0.92,
+     "sprint": 0.95,
+     "tac_sprint": 0.95,
+     "crouch_movement": 0.91,
+     "strafe_movement": 0.96,
+     "firing_movement": 0.92,
+     "ads": 1.47,
+     "ads_out": 1.16,
+     "reload": 1.2,
+     "ads_gun_bob": 1.07,
+     "range": 0.97,
+     "mag_size": 2
+    },
+    "TV Judicator": {
+     "raise_speed": 0.76
+    },
+    "Miri 40mm": {
+     "raise_speed": 0.76
+    },
+    "5.56 NATO Frangible": {
+     "bullet_penetration": 0.62
+    },
+    "GW Domi-9": {
+     "hip_idle_sway": 0.5,
+     "hip_gun_bob": 0.6
+    }
+   }
+  },
+  "csg-35": {
+   "base": {
+    "hitscan_range": 27,
+    "pre_fire_delay": 0
+   },
+   "attachments": {},
+   "stats": {
+    "range": 100,
+    "movement": 4.8,
+    "ads_movement": 3.28,
+    "sprint": 6.33,
+    "tac_sprint": 7.43,
+    "crouch_movement": 2.1,
+    "strafe_movement": 3.67,
+    "firing_movement": 4.32,
+    "ads": 210,
+    "ads_out": 285,
+    "stf": 110,
+    "reload": 2700,
+    "raise_speed": 1300,
+    "drop_speed": 767,
+    "vert_recoil": 39.6,
+    "horiz_recoil": 12.5,
+    "vert_gun_kick": 54,
+    "horiz_gun_kick": 8.5,
+    "ads_idle_sway": 0.54,
+    "ads_gun_bob": 0.09,
+    "bv": 540,
+    "bullet_penetration": 13,
+    "hip_idle_sway": 1.63,
+    "hip_gun_bob": 1.09,
+    "hip_turn_sway": 20.9,
+    "flinch_received": 0.22,
+    "rpm": 1200,
+    "mag_size": 28,
+    "reserve_ammo": 112
+   },
+   "damage": [
+    {
+     "minM": 0,
+     "maxM": 10,
+     "regions": {
+      "head": 23,
+      "neck": 17,
+      "chest": 17,
+      "stomach": 17,
+      "upperarm": 17,
+      "lowerarm": 17,
+      "upperleg": 16,
+      "lowerleg": 16
+     }
+    },
+    {
+     "minM": 10,
+     "maxM": 19,
+     "regions": {
+      "head": 21,
+      "neck": 15,
+      "chest": 15,
+      "stomach": 15,
+      "upperarm": 15,
+      "lowerarm": 15,
+      "upperleg": 14,
+      "lowerleg": 14
+     }
+    },
+    {
+     "minM": 19,
+     "maxM": 26,
+     "regions": {
+      "head": 19,
+      "neck": 14,
+      "chest": 14,
+      "stomach": 14,
+      "upperarm": 14,
+      "lowerarm": 14,
+      "upperleg": 13,
+      "lowerleg": 13
+     }
+    },
+    {
+     "minM": 26,
+     "maxM": null,
+     "regions": {
+      "head": 18,
+      "neck": 13,
+      "chest": 13,
+      "stomach": 13,
+      "upperarm": 13,
+      "lowerarm": 13,
+      "upperleg": 12,
+      "lowerleg": 12
+     }
+    }
+   ],
+   "mods": {
+    "EXP Forage-Hvy": {
+     "movement": 0.98,
+     "ads_movement": 0.98,
+     "crouch_movement": 0.98,
+     "strafe_movement": 0.98,
+     "firing_movement": 0.98,
+     "ads": 1.14,
+     "ads_out": 1.11,
+     "vert_recoil": 0.94,
+     "horiz_recoil": 0.94,
+     "vert_gun_kick": 0.94,
+     "horiz_gun_kick": 0.94,
+     "ads_idle_sway": 1.15,
+     "ads_gun_bob": 1.15,
+     "bv": 1.16,
+     "range": 1.17
+    },
+    "RTR-8 Pro": {
+     "ads": 1.06,
+     "ads_out": 1.04,
+     "vert_recoil": 0.92,
+     "horiz_recoil": 0.92,
+     "vert_gun_kick": 0.92,
+     "horiz_gun_kick": 0.92
+    },
+    "Matuzek Recourse 7": {},
+    "OCR-9F": {
+     "vert_recoil": 0.97,
+     "horiz_recoil": 0.97,
+     "vert_gun_kick": 0.97,
+     "horiz_gun_kick": 0.97
+    },
+    "NIL-RISE 90 Comp": {
+     "ads": 1.06,
+     "ads_out": 1.04,
+     "vert_recoil": 0.87,
+     "vert_gun_kick": 0.87
+    },
+    "EXP Forage-LGT": {
+     "range": 0.91
+    },
+    "ZLR TKO-35": {
+     "ads": 1.06,
+     "ads_out": 1.04,
+     "horiz_recoil": 0.75,
+     "horiz_gun_kick": 0.7
+    },
+    "SZ Gen.6 PEQ": {
+     "ads": 0.92,
+     "ads_out": 0.92,
+     "stf": 0.83,
+     "ads_gun_bob": 0.85
+    },
+    "Corio 4DV-3": {
+     "movement": 1.02,
+     "ads_movement": 1.02,
+     "crouch_movement": 1.02,
+     "strafe_movement": 1.02,
+     "firing_movement": 1.02,
+     "ads_idle_sway": 0.6,
+     "ads_gun_bob": 0.75,
+     "hip_gun_bob": 0.9
+    },
+    "Bruen 22-LPW": {
+     "stf": 0.83
+    },
+    "XRK Slight Stock": {
+     "movement": 1.02,
+     "ads_movement": 1.04,
+     "crouch_movement": 1.04,
+     "strafe_movement": 1.02,
+     "firing_movement": 1.02,
+     "ads": 0.94,
+     "ads_out": 0.94,
+     "vert_recoil": 1.04,
+     "horiz_recoil": 1.04,
+     "vert_gun_kick": 1.04,
+     "horiz_gun_kick": 1.04
+    },
+    "EXP Forage-Tac": {
+     "ads": 1.08,
+     "ads_out": 1.06
+    },
+    "Expedite Intra-5b": {
+     "ads_gun_bob": 1.3,
+     "hip_gun_bob": 0.85
+    },
+    "Sakin Contour-7": {
+     "ads_movement": 1.02,
+     "ads_idle_sway": 0.94,
+     "hip_idle_sway": 0.95,
+     "flinch_received": 0.78
+    },
+    "RASH-90 Heavy Stock": {
+     "ads_movement": 0.98,
+     "ads_idle_sway": 0.49,
+     "ads_gun_bob": 0.65,
+     "flinch_received": 0.9
+    },
+    "SA Laz-500": {
+     "ads": 0.96,
+     "ads_out": 0.96
+    },
+    "9mm Parabellum Frangible": {
+     "bullet_penetration": 0.69
+    },
+    "9mm Parabellum High Velocity": {
+     "bv": 1.2
+    },
+    "9mm Parabellum Overpressured": {
+     "bullet_penetration": 0.48
+    },
+    "IV-M Hand Stop": {
+     "movement": 1.04,
+     "strafe_movement": 1.05,
+     "firing_movement": 1.04,
+     "ads": 1.08,
+     "ads_out": 1.06
+    },
+    "CQC Stop": {
+     "ads": 1.1,
+     "ads_out": 1.07,
+     "stf": 1.14,
+     "vert_recoil": 0.91,
+     "horiz_recoil": 0.91,
+     "vert_gun_kick": 0.91,
+     "horiz_gun_kick": 0.91
+    },
+    "Corio ODSPR+": {
+     "ads_gun_bob": 1.3
+    },
+    "Matuzek Fire-Pro": {
+     "ads": 1.06,
+     "ads_out": 1.04,
+     "stf": 1.07,
+     "vert_recoil": 0.94,
+     "horiz_recoil": 0.94,
+     "vert_gun_kick": 0.94,
+     "horiz_gun_kick": 0.94
+    },
+    "XRK Fury-8": {
+     "ads": 1.1,
+     "ads_out": 1.07,
+     "vert_recoil": 0.93,
+     "horiz_recoil": 0.93,
+     "vert_gun_kick": 0.93,
+     "horiz_gun_kick": 0.93
+    },
+    "XRK TAC Grip": {
+     "ads": 0.92,
+     "ads_out": 0.93,
+     "vert_recoil": 1.03,
+     "horiz_recoil": 1.03,
+     "vert_gun_kick": 1.03,
+     "horiz_gun_kick": 1.03
+    },
+    "TA Operator-6": {
+     "movement": 0.97,
+     "ads_movement": 0.96,
+     "sprint": 0.98,
+     "tac_sprint": 0.98,
+     "crouch_movement": 0.96,
+     "strafe_movement": 0.97,
+     "firing_movement": 0.97,
+     "ads": 1.11,
+     "ads_out": 1.08,
+     "vert_recoil": 0.86,
+     "horiz_recoil": 0.86,
+     "vert_gun_kick": 0.86,
+     "horiz_gun_kick": 0.86
+    },
+    "9mm Parabellum Armor Piercing": {
+     "bullet_penetration": 1.04
+    },
+    "40 Round Mag": {
+     "movement": 0.99,
+     "ads_movement": 0.99,
+     "sprint": 0.99,
+     "tac_sprint": 0.99,
+     "crouch_movement": 0.98,
+     "strafe_movement": 0.99,
+     "firing_movement": 0.99,
+     "ads": 1.03,
+     "ads_out": 1.02,
+     "reload": 1.17,
+     "ads_gun_bob": 1.01,
+     "mag_size": 1.43,
+     "reserve_ammo": 1.43
+    },
+    "CSG Crossfire": {
+     "movement": 1.04,
+     "ads_movement": 0.95,
+     "sprint": 1.07,
+     "crouch_movement": 1.03,
+     "strafe_movement": 1.04,
+     "firing_movement": 1.01,
+     "ads": 1.48,
+     "ads_out": 2.05,
+     "stf": 0.87,
+     "raise_speed": 0.77,
+     "drop_speed": 0.39,
+     "vert_gun_kick": 0.51,
+     "horiz_gun_kick": 0.98
+    },
+    "TA Ration-424": {
+     "movement": 1.03,
+     "ads_movement": 1.05,
+     "sprint": 1.03,
+     "tac_sprint": 1.02,
+     "crouch_movement": 1.08,
+     "strafe_movement": 1.03,
+     "firing_movement": 1.03,
+     "ads": 0.94,
+     "ads_out": 0.94,
+     "stf": 0.97,
+     "vert_recoil": 1.09,
+     "horiz_recoil": 1.09,
+     "vert_gun_kick": 1.09,
+     "horiz_gun_kick": 1.09
+    },
+    "Grip Strap": {
+     "hip_idle_sway": 0.5,
+     "hip_gun_bob": 0.6
     }
    }
   }

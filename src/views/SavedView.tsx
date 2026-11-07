@@ -1,4 +1,4 @@
-import { attachmentImage, data, slotName, sortSlots, weaponById, weaponImage } from '../data/game';
+import { attachmentImage, data, hideMissing, slotName, sortSlots, weaponById, weaponImage } from '../data/game';
 import { Icon } from '../components/Icon';
 import type { Settings } from '../types';
 
@@ -24,7 +24,7 @@ export function SavedView({ saved, onLoad, onDelete, onCopy, onBuild, onCompare 
       const gearNames = (item.gear ?? []).map(id => data.gear.find(gear => gear.id === id)?.name).filter(Boolean);
       const text = [item.name, ...sortSlots(item.attachments).map(id => `${slotName(data.attachments[id].slot)}: ${data.attachments[id].name}`), ...(gearNames.length ? [`Perks, equipment and streaks: ${gearNames.join(', ')}`] : [])].join('\n');
       return <article key={item.id} className={`saved-card ${item.variant === 'apex' ? 'apex' : ''}`}>
-        <div className="saved-art"><img src={weaponImage(weapon.id)} alt="" loading="lazy"/></div>
+        <div className="saved-art"><img src={weaponImage(weapon.id)} onError={hideMissing} alt="" loading="lazy"/></div>
         <div className="saved-body">
           <span className="eyebrow">{item.variant === 'apex' ? 'Apex class' : 'No Apex'} · {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}{item.dataVersion !== data.version && <b className="tag warn">Older data</b>}</span>
           <h2>{item.name}</h2>

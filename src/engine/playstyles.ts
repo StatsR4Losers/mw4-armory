@@ -1,5 +1,5 @@
 import { metricIds } from '../types.ts';
-import type { GearStyle, MetricId, WeaponData, Weights } from '../types.ts';
+import type { GearStyle, MetricId, Mode, WeaponData, Weights } from '../types.ts';
 
 export type Role = 'smg' | 'ar' | 'lmg' | 'dmr' | 'bolt' | 'sniper' | 'shotgun' | 'pistol';
 
@@ -9,6 +9,8 @@ export interface Aim { name: string; regions: Record<string, number>; miss: numb
 export interface Playstyle {
   id: string;
   role: Role;
+  // Warzone playstyles carry wz. The rest are multiplayer.
+  mode?: Mode;
   name: string;
   blurb: string;
   distanceM: number;
@@ -149,7 +151,64 @@ export const PLAYSTYLES: Playstyle[] = [
     blurb: 'Heavy pistols aimed in. ADS, recoil between shots and damage range.',
     weights: weights({ ads: 1.1, stf: .6, ttk: 1, fireRate: 1, recoil: 2, mobility: .3, adsMove: .3, flinch: .2, magazine: .1, reload: .05, velocity: 1, sway: .1, swap: .4 }),
   },
+  // Warzone, after CODMunity's Warzone playstyles: long range, close range, sniper support and sniper. A full kill takes
+  // 300 damage through plates, so magazine size counts for far more than in multiplayer, and fights run longer.
+  {
+    id: 'wz-ar-long', role: 'ar', mode: 'wz', name: 'Long range', distanceM: 40, gear: 'long', optic: 'choice',
+    blurb: 'The main gun for 30 to 60 m fights. Recoil, bullet velocity and a magazine that kills through plates.',
+    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .2, adsMove: .2, flinch: .5, magazine: 1.2, reload: .3, velocity: 1.5, sway: .3 }),
+  },
+  {
+    id: 'wz-ar-close', role: 'ar', mode: 'wz', name: 'Close range', distanceM: 15, gear: 'close', optic: 'choice',
+    blurb: 'A rifle built to push buildings. ADS, sprint-to-fire and recoil, with a big magazine.',
+    weights: weights({ ads: 1, stf: 1, ttk: 1, fireRate: 1, recoil: 2.5, mobility: 1, adsMove: .6, flinch: .2, hipfire: .2, magazine: 1, reload: .2, velocity: 1 }),
+  },
+  {
+    id: 'wz-smg-close', role: 'smg', mode: 'wz', name: 'Close range', distanceM: 10, gear: 'close', optic: 'choice',
+    blurb: 'The close-range half of a Warzone loadout. Movement, sprint-to-fire and enough bullets for a full kill.',
+    weights: weights({ ads: .9, stf: 1.3, ttk: 1, fireRate: 1, recoil: 2, mobility: 1.5, adsMove: .8, flinch: .1, hipfire: .4, magazine: 1.2, reload: .2, velocity: .6 }),
+  },
+  {
+    id: 'wz-smg-support', role: 'smg', mode: 'wz', name: 'Sniper support', distanceM: 8, gear: 'close', optic: 'choice',
+    blurb: 'The secondary behind a sniper. Swap speed, sprint-to-fire and movement come first.',
+    weights: weights({ ads: 1, stf: 1.5, ttk: 1, fireRate: 1, recoil: 1.2, mobility: 2, adsMove: 1, hipfire: .6, magazine: .8, reload: .2, velocity: .4, swap: 1 }),
+  },
+  {
+    id: 'wz-lmg-long', role: 'lmg', mode: 'wz', name: 'Long range', distanceM: 45, gear: 'long', optic: 'choice',
+    blurb: 'Hold a ridge or a roof. Recoil and bullet velocity, with ADS you can live with.',
+    weights: weights({ ads: .5, stf: .2, ttk: 1, fireRate: 1, recoil: 4, mobility: .1, adsMove: .1, flinch: .5, magazine: .6, reload: .4, velocity: 1.5, sway: .3 }),
+  },
+  {
+    id: 'wz-dmr-long', role: 'dmr', mode: 'wz', name: 'Long range', distanceM: 50, gear: 'long', optic: 'choice', aim: AIMS.paced,
+    blurb: 'Semi-auto shots at range. Recoil between shots, bullet velocity and flinch.',
+    weights: weights({ ads: .7, stf: .3, ttk: 1, fireRate: 1, recoil: 3, mobility: .2, adsMove: .2, flinch: .6, magazine: .5, reload: .1, velocity: 1.5, sway: .4 }),
+  },
+  {
+    id: 'wz-bolt-long', role: 'bolt', mode: 'wz', name: 'Long range', distanceM: 55, gear: 'long', optic: 'choice', aim: AIMS.aimed,
+    blurb: 'Bolt-action shots at range. Bullet travel, sway, flinch and how many hits a kill takes.',
+    weights: weights({ ads: .6, stf: .3, ttk: 1, fireRate: 1, recoil: .3, mobility: .3, adsMove: .3, flinch: 1.2, magazine: .3, velocity: 2, sway: 1, steady: .3 }),
+  },
+  {
+    id: 'wz-sniper-long', role: 'sniper', mode: 'wz', name: 'Sniper', distanceM: 80, gear: 'long', optic: 'scope', aim: AIMS.aimed,
+    blurb: 'Long sight lines. Bullet velocity matters most, then sway, flinch and headshot kills.',
+    weights: weights({ ads: .5, stf: .3, ttk: 1, fireRate: 1, recoil: .3, mobility: .2, adsMove: .2, flinch: 1.5, velocity: 2, sway: 1.2, steady: .3 }),
+  },
+  {
+    id: 'wz-shotgun-close', role: 'shotgun', mode: 'wz', name: 'Close range', distanceM: 5, gear: 'close', optic: 'none', ammo: 'pellets', followUps: .5,
+    blurb: 'Buildings and stairwells. Sprint-to-fire, movement and hip fire.',
+    weights: weights({ ads: .3, stf: 1.3, ttk: .5, fireRate: 1, recoil: .3, mobility: 1.5, adsMove: .3, hipfire: 1, magazine: .5, reload: .3 }),
+  },
+  {
+    id: 'wz-pistol-secondary', role: 'pistol', mode: 'wz', name: 'Secondary', distanceM: 8, gear: 'allround', optic: 'choice', aim: AIMS.paced,
+    blurb: 'A backup for when the primary runs dry. Swap speed, sprint-to-fire and ADS.',
+    weights: weights({ ads: 1, stf: 1.2, ttk: 1, fireRate: 1, recoil: 1, mobility: .5, adsMove: .3, hipfire: .5, magazine: .5, reload: .1, velocity: .5, swap: 1 }),
+  },
 ];
+
+// The mode playstyle lists follow. data/game.ts sets it with the rest of the mode switch.
+let currentMode: Mode = 'mp';
+export function setPlaystyleMode(mode: Mode) { currentMode = mode; }
+export const playstyleMode = () => currentMode;
 
 export function roleOf(weapon: WeaponData): Role {
   switch (weapon.category) {
@@ -165,11 +224,11 @@ export function roleOf(weapon: WeaponData): Role {
 
 const byId = new Map(PLAYSTYLES.map(style => [style.id, style]));
 export const playstyleById = (id: string) => byId.get(id);
-export const playstylesFor = (weapon: WeaponData) => PLAYSTYLES.filter(style => style.role === roleOf(weapon));
-/** The weapon's playstyle with this id, or its class default when the id belongs to another class. */
+export const playstylesFor = (weapon: WeaponData, mode: Mode = currentMode) => PLAYSTYLES.filter(style => style.role === roleOf(weapon) && (style.mode ?? 'mp') === mode);
+/** The weapon's playstyle with this id, or its class default when the id belongs to another class or mode. */
 export function playstyleFor(weapon: WeaponData, id: string): Playstyle {
   const style = byId.get(id);
-  return style && style.role === roleOf(weapon) ? style : playstylesFor(weapon)[0];
+  return style && playstylesFor(weapon).includes(style) ? style : playstylesFor(weapon)[0];
 }
 
 export type { MetricId };
